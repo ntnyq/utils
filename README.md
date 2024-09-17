@@ -1,4 +1,4 @@
-# utils
+# @ntnyq/utils
 
 [![CI](https://github.com/ntnyq/utils/workflows/CI/badge.svg)](https://github.com/ntnyq/utils/actions)
 [![NPM VERSION](https://img.shields.io/npm/v/@ntnyq/utils.svg)](https://www.npmjs.com/package/@ntnyq/utils)
@@ -11,15 +11,15 @@
 ## Install
 
 ```bash
-npm install utils
+npm install @ntnyq/utils
 ```
 
 ```bash
-yarn add utils
+yarn add @ntnyq/utils
 ```
 
 ```bash
-pnpm add utils
+pnpm add @ntnyq/utils
 ```
 
 ## License

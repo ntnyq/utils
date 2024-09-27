@@ -1,5 +1,7 @@
+export * from './fn'
 export * from './env'
 export * from './case'
 export * from './misc'
 export * from './array'
 export * from './types'
+export * from './string'

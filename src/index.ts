@@ -1,3 +1,4 @@
+export * from './is'
 export * from './fn'
 export * from './env'
 export * from './case'

@@ -1,4 +1,5 @@
 export * from './raf'
 export * from './time'
+export * from './clamp'
 export * from './waitFor'
 export * from './warnOnce'

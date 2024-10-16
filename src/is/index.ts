@@ -16,6 +16,25 @@ export function isNumber(value: unknown): value is number {
   return typeof value === 'number'
 }
 
+export function isEmptyString(value: unknown): value is '' {
+  return isString(value) && value.length === 0
+}
+
+export type Whitespace = ' '
+export type NonEmptyString = string & { 0: '' }
+
+export function isWhitespaceString(value: unknown): value is Whitespace {
+  return isString(value) && /^\s*$/.test(value)
+}
+
+export function isEmptyStringOrWhitespace(value: unknown): value is '' | Whitespace {
+  return isEmptyString(value) || isWhitespaceString(value)
+}
+
+export function isNumbericString(value: unknown): value is `${number}` {
+  return isString(value) && !isEmptyStringOrWhitespace(value) && !Number.isNaN(Number(value))
+}
+
 export function isInteger(value: unknown): value is number {
   return Number.isInteger(value)
 }
@@ -39,6 +58,18 @@ export function isUndefined(value: unknown): value is undefined {
 
 export function isNull(value: unknown): value is null {
   return value === null
+}
+
+export function isObject(value: unknown): value is object {
+  return getObjectType(value) === 'Object'
+}
+
+export function isRegExp(value: unknown): value is RegExp {
+  return getObjectType(value) === 'RegExp'
+}
+
+export function isSet<Value = unknown>(value: unknown): value is Set<Value> {
+  return getObjectType(value) === 'Set'
 }
 
 export function isNativePromise<T = unknown>(value: unknown): value is Promise<T> {

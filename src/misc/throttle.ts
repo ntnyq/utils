@@ -1,53 +1,85 @@
+export interface ThrottleDebounceOptions {
+  /**
+   * @default false
+   */
+  isDebounce?: boolean
+}
+
+/**
+ * Throttle a function to limit its execution to a maximum of once per a specified time interval.
+ *
+ * @param delay - Zero or greater delay in milliseconds
+ * @param callback - A function to be throttled
+ * @param options - throttle options
+ * @returns A throttled function
+ */
 export function throttle<T extends ((...args: any[]) => undefined | void) | undefined | null>(
   delay: number,
-  fn: Exclude<T, undefined | null>,
-  _isDebounce?: boolean,
+  callback: Exclude<T, undefined | null>,
+  options: ThrottleDebounceOptions = {},
 ) {
+  const { isDebounce } = options
+
+  /**
+   * Track the last time `callback` was executed
+   */
   let lastExec = 0
   let cancelled = false
-  let timer: ReturnType<typeof setTimeout> | null = null
-  const clear = () => {
-    timer = null
+  let timeoutId: ReturnType<typeof setTimeout> | undefined
+
+  function clearExistingTimeout() {
+    if (timeoutId) {
+      clearTimeout(timeoutId)
+    }
+  }
+
+  function cancel() {
+    clearExistingTimeout()
+    cancelled = true
   }
 
   function wrapper(this: unknown, ...args: Parameters<Exclude<T, null | undefined>>) {
     if (cancelled) return
+
+    // eslint-disable-next-line @typescript-eslint/no-this-alias
+    const _this = this
     const now = Date.now()
     const elapsed = now - lastExec
-    const exec = (cur?: number) => {
-      lastExec = cur || Date.now()
-      fn.apply(this, args)
+
+    function clear() {
+      timeoutId = undefined
     }
 
-    if (_isDebounce && !timer) {
+    function exec(cur?: number) {
+      lastExec = cur || Date.now()
+      callback.apply(_this, args)
+    }
+
+    if (isDebounce && !timeoutId) {
       exec(now)
     }
 
-    if (timer) {
-      clearTimeout(timer)
-    }
+    clearExistingTimeout()
 
-    if (!_isDebounce && elapsed > delay) {
+    if (!isDebounce && elapsed > delay) {
       exec(now)
     } else {
-      timer = setTimeout(_isDebounce ? clear : exec, _isDebounce ? delay : delay - elapsed)
+      timeoutId = setTimeout(isDebounce ? clear : exec, isDebounce ? delay : delay - elapsed)
     }
   }
 
-  wrapper.cancel = () => {
-    if (timer) {
-      clearTimeout(timer)
-    }
-    clear()
-    cancelled = true
-  }
+  wrapper.cancel = cancel
 
   return wrapper as T & { cancel: () => void }
 }
 
 export function debounce<T extends ((...args: any[]) => undefined | void) | undefined | null>(
   delay: number,
-  fn: Exclude<T, undefined | null>,
+  callback: Exclude<T, undefined | null>,
+  options: ThrottleDebounceOptions = {},
 ) {
-  return throttle(delay, fn, true)
+  return throttle(delay, callback, {
+    ...options,
+    isDebounce: true,
+  })
 }

@@ -2,7 +2,7 @@ type JoinableValue = string | number | null | undefined
 
 interface JoinOptions {
   /**
-   * @default '''
+   * @default ''
    */
   separator?: string
 }

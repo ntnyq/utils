@@ -1,4 +1,5 @@
 export * from './join'
 export * from './slash'
+export * from './unindent'
 export * from './ensurePrefix'
 export * from './ensureSuffix'

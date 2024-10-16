@@ -1,6 +1,6 @@
 /**
  * Replace backslash to slash
  */
-export function slash(str: string) {
-  return str.replace(/\\/g, '/')
+export function slash(input: string) {
+  return input.replace(/\\/g, '/')
 }

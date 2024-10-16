@@ -1,3 +1,5 @@
+import { isPlainObject } from './isPlainObject'
+
 export interface SortObjectOptions {
   /**
    * Recursive sorting
@@ -25,7 +27,7 @@ export function sortObject<T extends Record<string, any>>(obj: T, options: SortO
       const value = obj[key]
       let newValue
 
-      if (options.deep && typeof value === 'object' && value !== null) {
+      if (options.deep && isPlainObject(value)) {
         newValue = sortKeys(value)
       } else {
         newValue = value

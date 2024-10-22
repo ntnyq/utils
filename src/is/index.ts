@@ -60,6 +60,10 @@ export function isNull(value: unknown): value is null {
   return value === null
 }
 
+export function isNil(value: unknown): value is null | undefined {
+  return isNull(value) || isUndefined(value)
+}
+
 export function isObject(value: unknown): value is object {
   return getObjectType(value) === 'Object'
 }

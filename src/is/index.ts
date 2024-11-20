@@ -4,6 +4,9 @@
  * @copyright {@link https://github.com/sindresorhus/is}
  */
 
+export type Whitespace = ' '
+export type NonEmptyString = string & { 0: '' }
+
 export function getObjectType(value: unknown): string {
   return Object.prototype.toString.call(value).slice(8, -1)
 }
@@ -20,8 +23,9 @@ export function isEmptyString(value: unknown): value is '' {
   return isString(value) && value.length === 0
 }
 
-export type Whitespace = ' '
-export type NonEmptyString = string & { 0: '' }
+export function isNonEmptyString(value: unknown): value is NonEmptyString {
+  return isString(value) && value.length > 0
+}
 
 export function isWhitespaceString(value: unknown): value is Whitespace {
   return isString(value) && /^\s*$/.test(value)

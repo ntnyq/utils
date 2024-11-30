@@ -19,7 +19,7 @@ function mockRAF(fn: FrameRequestCallback): number {
 /**
  * Request animation frame
  *
- * @param fn callback
+ * @param fn - callback
  * @returns id
  */
 export function rAF(fn: FrameRequestCallback) {
@@ -30,7 +30,7 @@ export function rAF(fn: FrameRequestCallback) {
 /**
  * Cancel animation frame
  *
- * @param id id
+ * @param id - id
  * @returns void
  */
 export function cAF(id: number) {

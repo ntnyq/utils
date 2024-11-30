@@ -1,6 +1,6 @@
 /**
  * @file object utils
- * @category object
+ * @module object
  */
 
 export * from './omit'

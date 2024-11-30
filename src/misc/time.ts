@@ -1,5 +1,6 @@
 /**
- * @category Utils - time
+ * @file time utils
+ * @module Time
  */
 
 const ONE_SECOND = 1000

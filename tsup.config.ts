@@ -1,11 +1,12 @@
 import { defineConfig } from 'tsup'
+import pkg from './package.json'
 
 export default defineConfig({
-  entry: ['src/index.ts'],
-  dts: true,
-  clean: true,
   cjsInterop: true,
+  clean: true,
+  dts: true,
+  entry: ['src/index.ts'],
   format: ['cjs', 'esm'],
+  noExternal: [...Object.keys(pkg.dependencies || {})],
   target: ['node18', 'es2022'],
-  noExternal: ['scule'],
 })

@@ -1,7 +1,7 @@
 /**
  * Wait for a number of milliseconds
  *
- * @param ms millseconds to wait
+ * @param ms - millseconds to wait
  * @returns a promise that resolves after ms milliseconds
  *
  * @example

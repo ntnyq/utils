@@ -1,6 +1,6 @@
 /**
  * @file is utils
- * @category is
+ * @module is
  * @copyright {@link https://github.com/sindresorhus/is}
  */
 

@@ -3,7 +3,7 @@ const _RE_FULL_WS = /^\s*$/
 /**
  * Remove leading whitespace from a template string
  * Empty lines at the beginning and end of the template string are also removed.
- * @param input template string
+ * @param input - template string
  *
  * @example
  *

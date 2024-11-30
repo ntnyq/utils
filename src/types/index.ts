@@ -23,3 +23,5 @@ export type Overwrite<T, U> = Pick<T, Exclude<keyof T, keyof U>> & U
  * Resolve `boolean | Record<string, any>` to `Record<string, any>`
  */
 export type ResolvedOptions<T> = T extends boolean ? never : NonNullable<T>
+
+export * from './module'

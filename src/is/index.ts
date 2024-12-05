@@ -93,3 +93,5 @@ function hasPromiseApi<T = unknown>(value: unknown): value is Promise<T> {
 export function isPromise<T = unknown>(value: unknown): value is Promise<T> {
   return isNativePromise(value) || hasPromiseApi(value)
 }
+
+export * from './isDeepEqual'

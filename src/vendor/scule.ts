@@ -1,6 +1,6 @@
 /**
  * @file case utils
- * @module Case
+ * @module vendor
  */
 
 import { upperFirst } from 'scule'

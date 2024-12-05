@@ -11,12 +11,32 @@ export function getObjectType(value: unknown): string {
   return Object.prototype.toString.call(value).slice(8, -1)
 }
 
+export function isUndefined(value: unknown): value is undefined {
+  return value === undefined
+}
+
+export function isNull(value: unknown): value is null {
+  return value === null
+}
+
+export function isNil(value: unknown): value is null | undefined {
+  return isNull(value) || isUndefined(value)
+}
+
 export function isString(value: unknown): value is string {
   return typeof value === 'string'
 }
 
 export function isNumber(value: unknown): value is number {
   return typeof value === 'number'
+}
+
+export function isZero(value: unknown): value is 0 {
+  return value === 0
+}
+
+export function isNaN(value: unknown): value is typeof Number.NaN {
+  return Number.isNaN(value)
 }
 
 export function isEmptyString(value: unknown): value is '' {
@@ -56,20 +76,16 @@ export function isArray(value: unknown): value is unknown[] {
   return Array.isArray(value)
 }
 
-export function isUndefined(value: unknown): value is undefined {
-  return value === undefined
-}
-
-export function isNull(value: unknown): value is null {
-  return value === null
-}
-
-export function isNil(value: unknown): value is null | undefined {
-  return isNull(value) || isUndefined(value)
+export function isEmptyArray(value: unknown): value is [] {
+  return isArray(value) && value.length === 0
 }
 
 export function isObject(value: unknown): value is object {
   return getObjectType(value) === 'Object'
+}
+
+export function isEmptyObject(value: unknown): value is {} {
+  return isObject(value) && Object.keys(value).length === 0
 }
 
 export function isRegExp(value: unknown): value is RegExp {

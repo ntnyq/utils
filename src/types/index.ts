@@ -4,9 +4,9 @@ export type Arrayable<T> = T | T[]
 export type Awaitable<T> = Promise<T> | T
 
 export type MayBe<T> = T | undefined
-export type Nullable<T> = null | T
+export type Nullable<T> = T | null
 
-export type PrimitiveType = bigint | boolean | null | number | string | symbol | undefined
+export type PrimitiveType = bigint | boolean | number | string | symbol | null | undefined
 
 /**
  * Prettify object type

@@ -10,17 +10,21 @@
 
 ## Install
 
-```bash
+```shell
 npm install @ntnyq/utils
 ```
 
-```bash
+```shell
 yarn add @ntnyq/utils
 ```
 
-```bash
+```shell
 pnpm add @ntnyq/utils
 ```
+
+## Credits
+
+- [antfu/utils](https://github.com/antfu/utils)
 
 ## License
 

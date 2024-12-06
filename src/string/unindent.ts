@@ -1,7 +1,7 @@
 const _RE_FULL_WS = /^\s*$/
 
 /**
- * Remove leading whitespace from a template string
+ * Remove common leading whitespace from a template string
  * Empty lines at the beginning and end of the template string are also removed.
  * @param input - template string
  *
@@ -20,10 +20,10 @@ export function unindent(input: TemplateStringsArray | string) {
   const whitespaceLines = lines.map(line => _RE_FULL_WS.test(line))
 
   const commonIndent = lines.reduce((min, line, idx) => {
-    if (!whitespaceLines[idx]) {
+    if (whitespaceLines[idx]) {
       return min
     }
-    const indent = line.match(/^\s/)?.[0].length
+    const indent = line.match(/^\s*/)?.[0].length
     return indent === undefined ? min : Math.min(min, indent)
   }, Number.POSITIVE_INFINITY)
 

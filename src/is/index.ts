@@ -63,6 +63,10 @@ export function isInteger(value: unknown): value is number {
   return Number.isInteger(value)
 }
 
+export function isBigInt(value: unknown): value is bigint {
+  return typeof value === 'bigint'
+}
+
 export function isBoolean(value: unknown): value is boolean {
   return typeof value === 'boolean'
 }
@@ -90,6 +94,10 @@ export function isEmptyObject(value: unknown): value is {} {
 
 export function isRegExp(value: unknown): value is RegExp {
   return getObjectType(value) === 'RegExp'
+}
+
+export function isError(value: unknown): value is Error {
+  return getObjectType(value) === 'Error'
 }
 
 export function isSet<Value = unknown>(value: unknown): value is Set<Value> {

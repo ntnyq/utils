@@ -7,7 +7,10 @@ export type Callable<T> = AnyFn<any, T> | T
 export type MayBe<T> = T | undefined
 export type Nullable<T> = T | null
 
-export type PrimitiveType = bigint | boolean | number | string | symbol | null | undefined
+/**
+ * Overwrite some keys type
+ */
+export type Overwrite<T, U> = Pick<T, Exclude<keyof T, keyof U>> & U
 
 /**
  * Prettify object type
@@ -15,10 +18,7 @@ export type PrimitiveType = bigint | boolean | number | string | symbol | null |
 export type Prettify<T> = { [K in keyof T]: T[K] } & {}
 export type PrettifyV2<T> = Omit<T, never>
 
-/**
- * Overwrite some keys type
- */
-export type Overwrite<T, U> = Pick<T, Exclude<keyof T, keyof U>> & U
+export type PrimitiveType = bigint | boolean | number | string | symbol | null | undefined
 
 /**
  * Resolve `boolean | Record<string, any>` to `Record<string, any>`

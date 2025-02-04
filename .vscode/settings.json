@@ -1,14 +1,14 @@
 {
-  "prettier.enable": true,
   "eslint.enable": true,
+  "prettier.enable": true,
   "editor.formatOnSave": true,
+  "editor.defaultFormatter": "esbenp.prettier-vscode",
   "editor.codeActionsOnSave": {
     "source.fixAll.eslint": "explicit"
   },
   "eslint.validate": [
     "vue",
     "yaml",
-    "html",
     "toml",
     "json",
     "jsonc",
@@ -22,7 +22,7 @@
   "cSpell.words": [
     "bumpp",
     "changelogithub",
-    "CODECOV",
+    "codecov",
     "lcov",
     "pnpm",
     "scule",

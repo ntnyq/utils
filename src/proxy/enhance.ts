@@ -2,6 +2,7 @@
  * enhance object
  * @module proxy
  */
+
 export function enhance<T extends Record<PropertyKey, any>, E extends Record<PropertyKey, any>>(
   module: T,
   extra: E,

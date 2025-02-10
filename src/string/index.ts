@@ -1,5 +1,6 @@
 export * from './join'
 export * from './slash'
+export * from './random'
 export * from './unindent'
 export * from './ensurePrefix'
 export * from './ensureSuffix'

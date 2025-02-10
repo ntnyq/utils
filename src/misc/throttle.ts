@@ -13,7 +13,9 @@ export interface ThrottleDebounceOptions {
  * @param options - throttle options
  * @returns A throttled function
  */
-export function throttle<T extends ((...args: any[]) => undefined | void) | undefined | null>(
+export function throttle<
+  T extends ((...args: any[]) => undefined | void) | undefined | null,
+>(
   delay: number,
   callback: Exclude<T, undefined | null>,
   options: ThrottleDebounceOptions = {},
@@ -38,7 +40,10 @@ export function throttle<T extends ((...args: any[]) => undefined | void) | unde
     cancelled = true
   }
 
-  function wrapper(this: unknown, ...args: Parameters<Exclude<T, null | undefined>>) {
+  function wrapper(
+    this: unknown,
+    ...args: Parameters<Exclude<T, null | undefined>>
+  ) {
     if (cancelled) return
 
     // eslint-disable-next-line @typescript-eslint/no-this-alias
@@ -64,7 +69,10 @@ export function throttle<T extends ((...args: any[]) => undefined | void) | unde
     if (!isDebounce && elapsed > delay) {
       exec(now)
     } else {
-      timeoutId = setTimeout(isDebounce ? clear : exec, isDebounce ? delay : delay - elapsed)
+      timeoutId = setTimeout(
+        isDebounce ? clear : exec,
+        isDebounce ? delay : delay - elapsed,
+      )
     }
   }
 
@@ -73,7 +81,9 @@ export function throttle<T extends ((...args: any[]) => undefined | void) | unde
   return wrapper as T & { cancel: () => void }
 }
 
-export function debounce<T extends ((...args: any[]) => undefined | void) | undefined | null>(
+export function debounce<
+  T extends ((...args: any[]) => undefined | void) | undefined | null,
+>(
   delay: number,
   callback: Exclude<T, undefined | null>,
   options: ThrottleDebounceOptions = {},

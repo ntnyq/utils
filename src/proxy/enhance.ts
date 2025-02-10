@@ -3,10 +3,10 @@
  * @module proxy
  */
 
-export function enhance<T extends Record<PropertyKey, any>, E extends Record<PropertyKey, any>>(
-  module: T,
-  extra: E,
-): T {
+export function enhance<
+  T extends Record<PropertyKey, any>,
+  E extends Record<PropertyKey, any>,
+>(module: T, extra: E): T {
   return new Proxy(module, {
     get(target, key, receiver) {
       if (Reflect.has(extra, key)) {

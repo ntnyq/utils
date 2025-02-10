@@ -14,7 +14,9 @@ import type { Awaitable, InteropModuleDefault } from '../types'
  * const { unindent } = await interopDefault(import('@ntnyq/utils'))
  * ```
  */
-export async function interopDefault<T>(mod: Awaitable<T>): Promise<InteropModuleDefault<T>> {
+export async function interopDefault<T>(
+  mod: Awaitable<T>,
+): Promise<InteropModuleDefault<T>> {
   const resolved = await mod
   return (resolved as { default?: any }).default || resolved
 }

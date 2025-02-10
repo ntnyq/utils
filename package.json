@@ -70,6 +70,11 @@
   "engines": {
     "node": ">=18.18.0"
   },
+  "pnpm": {
+    "onlyBuiltDependencies": [
+      "esbuild"
+    ]
+  },
   "nano-staged": {
     "*.{js,ts,mjs,cjs,json,md,yml,yaml}": "eslint --fix"
   }

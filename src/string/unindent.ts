@@ -35,7 +35,10 @@ export function unindent(input: TemplateStringsArray | string) {
 
   let emptylinesTail = 0
 
-  while (emptylinesTail < lines.length && whitespaceLines[lines.length - emptylinesTail - 1]) {
+  while (
+    emptylinesTail < lines.length
+    && whitespaceLines[lines.length - emptylinesTail - 1]
+  ) {
     emptylinesTail++
   }
 

@@ -18,7 +18,14 @@ export type Overwrite<T, U> = Pick<T, Exclude<keyof T, keyof U>> & U
 export type Prettify<T> = { [K in keyof T]: T[K] } & {}
 export type PrettifyV2<T> = Omit<T, never>
 
-export type PrimitiveType = bigint | boolean | number | string | symbol | null | undefined
+export type PrimitiveType =
+  | bigint
+  | boolean
+  | number
+  | string
+  | symbol
+  | null
+  | undefined
 
 /**
  * Resolve `boolean | Record<string, any>` to `Record<string, any>`

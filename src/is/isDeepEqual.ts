@@ -25,7 +25,9 @@ export function isDeepEqual(value1: any, value2: any): boolean {
       return false
     }
 
-    return keys.every(key => isDeepEqual(value1[key as keyof typeof value1], value2[key]))
+    return keys.every(key =>
+      isDeepEqual(value1[key as keyof typeof value1], value2[key]),
+    )
   }
 
   return Object.is(value1, value2)

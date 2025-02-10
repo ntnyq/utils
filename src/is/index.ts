@@ -34,11 +34,17 @@ export function isNonEmptyString(value: unknown): value is NonEmptyString {
 export function isWhitespaceString(value: unknown): value is Whitespace {
   return isString(value) && /^\s*$/.test(value)
 }
-export function isEmptyStringOrWhitespace(value: unknown): value is '' | Whitespace {
+export function isEmptyStringOrWhitespace(
+  value: unknown,
+): value is '' | Whitespace {
   return isEmptyString(value) || isWhitespaceString(value)
 }
 export function isNumbericString(value: unknown): value is `${number}` {
-  return isString(value) && !isEmptyStringOrWhitespace(value) && !Number.isNaN(Number(value))
+  return (
+    isString(value)
+    && !isEmptyStringOrWhitespace(value)
+    && !Number.isNaN(Number(value))
+  )
 }
 
 export function isNumber(value: unknown): value is number {
@@ -83,10 +89,17 @@ export function isObject(value: unknown): value is object {
   return (typeof value === 'object' || isFunction(value)) && !isNull(value)
 }
 export function isEmptyObject(value: unknown): value is {} {
-  return isObject(value) && !isMap(value) && !isSet(value) && Object.keys(value).length === 0
+  return (
+    isObject(value)
+    && !isMap(value)
+    && !isSet(value)
+    && Object.keys(value).length === 0
+  )
 }
 
-export function isMap<Key = unknown, Value = unknown>(value: unknown): value is Map<Key, Value> {
+export function isMap<Key = unknown, Value = unknown>(
+  value: unknown,
+): value is Map<Key, Value> {
   return getObjectType(value) === 'Map'
 }
 
@@ -114,9 +127,14 @@ export function isError(value: unknown): value is Error {
  * @internal
  */
 function hasPromiseApi<T = unknown>(value: unknown): value is Promise<T> {
-  return isFunction((value as Promise<T>)?.then) && isFunction((value as Promise<T>)?.catch)
+  return (
+    isFunction((value as Promise<T>)?.then)
+    && isFunction((value as Promise<T>)?.catch)
+  )
 }
-export function isNativePromise<T = unknown>(value: unknown): value is Promise<T> {
+export function isNativePromise<T = unknown>(
+  value: unknown,
+): value is Promise<T> {
   return getObjectType(value) === 'Promise'
 }
 export function isPromise<T = unknown>(value: unknown): value is Promise<T> {

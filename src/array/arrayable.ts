@@ -6,7 +6,9 @@ import type { Arrayable, Nullable } from '../types'
  * @param array - given array
  * @returns Array<T>
  */
-export function flattenArrayable<T>(array?: Nullable<Arrayable<T | Array<T>>>): Array<T> {
+export function flattenArrayable<T>(
+  array?: Nullable<Arrayable<T | Array<T>>>,
+): Array<T> {
   return toArray(array).flat(1) as Array<T>
 }
 

@@ -16,7 +16,10 @@ export interface SortObjectOptions {
 /**
  * Sort object properties
  */
-export function sortObject<T extends Record<string, any>>(obj: T, options: SortObjectOptions = {}) {
+export function sortObject<T extends Record<string, any>>(
+  obj: T,
+  options: SortObjectOptions = {},
+) {
   const { compareFn = (a, b) => a.localeCompare(b) } = options
 
   function sortKeys<T extends Record<string, any>>(obj: T) {

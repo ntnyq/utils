@@ -72,7 +72,10 @@ export interface CleanObjectOptions {
  * @param options - clean options
  * @returns cleaned object
  */
-export function cleanObject<T extends object>(obj: T, options: CleanObjectOptions = {}): T {
+export function cleanObject<T extends object>(
+  obj: T,
+  options: CleanObjectOptions = {},
+): T {
   const {
     cleanUndefined = true,
     cleanNull = true,

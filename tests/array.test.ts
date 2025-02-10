@@ -6,8 +6,12 @@ it('toArray', () => {
 })
 
 it('intersect', () => {
-  expect(intersect(['a', 'b', 1, true, undefined, {}], ['a', 'b', 1, true, undefined, {}]))
-    .toMatchInlineSnapshot(`
+  expect(
+    intersect(
+      ['a', 'b', 1, true, undefined, {}],
+      ['a', 'b', 1, true, undefined, {}],
+    ),
+  ).toMatchInlineSnapshot(`
     [
       "a",
       "b",

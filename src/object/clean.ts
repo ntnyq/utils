@@ -40,21 +40,21 @@ export interface CleanObjectOptions {
   /**
    * clean empty string
    *
-   * @default true
+   * @default false
    */
   cleanEmptyString?: boolean
 
   /**
    * clean empty array
    *
-   * @default true
+   * @default false
    */
   cleanEmptyArray?: boolean
 
   /**
    * clean empty object
    *
-   * @default true
+   * @default false
    */
   cleanEmptyObject?: boolean
 
@@ -79,11 +79,11 @@ export function cleanObject<T extends object>(
   const {
     cleanUndefined = true,
     cleanNull = true,
-    cleanZero = false,
     cleanNaN = true,
-    cleanEmptyString = true,
-    cleanEmptyArray = true,
-    cleanEmptyObject = true,
+    cleanZero = false,
+    cleanEmptyString = false,
+    cleanEmptyArray = false,
+    cleanEmptyObject = false,
     recursive = true,
   } = options
 
@@ -105,11 +105,9 @@ export function cleanObject<T extends object>(
     if (cleanEmptyString && isEmptyString(v)) {
       delete obj[key as keyof typeof obj]
     }
-
     if (cleanEmptyArray && isEmptyArray(v)) {
       delete obj[key as keyof typeof obj]
     }
-
     if (cleanEmptyObject && isEmptyObject(v)) {
       delete obj[key as keyof typeof obj]
     }

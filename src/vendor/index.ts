@@ -1,1 +1,1 @@
-export * from './scule'
+export * from './changeCase'

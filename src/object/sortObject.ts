@@ -27,12 +27,14 @@ export function sortObject<T extends Record<string, any>>(
     const result = {}
 
     for (const key of sortedKeys) {
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
       const value = obj[key]
-      let newValue
+      let newValue: any
 
       if (options.deep && isPlainObject(value)) {
         newValue = sortKeys(value)
       } else {
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
         newValue = value
       }
 

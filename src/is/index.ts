@@ -128,7 +128,9 @@ export function isError(value: unknown): value is Error {
  */
 function hasPromiseApi<T = unknown>(value: unknown): value is Promise<T> {
   return (
+    // eslint-disable-next-line @typescript-eslint/unbound-method
     isFunction((value as Promise<T>)?.then)
+    // eslint-disable-next-line @typescript-eslint/unbound-method
     && isFunction((value as Promise<T>)?.catch)
   )
 }

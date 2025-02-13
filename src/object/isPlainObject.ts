@@ -11,7 +11,7 @@ export function isPlainObject<Value = unknown>(
 ): value is Record<PropertyKey, Value> {
   if (!isObject(value)) return false
 
-  const prototype = Object.getPrototypeOf(value)
+  const prototype: unknown = Object.getPrototypeOf(value)
 
   return (
     (prototype === null

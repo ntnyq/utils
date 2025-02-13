@@ -11,14 +11,14 @@ export function isDeepEqual(value1: any, value2: any): boolean {
     return false
   }
 
-  if (isArray(value1)) {
+  if (isArray(value1) && isArray(value2)) {
     if (value1.length !== value2.length) {
       return false
     }
     return value1.every((item, index) => isDeepEqual(item, value2[index]))
   }
 
-  if (isObject(value1)) {
+  if (isObject(value1) && isObject(value2)) {
     const keys = Object.keys(value1)
 
     if (keys.length !== Object.keys(value2).length) {
@@ -26,7 +26,10 @@ export function isDeepEqual(value1: any, value2: any): boolean {
     }
 
     return keys.every(key =>
-      isDeepEqual(value1[key as keyof typeof value1], value2[key]),
+      isDeepEqual(
+        value1[key as keyof typeof value1],
+        value2[key as keyof typeof value1],
+      ),
     )
   }
 

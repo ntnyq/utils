@@ -9,5 +9,5 @@ export function pick<T, K extends keyof T>(object: T, keys: K[]): Pick<T, K> {
         return { [key]: object[key] }
       }
     }),
-  )
+  ) as unknown as Pick<T, K>
 }

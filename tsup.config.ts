@@ -1,6 +1,6 @@
 import { defineConfig } from 'tsup'
 
-export default defineConfig({
+const config: any = defineConfig({
   cjsInterop: true,
   clean: true,
   dts: true,
@@ -8,3 +8,5 @@ export default defineConfig({
   format: ['cjs', 'esm'],
   target: ['node18', 'es2022'],
 })
+
+export default config

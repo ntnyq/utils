@@ -18,7 +18,7 @@ export function randomNumber(
   min: number,
   max = 0,
   options: RamdomNumberOptions = {},
-) {
+): number {
   if (max === 0) {
     max = min
     min = 0

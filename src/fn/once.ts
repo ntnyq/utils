@@ -1,6 +1,6 @@
 export function once<T extends unknown[]>(func: (...args: T) => void) {
   let called = false
-  return function (this: unknown, ...args: T) {
+  return function (this: unknown, ...args: T): boolean {
     if (called) {
       return false
     }

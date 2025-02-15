@@ -20,7 +20,7 @@ export function isNull(value: unknown): value is null {
 export function isNil(value: unknown): value is null | undefined {
   return isNull(value) || isUndefined(value)
 }
-export const isNullOrUndefined = isNil
+export const isNullOrUndefined: typeof isNil = isNil
 
 export function isString(value: unknown): value is string {
   return typeof value === 'string'

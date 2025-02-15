@@ -22,15 +22,20 @@ export class Color {
     public alpha = 1,
   ) {}
 
-  static fromRGB(red: number, green: number, blue: number) {
+  static fromRGB(red: number, green: number, blue: number): Color {
     return new Color(red, green, blue)
   }
 
-  static fromRGBA(red: number, green: number, blue: number, alpha: number) {
+  static fromRGBA(
+    red: number,
+    green: number,
+    blue: number,
+    alpha: number,
+  ): Color {
     return new Color(red, green, blue, alpha)
   }
 
-  static fromHex(hex: string) {
+  static fromHex(hex: string): Color {
     if (!validateHexColor(hex)) {
       throw new Error('Invalid hex color')
     }
@@ -41,24 +46,24 @@ export class Color {
     return new Color(red, green, blue)
   }
 
-  get brightness() {
+  get brightness(): number {
     return (this.red * 299 + this.green * 587 + this.blue * 114) / 1000
   }
 
-  get isDark() {
+  get isDark(): boolean {
     return this.brightness < 128
   }
 
-  get isLight() {
+  get isLight(): boolean {
     return !this.isDark
   }
 
-  toHexString(isUpperCase = true) {
+  toHexString(isUpperCase = true): string {
     const hexString = `#${pad2(this.red.toString(16))}${pad2(this.green.toString(16))}${pad2(this.blue.toString(16))}`
     return isUpperCase ? hexString.toUpperCase() : hexString
   }
 
-  toRGBAString() {
+  toRGBAString(): string {
     return `rgba(${this.red}, ${this.green}, ${this.blue}, ${this.alpha})`
   }
 
@@ -68,7 +73,7 @@ export class Color {
    * @param alpha - alpha value
    * @returns instance of {@link Color}
    */
-  withAlpha(alpha = 1) {
+  withAlpha(alpha = 1): Color {
     return new Color(this.red, this.green, this.blue, alpha)
   }
 
@@ -77,7 +82,7 @@ export class Color {
    *
    * @param percentage - percentage to lighten
    */
-  lighten(percentage = 0) {
+  lighten(percentage = 0): Color {
     const amount = Math.round((percentage / 100) * 255)
     return new Color(
       Math.min(this.red + amount, 255),
@@ -92,7 +97,7 @@ export class Color {
    *
    * @param percentage - percentage to darken
    */
-  darken(percentage = 0) {
+  darken(percentage = 0): Color {
     const amount = Math.round((percentage / 100) * 255)
     return new Color(
       Math.max(this.red - amount, 0),

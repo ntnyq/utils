@@ -10,7 +10,7 @@ import { randomNumber } from '../number'
 export function randomString(
   length: number = 16,
   chars = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ',
-) {
+): string {
   const result: string[] = []
   for (let i = length; i > 0; --i) {
     result.push(chars[randomNumber(chars.length)])

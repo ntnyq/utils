@@ -4,7 +4,7 @@
  * @param value - item to be removed
  * @returns true if item was removed, otherwise false
  */
-export function remove<T>(array: T[], value: T) {
+export function remove<T>(array: T[], value: T): boolean {
   if (!array) return false
 
   const index = array.indexOf(value)

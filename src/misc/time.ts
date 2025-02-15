@@ -9,22 +9,22 @@ const ONE_HOUR = 60 * ONE_MINUTE
 const ONE_DAY = 24 * ONE_HOUR
 const ONE_WEEK = 7 * ONE_DAY
 
-export function seconds(count: number) {
+export function seconds(count: number): number {
   return count * ONE_SECOND
 }
 
-export function minutes(count: number) {
+export function minutes(count: number): number {
   return count * ONE_MINUTE
 }
 
-export function hours(count: number) {
+export function hours(count: number): number {
   return count * ONE_HOUR
 }
 
-export function days(count: number) {
+export function days(count: number): number {
   return count * ONE_DAY
 }
 
-export function weeks(count: number) {
+export function weeks(count: number): number {
   return count * ONE_WEEK
 }

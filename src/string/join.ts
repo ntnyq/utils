@@ -13,7 +13,10 @@ interface JoinOptions {
  * @param options - An object of options.
  * @returns A string.
  */
-export function join(array: JoinableValue[], options: JoinOptions = {}) {
+export function join(
+  array: JoinableValue[],
+  options: JoinOptions = {},
+): string {
   const { separator = '' } = options
   if (!Array.isArray(array) || !array.length) return ''
   return array.filter(v => Boolean(v) || v === 0).join(separator)

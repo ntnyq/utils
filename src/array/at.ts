@@ -4,7 +4,7 @@
  * @param index - index of item
  * @returns undefined if not match, otherwise matched item
  */
-export function at<T>(array: readonly T[], index: number) {
+export function at<T>(array: readonly T[], index: number): T | undefined {
   const length = array.length
 
   if (!length) return undefined
@@ -21,6 +21,6 @@ export function at<T>(array: readonly T[], index: number) {
  * @param array - given array
  * @returns undefined if empty array, otherwise last item
  */
-export function last<T>(array: readonly T[]) {
+export function last<T>(array: readonly T[]): T | undefined {
   return at(array, -1)
 }

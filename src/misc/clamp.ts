@@ -7,8 +7,8 @@
  */
 export function clamp(
   value: number,
-  min = Number.NEGATIVE_INFINITY,
-  max = Number.POSITIVE_INFINITY,
+  min: number = Number.NEGATIVE_INFINITY,
+  max: number = Number.POSITIVE_INFINITY,
 ): number {
   return Math.min(Math.max(value, min), max)
 }

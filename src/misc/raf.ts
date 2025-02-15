@@ -22,7 +22,7 @@ function mockRAF(fn: FrameRequestCallback): number {
  * @param fn - callback
  * @returns id
  */
-export function rAF(fn: FrameRequestCallback) {
+export function rAF(fn: FrameRequestCallback): number {
   const raf = root.requestAnimationFrame || mockRAF
   return raf.call(root, fn)
 }
@@ -33,7 +33,7 @@ export function rAF(fn: FrameRequestCallback) {
  * @param id - id
  * @returns void
  */
-export function cAF(id: number) {
+export function cAF(id: number): void {
   const caf = root.cancelAnimationFrame || root.clearTimeout
   return caf.call(root, id)
 }

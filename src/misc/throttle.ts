@@ -19,7 +19,7 @@ export function throttle<
   delay: number,
   callback: Exclude<T, undefined | null>,
   options: ThrottleDebounceOptions = {},
-) {
+): T & { cancel: () => void } {
   const { isDebounce } = options
 
   /**
@@ -87,7 +87,7 @@ export function debounce<
   delay: number,
   callback: Exclude<T, undefined | null>,
   options: ThrottleDebounceOptions = {},
-) {
+): T & { cancel: () => void } {
   return throttle(delay, callback, {
     ...options,
     isDebounce: true,

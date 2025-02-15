@@ -1,6 +1,6 @@
 const warned = new Set<string>()
 
-export const warnOnce = (message: string) => {
+export function warnOnce(message: string): void {
   if (warned.has(message)) {
     return
   }

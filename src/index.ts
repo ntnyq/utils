@@ -1,6 +1,7 @@
 export * from './is'
 export * from './fn'
 export * from './env'
+export * from './dom'
 export * from './misc'
 export * from './html'
 export * from './array'

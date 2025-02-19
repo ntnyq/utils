@@ -1,7 +1,7 @@
 /**
  * A function that does nothing.
  */
-export const noop = (): void => {}
+export function noop(): void {}
 
 /**
  * Alias of {@link noop}.

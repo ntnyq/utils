@@ -1,1 +1,1 @@
-export * from './escapeHtml'
+export * from './escapeHTML'

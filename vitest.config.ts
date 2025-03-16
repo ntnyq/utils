@@ -1,7 +1,6 @@
 import { defineConfig } from 'vitest/config'
-import type { UserConfigExport } from 'vitest/config'
 
-const config: UserConfigExport = defineConfig({
+export default defineConfig({
   test: {
     reporters: ['dot'],
     coverage: {
@@ -10,5 +9,3 @@ const config: UserConfigExport = defineConfig({
     },
   },
 })
-
-export default config

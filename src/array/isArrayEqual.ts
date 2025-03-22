@@ -1,3 +1,9 @@
+/**
+ * Check if values of two arrays are equal
+ * @param array1 - array 1
+ * @param array2 - array 2
+ * @returns `true` if equal
+ */
 export function isArrayEqual(array1: unknown[], array2: unknown[]): boolean {
   if (array1.length !== array2.length) {
     return false

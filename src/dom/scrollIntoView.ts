@@ -1,23 +1,28 @@
+interface Options extends ScrollIntoViewOptions {
+  /**
+   * @default `document.body`
+   */
+  parent?: HTMLElement
+}
+
 /**
  * Scroll element into view if it is out of view.
  *
  * @param element - element to scroll
- * @param parent - parent element
  * @param options - scroll options
  */
-export function scrollIntoView(
+export function scrollElementIntoView(
   element: HTMLElement,
-  parent: HTMLElement,
-  options: ScrollIntoViewOptions = {
-    behavior: 'smooth',
-    block: 'center',
-    inline: 'center',
-  },
+  options: Options = {},
 ): void {
-  if (parent === document.body) {
-    parent.scrollIntoView(options)
+  const body = document.body
+  const { parent = body, ...scrollIntoViewOptions } = options
+
+  if (parent === body) {
+    parent.scrollIntoView(scrollIntoViewOptions)
     return
   }
+
   const parentRect = parent.getBoundingClientRect()
   const elementRect = element.getBoundingClientRect()
   const isHorizontal = parent.scrollWidth > parent.scrollHeight
@@ -26,6 +31,6 @@ export function scrollIntoView(
     : elementRect.top < parentRect.top || elementRect.bottom > parentRect.bottom
 
   if (isOutOfView) {
-    parent.scrollIntoView(options)
+    parent.scrollIntoView(scrollIntoViewOptions)
   }
 }

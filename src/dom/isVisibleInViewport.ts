@@ -1,3 +1,9 @@
+/**
+ * Check if element is in viewport
+ * @param element - checked element
+ * @param targetWindow - window
+ * @returns true if element is in viewport, false otherwise
+ */
 export function isElementVisibleInViewport(
   element: HTMLElement,
   targetWindow: Window = window,

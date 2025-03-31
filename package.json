@@ -2,7 +2,7 @@
   "name": "@ntnyq/utils",
   "type": "module",
   "version": "0.6.2",
-  "packageManager": "pnpm@10.6.5",
+  "packageManager": "pnpm@10.7.0",
   "description": "Common used utils.",
   "keywords": [
     "utils"
@@ -69,6 +69,6 @@
     "node": ">=18.18.0"
   },
   "nano-staged": {
-    "*.{js,ts,mjs,cjs,md,yml,yaml,json}": "eslint --fix"
+    "*.{js,ts,mjs,cjs,md,yml,yaml,toml,json}": "eslint --fix"
   }
 }

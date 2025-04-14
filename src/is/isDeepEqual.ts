@@ -1,4 +1,4 @@
-import { getObjectType, isArray, isObject } from '.'
+import { getObjectType, isArray, isObject } from './core'
 
 /**
  * check if two values are deeply equal

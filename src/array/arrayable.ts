@@ -9,7 +9,7 @@ import type { Arrayable, Nullable } from '../types'
 export function flattenArrayable<T>(
   array?: Nullable<Arrayable<T | Array<T>>>,
 ): Array<T> {
-  return toArray(array).flat(1) as Array<T>
+  return toArray(array).flat() as Array<T>
 }
 
 /**

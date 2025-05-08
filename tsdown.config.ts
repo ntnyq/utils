@@ -1,7 +1,6 @@
-import { defineConfig } from 'tsup'
+import { defineConfig } from 'tsdown'
 
 export default defineConfig({
-  cjsInterop: true,
   clean: true,
   dts: true,
   entry: ['src/index.ts'],

@@ -9,7 +9,7 @@ export default defineESLintConfig({
     },
   },
   typescript: {
-    allowDefaultProject: ['tsup.config.ts', 'vitest.config.ts'],
+    allowDefaultProject: ['tsdown.config.ts', 'vitest.config.ts'],
     tsconfigPath: './tsconfig.json',
   },
 })

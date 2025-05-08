@@ -4,6 +4,6 @@ export default defineConfig({
   clean: true,
   dts: true,
   entry: ['src/index.ts'],
-  format: ['cjs', 'esm'],
+  platform: 'neutral',
   target: ['node18', 'es2022'],
 })

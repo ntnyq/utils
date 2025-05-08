@@ -32,6 +32,7 @@
     "pnpm",
     "scule",
     "tsdown",
+    "unrs",
     "vite",
     "vitest"
   ],

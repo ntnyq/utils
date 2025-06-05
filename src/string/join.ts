@@ -18,6 +18,8 @@ export function join(
   options: JoinOptions = {},
 ): string {
   const { separator = '' } = options
-  if (!Array.isArray(array) || !array.length) return ''
+  if (!Array.isArray(array) || !array.length) {
+    return ''
+  }
   return array.filter(v => Boolean(v) || v === 0).join(separator)
 }

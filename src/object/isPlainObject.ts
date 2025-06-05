@@ -9,7 +9,9 @@ import { isObject } from '../is'
 export function isPlainObject<Value = unknown>(
   value: unknown,
 ): value is Record<PropertyKey, Value> {
-  if (!isObject(value)) return false
+  if (!isObject(value)) {
+    return false
+  }
 
   const prototype: unknown = Object.getPrototypeOf(value)
 

@@ -4,7 +4,9 @@
 
 import { isBrowser } from '../env'
 
-const root = isBrowser() ? window : globalThis
+export function getRoot(): Window | typeof globalThis {
+  return isBrowser() ? window : globalThis
+}
 
 let prev = Date.now()
 
@@ -23,6 +25,7 @@ function mockRAF(fn: FrameRequestCallback): number {
  * @returns id
  */
 export function rAF(fn: FrameRequestCallback): number {
+  const root = getRoot()
   const raf = root.requestAnimationFrame || mockRAF
   return raf.call(root, fn)
 }
@@ -34,6 +37,7 @@ export function rAF(fn: FrameRequestCallback): number {
  * @returns void
  */
 export function cAF(id: number): void {
+  const root = getRoot()
   const caf = root.cancelAnimationFrame || root.clearTimeout
   return caf.call(root, id)
 }

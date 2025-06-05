@@ -5,8 +5,12 @@ const pad2 = createPadString({ length: 2, char: '0' })
 const RE_VALID_HEX_COLOR = /^#(?:[0-9a-f]{6}|[0-9a-f]{3})$/i
 
 function validateHexColor(hex: string) {
-  if (hex.length !== 4 && hex.length !== 7) return false
-  if (!hex.startsWith('#')) return false
+  if (hex.length !== 4 && hex.length !== 7) {
+    return false
+  }
+  if (!hex.startsWith('#')) {
+    return false
+  }
   return RE_VALID_HEX_COLOR.test(hex)
 }
 

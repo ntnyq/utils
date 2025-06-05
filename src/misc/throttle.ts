@@ -44,7 +44,9 @@ export function throttle<
     this: unknown,
     ...args: Parameters<Exclude<T, null | undefined>>
   ) {
-    if (cancelled) return
+    if (cancelled) {
+      return
+    }
 
     // eslint-disable-next-line @typescript-eslint/no-this-alias
     const _this = this

@@ -7,7 +7,9 @@
 export function at<T>(array: readonly T[], index: number): T | undefined {
   const length = array.length
 
-  if (!length) return undefined
+  if (!length) {
+    return undefined
+  }
 
   if (index < 0) {
     index += length

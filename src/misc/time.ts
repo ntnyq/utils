@@ -3,28 +3,28 @@
  * @module Time
  */
 
-const ONE_SECOND = 1000
-const ONE_MINUTE = 60 * ONE_SECOND
-const ONE_HOUR = 60 * ONE_MINUTE
-const ONE_DAY = 24 * ONE_HOUR
-const ONE_WEEK = 7 * ONE_DAY
+export const ONE_SECOND_MILLSECONDS: number = 1000
+export const ONE_MINUTE_MILLSECONDS: number = 60 * ONE_SECOND_MILLSECONDS
+export const ONE_HOUR_MILLSECONDS: number = 60 * ONE_MINUTE_MILLSECONDS
+export const ONE_DAY_MILLSECONDS: number = 24 * ONE_HOUR_MILLSECONDS
+export const ONE_WEEK_MILLSECONDS: number = 7 * ONE_DAY_MILLSECONDS
 
 export function seconds(count: number): number {
-  return count * ONE_SECOND
+  return count * ONE_SECOND_MILLSECONDS
 }
 
 export function minutes(count: number): number {
-  return count * ONE_MINUTE
+  return count * ONE_MINUTE_MILLSECONDS
 }
 
 export function hours(count: number): number {
-  return count * ONE_HOUR
+  return count * ONE_HOUR_MILLSECONDS
 }
 
 export function days(count: number): number {
-  return count * ONE_DAY
+  return count * ONE_DAY_MILLSECONDS
 }
 
 export function weeks(count: number): number {
-  return count * ONE_WEEK
+  return count * ONE_WEEK_MILLSECONDS
 }

@@ -52,9 +52,9 @@
     "nano-staged": "^0.8.0",
     "npm-run-all2": "^8.0.4",
     "prettier": "^3.5.3",
-    "tsdown": "^0.12.6",
+    "tsdown": "^0.12.7",
     "typescript": "^5.8.3",
-    "vitest": "^3.2.1"
+    "vitest": "^3.2.2"
   },
   "engines": {
     "node": ">=18.18.0"

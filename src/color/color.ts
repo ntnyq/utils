@@ -1,7 +1,5 @@
 import { createPadString } from '../string'
 
-const pad2 = createPadString({ length: 2, char: '0' })
-
 const RE_VALID_HEX_COLOR = /^#(?:[0-9a-f]{6}|[0-9a-f]{3})$/i
 
 function validateHexColor(hex: string) {
@@ -73,6 +71,7 @@ export class Color {
   }
 
   toHexString(isUpperCase = true): string {
+    const pad2 = createPadString({ length: 2, char: '0' })
     const hexString = `#${pad2(this.red.toString(16))}${pad2(this.green.toString(16))}${pad2(this.blue.toString(16))}`
     return isUpperCase ? hexString.toUpperCase() : hexString
   }

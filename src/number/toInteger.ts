@@ -109,7 +109,7 @@ export function toInteger(
   }
 
   if (allowDecimal) {
-    result = Math.floor(numberValue)
+    result = numberValue > 0 ? Math.floor(numberValue) : Math.ceil(numberValue)
   } else {
     if (numberValue % 1 !== 0) {
       if (onError === 'throwError') {

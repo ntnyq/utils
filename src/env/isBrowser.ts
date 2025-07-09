@@ -7,4 +7,6 @@
  *
  * @returns boolean - true if the code is running in a browser
  */
-export const isBrowser = (): boolean => typeof document !== 'undefined'
+export function isBrowser(): boolean {
+  return typeof document !== 'undefined'
+}

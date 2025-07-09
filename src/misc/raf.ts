@@ -4,18 +4,12 @@
 
 import { isBrowser } from '../env'
 
+/**
+ * Gets the global root object.
+ * @returns the global root object
+ */
 export function getRoot(): Window | typeof globalThis {
   return isBrowser() ? window : globalThis
-}
-
-let prev = Date.now()
-
-function mockRAF(fn: FrameRequestCallback): number {
-  const curr = Date.now()
-  const ms = Math.max(0, 16 - (curr - prev))
-  const id = setTimeout(fn, ms)
-  prev = curr + ms
-  return id
 }
 
 /**
@@ -26,7 +20,7 @@ function mockRAF(fn: FrameRequestCallback): number {
  */
 export function rAF(fn: FrameRequestCallback): number {
   const root = getRoot()
-  const raf = root.requestAnimationFrame || mockRAF
+  const raf = root.requestAnimationFrame
   return raf.call(root, fn)
 }
 
@@ -38,6 +32,6 @@ export function rAF(fn: FrameRequestCallback): number {
  */
 export function cAF(id: number): void {
   const root = getRoot()
-  const caf = root.cancelAnimationFrame || root.clearTimeout
+  const caf = root.cancelAnimationFrame
   return caf.call(root, id)
 }

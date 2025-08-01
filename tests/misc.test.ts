@@ -1,9 +1,13 @@
 import { describe, expect, it } from 'vitest'
 import {
   convertFromBytes,
+  convertFromMilliseconds,
   convertStorageUnit,
+  convertTimeUnit,
   convertToBytes,
+  convertToMilliseconds,
   STORAGE_UNITS,
+  TIME_UNITS,
 } from '../src/misc'
 
 describe('storage unit conversion', () => {
@@ -62,6 +66,69 @@ describe('storage unit conversion', () => {
     it('should handle same unit conversion', () => {
       expect(convertStorageUnit(100, 'MB', 'MB')).toBe(100)
       expect(convertStorageUnit(50, 'KB', 'KB')).toBe(50)
+    })
+  })
+})
+
+describe('time unit conversion', () => {
+  describe('TIME_UNITS', () => {
+    it('should have correct values', () => {
+      expect(TIME_UNITS).toMatchInlineSnapshot(`
+        {
+          "DAY": 86400000,
+          "HOUR": 3600000,
+          "MILLISECOND": 1,
+          "MINUTE": 60000,
+          "SECOND": 1000,
+          "WEEK": 604800000,
+        }
+      `)
+    })
+  })
+
+  describe('convertToMilliseconds', () => {
+    it('should convert seconds to milliseconds by default', () => {
+      expect(convertToMilliseconds(1)).toBe(1000)
+      expect(convertToMilliseconds(5)).toBe(5000)
+    })
+
+    it('should convert different units to milliseconds', () => {
+      expect(convertToMilliseconds(1, 'MILLISECOND')).toBe(1)
+      expect(convertToMilliseconds(1, 'SECOND')).toBe(1000)
+      expect(convertToMilliseconds(1, 'MINUTE')).toBe(60000)
+      expect(convertToMilliseconds(1, 'HOUR')).toBe(3600000)
+      expect(convertToMilliseconds(1, 'DAY')).toBe(86400000)
+      expect(convertToMilliseconds(1, 'WEEK')).toBe(604800000)
+    })
+  })
+
+  describe('convertFromMilliseconds', () => {
+    it('should convert milliseconds to seconds by default', () => {
+      expect(convertFromMilliseconds(1000)).toBe(1)
+      expect(convertFromMilliseconds(5000)).toBe(5)
+    })
+
+    it('should convert milliseconds to different units', () => {
+      expect(convertFromMilliseconds(1000, 'MILLISECOND')).toBe(1000)
+      expect(convertFromMilliseconds(1000, 'SECOND')).toBe(1)
+      expect(convertFromMilliseconds(60000, 'MINUTE')).toBe(1)
+      expect(convertFromMilliseconds(3600000, 'HOUR')).toBe(1)
+      expect(convertFromMilliseconds(86400000, 'DAY')).toBe(1)
+      expect(convertFromMilliseconds(604800000, 'WEEK')).toBe(1)
+    })
+  })
+
+  describe('convertTimeUnit', () => {
+    it('should convert between units', () => {
+      expect(convertTimeUnit(1, 'HOUR', 'MINUTE')).toBe(60)
+      expect(convertTimeUnit(120, 'SECOND', 'MINUTE')).toBe(2)
+      expect(convertTimeUnit(2, 'WEEK', 'DAY')).toBe(14)
+      expect(convertTimeUnit(1, 'DAY', 'HOUR')).toBe(24)
+    })
+
+    it('should handle same unit conversion', () => {
+      expect(convertTimeUnit(100, 'SECOND', 'SECOND')).toBe(100)
+      expect(convertTimeUnit(50, 'MINUTE', 'MINUTE')).toBe(50)
     })
   })
 })

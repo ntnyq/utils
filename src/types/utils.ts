@@ -18,3 +18,8 @@ export type Merge<T, U> = keyof T & keyof U extends never
  * Non empty object `{}`
  */
 export type NonEmptyObject<T> = T extends Record<string, never> ? never : T
+
+/**
+ * A type that represents the values of an object type.
+ */
+export type ValueOf<T> = T[keyof T]

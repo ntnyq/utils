@@ -23,3 +23,9 @@ export type NonEmptyObject<T> = T extends Record<string, never> ? never : T
  * A type that represents the values of an object type.
  */
 export type ValueOf<T> = T[keyof T]
+
+/**
+ * A type that represents the elements of an array type.
+ */
+export type ElementOf<T extends unknown[] | null | undefined> =
+  T extends Array<infer U> ? U : never

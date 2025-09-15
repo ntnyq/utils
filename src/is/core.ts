@@ -124,6 +124,7 @@ export function isRegExp(value: unknown): value is RegExp {
 }
 
 export function isError(value: unknown): value is Error {
+  // TODO: use `Error.isError` when targeting node v24
   return getObjectType(value) === 'Error'
 }
 
@@ -149,4 +150,29 @@ export function isPromise<T = unknown>(value: unknown): value is Promise<T> {
 
 export function isIterable<T = unknown>(value: unknown): value is Iterable<T> {
   return isFunction((value as Iterable<T>)?.[Symbol.iterator])
+}
+
+export function isBlob(value: unknown): value is Blob {
+  return getObjectType(value) === 'Blob'
+}
+export function isFormData(value: unknown): value is FormData {
+  return getObjectType(value) === 'FormData'
+}
+export function isFile(value: unknown): value is File {
+  return getObjectType(value) === 'File'
+}
+
+export type UrlString = string & { readonly __brand: 'UrlString' }
+
+export function isUrlString(value: unknown): value is UrlString {
+  if (!isString(value)) {
+    return false
+  }
+  try {
+    // eslint-disable-next-line no-new
+    new URL(value)
+    return true
+  } catch {
+    return false
+  }
 }

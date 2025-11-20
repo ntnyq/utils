@@ -1,3 +1,20 @@
+/**
+ * Creates a function that is restricted to invoking `func` once. Repeat calls to the function return `false`.
+ *
+ * @param func - The function to restrict.
+ * @returns A new function that returns `true` when `func` is invoked for the first time and `false` on subsequent calls.
+ *
+ * @example
+ *
+ * ```ts
+ * const initialize = once(() => {
+ *   console.log('Initialized')
+ * })
+ *
+ * initialize() // Logs: 'Initialized', returns true
+ * ```
+ */
+
 export function once<T extends unknown[]>(func: (...args: T) => void) {
   let called = false
   return function (this: unknown, ...args: T): boolean {

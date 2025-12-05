@@ -13,7 +13,10 @@ export function randomString(
 ): string {
   const result: string[] = []
   for (let i = length; i > 0; --i) {
-    result.push(chars[randomNumber(chars.length)])
+    const matchedChar = chars[randomNumber(chars.length)]
+    if (matchedChar) {
+      result.push(matchedChar)
+    }
   }
   return result.join('')
 }

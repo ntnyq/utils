@@ -18,7 +18,7 @@ const _RE_FULL_WS = /^\s*$/
  * ```
  */
 export function unindent(input: TemplateStringsArray | string): string {
-  const lines = (isString(input) ? input : input[0]).split('\n')
+  const lines = (isString(input) ? input : input[0])?.split('\n') ?? []
   const whitespaceLines = lines.map(line => _RE_FULL_WS.test(line))
 
   const commonIndent = lines.reduce((min, line, idx) => {

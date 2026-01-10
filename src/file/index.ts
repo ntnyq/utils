@@ -1,1 +1,1 @@
-export * from './removeExtension'
+export * from './extension'

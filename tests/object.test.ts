@@ -186,14 +186,12 @@ describe('cleanObject', () => {
 
   it('should not clean NaN by default (bug: cleanNaN uses isZero instead of isNaN)', () => {
     const obj = { a: 1, b: Number.NaN, c: 3 }
-    // Note: This is a bug in the implementation - cleanNaN checks isZero instead of isNaN
-    expect(cleanObject(obj)).toEqual({ a: 1, b: Number.NaN, c: 3 })
+    expect(cleanObject(obj)).toEqual({ a: 1, c: 3 })
   })
 
   it('should clean zero by default (bug: cleanNaN removes zero values)', () => {
     const obj = { a: 1, b: 0, c: 3 }
-    // Note: This is a bug - cleanNaN is true by default and checks isZero instead of isNaN
-    expect(cleanObject(obj)).toEqual({ a: 1, c: 3 })
+    expect(cleanObject(obj)).toEqual({ a: 1, b: 0, c: 3 })
   })
 
   it('should clean zero when cleanZero is true', () => {

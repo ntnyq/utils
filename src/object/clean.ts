@@ -2,6 +2,7 @@ import {
   isEmptyArray,
   isEmptyObject,
   isEmptyString,
+  isNaN,
   isNull,
   isObject,
   isUndefined,
@@ -99,7 +100,7 @@ export function cleanObject<T extends object>(
     if (cleanZero && isZero(v)) {
       delete obj[key as keyof typeof obj]
     }
-    if (cleanNaN && isZero(v)) {
+    if (cleanNaN && isNaN(v)) {
       delete obj[key as keyof typeof obj]
     }
     if (cleanEmptyString && isEmptyString(v)) {

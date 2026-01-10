@@ -1,6 +1,7 @@
 export * from './pad'
 export * from './join'
 export * from './slash'
+export * from './escape'
 export * from './random'
 export * from './slugify'
 export * from './unindent'

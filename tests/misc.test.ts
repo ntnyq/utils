@@ -1,13 +1,21 @@
-import { describe, expect, it } from 'vitest'
+import { describe, expect, it, vi } from 'vitest'
 import {
+  cAF,
+  clamp,
   convertFromBytes,
   convertFromMilliseconds,
   convertStorageUnit,
   convertTimeUnit,
   convertToBytes,
   convertToMilliseconds,
+  debounce,
+  getRoot,
+  rAF,
   STORAGE_UNITS,
+  throttle,
   TIME_UNITS,
+  waitFor,
+  warnOnce,
 } from '../src/misc'
 
 describe('storage unit conversion', () => {
@@ -130,5 +138,100 @@ describe('time unit conversion', () => {
       expect(convertTimeUnit(100, 'SECOND', 'SECOND')).toBe(100)
       expect(convertTimeUnit(50, 'MINUTE', 'MINUTE')).toBe(50)
     })
+  })
+})
+
+describe('clamp', () => {
+  it('should clamp within range', () => {
+    expect(clamp(5, 0, 10)).toBe(5)
+    expect(clamp(-5, 0, 10)).toBe(0)
+    expect(clamp(15, 0, 10)).toBe(10)
+  })
+
+  it('should handle default min/max', () => {
+    expect(clamp(5)).toBe(5)
+  })
+})
+
+describe('warnOnce', () => {
+  it('should warn only once per message', () => {
+    const spy = vi.spyOn(console, 'warn').mockImplementation(() => {})
+    warnOnce('msg')
+    warnOnce('msg')
+    warnOnce('another')
+    expect(spy).toHaveBeenCalledTimes(2)
+    spy.mockRestore()
+  })
+})
+
+describe('waitFor', () => {
+  it('should resolve after specified ms', async () => {
+    const start = Date.now()
+    await waitFor(10)
+    expect(Date.now() - start).toBeGreaterThanOrEqual(10)
+  })
+})
+
+describe('throttle/debounce', () => {
+  it('throttle should limit calls', () => {
+    vi.useFakeTimers()
+    const spy = vi.fn()
+    const fn = throttle(50, spy)
+    fn()
+    fn()
+    vi.advanceTimersByTime(60)
+    fn()
+    expect(spy).toHaveBeenCalledTimes(2)
+    vi.useRealTimers()
+  })
+
+  it('debounce should delay calls', () => {
+    vi.useFakeTimers()
+    const spy = vi.fn()
+    const fn = debounce(50, spy)
+    fn()
+    fn()
+    // Leading-edge debounce: first call invokes immediately
+    expect(spy).toHaveBeenCalledTimes(1)
+    vi.advanceTimersByTime(50)
+    // No trailing call in current implementation
+    expect(spy).toHaveBeenCalledTimes(1)
+    vi.useRealTimers()
+  })
+
+  it('cancel should prevent further execution', () => {
+    vi.useFakeTimers()
+    const spy = vi.fn()
+    const fn = debounce(50, spy)
+    fn()
+    fn.cancel()
+    vi.advanceTimersByTime(60)
+    // First call already executed; cancel prevents further calls
+    expect(spy).toHaveBeenCalledTimes(1)
+    vi.useRealTimers()
+  })
+})
+
+describe('raf helpers', () => {
+  it('should use window in browser-like env', () => {
+    const win: any = {
+      requestAnimationFrame: vi.fn(cb => {
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-call
+        cb(0 as any)
+        return 1
+      }),
+      cancelAnimationFrame: vi.fn(),
+    }
+    const doc: any = {}
+    vi.stubGlobal('window', win)
+    vi.stubGlobal('document', doc)
+    vi.stubGlobal('self', win)
+
+    expect(getRoot()).toBe(win)
+    const id = rAF(() => {})
+    expect(id).toBe(1)
+    cAF(id)
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+    expect(win.cancelAnimationFrame).toHaveBeenCalledWith(1)
   })
 })

@@ -14,6 +14,7 @@ export interface ThrottleDebounceOptions {
  * @returns A throttled function
  */
 export function throttle<
+  // oxlint-disable-next-line typescript/no-invalid-void-type
   T extends ((...args: any[]) => undefined | void) | undefined | null,
 >(
   delay: number,
@@ -27,7 +28,7 @@ export function throttle<
    */
   let lastExec = 0
   let cancelled = false
-  let timeoutId: ReturnType<typeof setTimeout> | undefined
+  let timeoutId: ReturnType<typeof setTimeout> | undefined = undefined
 
   function clearExistingTimeout() {
     if (timeoutId) {
@@ -48,7 +49,7 @@ export function throttle<
       return
     }
 
-    // eslint-disable-next-line @typescript-eslint/no-this-alias
+    // oxlint-disable-next-line unicorn/no-this-assignment, typescript/no-this-alias
     const _this = this
     const now = Date.now()
     const elapsed = now - lastExec
@@ -84,6 +85,7 @@ export function throttle<
 }
 
 export function debounce<
+  // oxlint-disable-next-line typescript/no-invalid-void-type
   T extends ((...args: any[]) => undefined | void) | undefined | null,
 >(
   delay: number,

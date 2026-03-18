@@ -13,5 +13,6 @@ export function warnOnce(message: string): void {
     return
   }
   warned.add(message)
+  // oxlint-disable-next-line no-console
   console.warn(message)
 }

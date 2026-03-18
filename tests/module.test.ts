@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest'
 import { interopDefault, resolveSubOptions } from '../src/module'
 
-describe('interopDefault', () => {
+describe(interopDefault, () => {
   it('should return default export when present', async () => {
     const mod = Promise.resolve({ default: { x: 1 } })
     const result = await interopDefault(mod)
@@ -15,7 +15,7 @@ describe('interopDefault', () => {
   })
 })
 
-describe('resolveSubOptions', () => {
+describe(resolveSubOptions, () => {
   it('should resolve boolean to empty object', () => {
     const options = { compile: true }
     expect(resolveSubOptions(options, 'compile')).toEqual({})

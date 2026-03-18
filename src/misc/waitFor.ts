@@ -13,5 +13,6 @@
  */
 
 export async function waitFor(ms: number): Promise<void> {
+  // oxlint-disable-next-line no-promise-executor-return, promise/avoid-new
   return new Promise<void>(resolve => setTimeout(resolve, ms))
 }

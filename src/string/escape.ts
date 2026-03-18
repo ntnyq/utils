@@ -3,5 +3,7 @@
  */
 
 export function escapeStringRegexp(value: string): string {
-  return value.replace(/[|\\{}()[\]^$+*?.]/g, '\\$&').replace(/-/g, '\\x2d')
+  return value
+    .replaceAll(/[|\\{}()[\]^$+*?.]/g, '\\$&')
+    .replaceAll('-', '\\x2d')
 }

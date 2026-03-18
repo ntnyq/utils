@@ -41,9 +41,9 @@ export function isEmptyStringOrWhitespace(
 }
 export function isNumbericString(value: unknown): value is `${number}` {
   return (
-    isString(value)
-    && !isEmptyStringOrWhitespace(value)
-    && !Number.isNaN(Number(value))
+    isString(value) &&
+    !isEmptyStringOrWhitespace(value) &&
+    !Number.isNaN(Number(value))
   )
 }
 
@@ -68,6 +68,7 @@ export function isBoolean(value: unknown): value is boolean {
   return typeof value === 'boolean'
 }
 
+// oxlint-disable-next-line unicorn/prefer-native-coercion-functions
 export function isTruthy<T>(value: T | undefined): value is T {
   return Boolean(value)
 }
@@ -89,26 +90,10 @@ export function isNonEmptyArray<T = unknown, Item = unknown>(
   return isArray(value) && value.length > 0
 }
 
-export function isObject(value: unknown): value is object {
-  return (typeof value === 'object' || isFunction(value)) && !isNull(value)
-}
-export function isEmptyObject(value: unknown): value is {} {
-  return (
-    isObject(value)
-    && !isMap(value)
-    && !isSet(value)
-    && Object.keys(value).length === 0
-  )
-}
-
 export function isMap<Key = unknown, Value = unknown>(
   value: unknown,
 ): value is Map<Key, Value> {
   return getObjectType(value) === 'Map'
-}
-
-export function isEmptyMap(value: unknown): value is Map<never, never> {
-  return isMap(value) && value.size === 0
 }
 
 export function isSet<Value = unknown>(value: unknown): value is Set<Value> {
@@ -117,6 +102,23 @@ export function isSet<Value = unknown>(value: unknown): value is Set<Value> {
 
 export function isEmptySet(value: unknown): value is Set<never> {
   return isSet(value) && value.size === 0
+}
+
+export function isObject(value: unknown): value is object {
+  return (typeof value === 'object' || isFunction(value)) && !isNull(value)
+}
+
+export function isEmptyObject(value: unknown): value is {} {
+  return (
+    isObject(value) &&
+    !isMap(value) &&
+    !isSet(value) &&
+    Object.keys(value).length === 0
+  )
+}
+
+export function isEmptyMap(value: unknown): value is Map<never, never> {
+  return isMap(value) && value.size === 0
 }
 
 export function isRegExp(value: unknown): value is RegExp {
@@ -134,9 +136,9 @@ export function isError(value: unknown): value is Error {
 function hasPromiseApi<T = unknown>(value: unknown): value is Promise<T> {
   return (
     // eslint-disable-next-line @typescript-eslint/unbound-method
-    isFunction((value as Promise<T>)?.then)
+    isFunction((value as Promise<T>)?.then) &&
     // eslint-disable-next-line @typescript-eslint/unbound-method
-    && isFunction((value as Promise<T>)?.catch)
+    isFunction((value as Promise<T>)?.catch)
   )
 }
 export function isNativePromise<T = unknown>(

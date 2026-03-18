@@ -8,7 +8,7 @@ import { randomNumber } from '../number'
  * @returns random string
  */
 export function randomString(
-  length: number = 16,
+  length = 16,
   chars = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ',
 ): string {
   const result: string[] = []

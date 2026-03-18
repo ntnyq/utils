@@ -9,9 +9,12 @@
 export const STORAGE_UNITS = {
   BYTE: 1,
   KB: 1024,
-  MB: (1024 * 1024) as 1048576,
-  GB: (1024 * 1024 * 1024) as 1073741824,
-  TB: (1024 * 1024 * 1024 * 1024) as 1099511627776,
+  // oxlint-disable-next-line no-magic-numbers
+  MB: (1024 * 1024) as 1_048_576,
+  // oxlint-disable-next-line no-magic-numbers
+  GB: (1024 * 1024 * 1024) as 1_073_741_824,
+  // oxlint-disable-next-line no-magic-numbers
+  TB: (1024 * 1024 * 1024 * 1024) as 1_099_511_627_776,
 } as const
 
 export type StorageUnit = keyof typeof STORAGE_UNITS

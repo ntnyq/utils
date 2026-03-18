@@ -41,7 +41,7 @@ import {
   isZero,
 } from '../src/is'
 
-describe('getObjectType', () => {
+describe(getObjectType, () => {
   it('should return correct object type', () => {
     expect(getObjectType({})).toBe('Object')
     expect(getObjectType([])).toBe('Array')
@@ -52,611 +52,638 @@ describe('getObjectType', () => {
     expect(getObjectType(new Error('error'))).toBe('Error')
     expect(getObjectType(Promise.resolve())).toBe('Promise')
     expect(getObjectType(null)).toBe('Null')
-    expect(getObjectType(undefined)).toBe('Undefined')
+    // @ts-expect-error testing undefined
+    expect(getObjectType()).toBe('Undefined')
   })
 })
 
-describe('isUndefined', () => {
+describe(isUndefined, () => {
   it('should return true for undefined', () => {
-    expect(isUndefined(undefined)).toBe(true)
+    // @ts-expect-error testing undefined
+    expect(isUndefined()).toBeTruthy()
   })
 
   it('should return false for other values', () => {
-    expect(isUndefined(null)).toBe(false)
-    expect(isUndefined(0)).toBe(false)
-    expect(isUndefined('')).toBe(false)
-    expect(isUndefined(false)).toBe(false)
-    expect(isUndefined({})).toBe(false)
+    expect(isUndefined(null)).toBeFalsy()
+    expect(isUndefined(0)).toBeFalsy()
+    expect(isUndefined('')).toBeFalsy()
+    expect(isUndefined(false)).toBeFalsy()
+    expect(isUndefined({})).toBeFalsy()
   })
 })
 
-describe('isNull', () => {
+describe(isNull, () => {
   it('should return true for null', () => {
-    expect(isNull(null)).toBe(true)
+    expect(isNull(null)).toBeTruthy()
   })
 
   it('should return false for other values', () => {
-    expect(isNull(undefined)).toBe(false)
-    expect(isNull(0)).toBe(false)
-    expect(isNull('')).toBe(false)
-    expect(isNull(false)).toBe(false)
-    expect(isNull({})).toBe(false)
+    // @ts-expect-error testing undefined
+    expect(isNull()).toBeFalsy()
+    expect(isNull(0)).toBeFalsy()
+    expect(isNull('')).toBeFalsy()
+    expect(isNull(false)).toBeFalsy()
+    expect(isNull({})).toBeFalsy()
   })
 })
 
-describe('isNil', () => {
+describe(isNil, () => {
   it('should return true for null and undefined', () => {
-    expect(isNil(null)).toBe(true)
-    expect(isNil(undefined)).toBe(true)
+    expect(isNil(null)).toBeTruthy()
+    // @ts-expect-error testing undefined
+    expect(isNil()).toBeTruthy()
   })
 
   it('should return false for other values', () => {
-    expect(isNil(0)).toBe(false)
-    expect(isNil('')).toBe(false)
-    expect(isNil(false)).toBe(false)
-    expect(isNil({})).toBe(false)
+    expect(isNil(0)).toBeFalsy()
+    expect(isNil('')).toBeFalsy()
+    expect(isNil(false)).toBeFalsy()
+    expect(isNil({})).toBeFalsy()
   })
 })
 
-describe('isNullOrUndefined', () => {
+describe(isNullOrUndefined, () => {
   it('should be an alias of isNil', () => {
     expect(isNullOrUndefined).toBe(isNil)
   })
 
   it('should return true for null and undefined', () => {
-    expect(isNullOrUndefined(null)).toBe(true)
-    expect(isNullOrUndefined(undefined)).toBe(true)
+    expect(isNullOrUndefined(null)).toBeTruthy()
+    // @ts-expect-error testing undefined
+    expect(isNullOrUndefined()).toBeTruthy()
   })
 })
 
-describe('isString', () => {
+describe(isString, () => {
   it('should return true for strings', () => {
-    expect(isString('')).toBe(true)
-    expect(isString('hello')).toBe(true)
-    expect(isString(String('test'))).toBe(true)
+    expect(isString('')).toBeTruthy()
+    expect(isString('hello')).toBeTruthy()
+    expect(isString(String('test'))).toBeTruthy()
   })
 
   it('should return false for non-strings', () => {
-    expect(isString(123)).toBe(false)
-    expect(isString(true)).toBe(false)
-    expect(isString(null)).toBe(false)
-    expect(isString(undefined)).toBe(false)
-    expect(isString({})).toBe(false)
+    expect(isString(123)).toBeFalsy()
+    expect(isString(true)).toBeFalsy()
+    expect(isString(null)).toBeFalsy()
+    // @ts-expect-error testing undefined
+    expect(isString()).toBeFalsy()
+    expect(isString({})).toBeFalsy()
   })
 })
 
-describe('isEmptyString', () => {
+describe(isEmptyString, () => {
   it('should return true for empty string', () => {
-    expect(isEmptyString('')).toBe(true)
+    expect(isEmptyString('')).toBeTruthy()
   })
 
   it('should return false for non-empty strings', () => {
-    expect(isEmptyString('hello')).toBe(false)
-    expect(isEmptyString(' ')).toBe(false)
-    expect(isEmptyString('0')).toBe(false)
+    expect(isEmptyString('hello')).toBeFalsy()
+    expect(isEmptyString(' ')).toBeFalsy()
+    expect(isEmptyString('0')).toBeFalsy()
   })
 
   it('should return false for non-strings', () => {
-    expect(isEmptyString(null)).toBe(false)
-    expect(isEmptyString(undefined)).toBe(false)
-    expect(isEmptyString(0)).toBe(false)
+    expect(isEmptyString(null)).toBeFalsy()
+    // @ts-expect-error testing undefined
+    expect(isEmptyString()).toBeFalsy()
+    expect(isEmptyString(0)).toBeFalsy()
   })
 })
 
-describe('isNonEmptyString', () => {
+describe(isNonEmptyString, () => {
   it('should return true for non-empty strings', () => {
-    expect(isNonEmptyString('hello')).toBe(true)
-    expect(isNonEmptyString(' ')).toBe(true)
-    expect(isNonEmptyString('0')).toBe(true)
+    expect(isNonEmptyString('hello')).toBeTruthy()
+    expect(isNonEmptyString(' ')).toBeTruthy()
+    expect(isNonEmptyString('0')).toBeTruthy()
   })
 
   it('should return false for empty string', () => {
-    expect(isNonEmptyString('')).toBe(false)
+    expect(isNonEmptyString('')).toBeFalsy()
   })
 
   it('should return false for non-strings', () => {
-    expect(isNonEmptyString(null)).toBe(false)
-    expect(isNonEmptyString(undefined)).toBe(false)
+    expect(isNonEmptyString(null)).toBeFalsy()
+    // @ts-expect-error testing undefined
+    expect(isNonEmptyString()).toBeFalsy()
   })
 })
 
-describe('isWhitespaceString', () => {
+describe(isWhitespaceString, () => {
   it('should return true for whitespace strings', () => {
-    expect(isWhitespaceString(' ')).toBe(true)
-    expect(isWhitespaceString('  ')).toBe(true)
-    expect(isWhitespaceString('\t')).toBe(true)
-    expect(isWhitespaceString('\n')).toBe(true)
-    expect(isWhitespaceString('\r\n')).toBe(true)
-    expect(isWhitespaceString(' \t\n ')).toBe(true)
-    expect(isWhitespaceString('')).toBe(true)
+    expect(isWhitespaceString(' ')).toBeTruthy()
+    expect(isWhitespaceString('  ')).toBeTruthy()
+    expect(isWhitespaceString('\t')).toBeTruthy()
+    expect(isWhitespaceString('\n')).toBeTruthy()
+    expect(isWhitespaceString('\r\n')).toBeTruthy()
+    expect(isWhitespaceString(' \t\n ')).toBeTruthy()
+    expect(isWhitespaceString('')).toBeTruthy()
   })
 
   it('should return false for non-whitespace strings', () => {
-    expect(isWhitespaceString('hello')).toBe(false)
-    expect(isWhitespaceString(' hello ')).toBe(false)
-    expect(isWhitespaceString('0')).toBe(false)
+    expect(isWhitespaceString('hello')).toBeFalsy()
+    expect(isWhitespaceString(' hello ')).toBeFalsy()
+    expect(isWhitespaceString('0')).toBeFalsy()
   })
 
   it('should return false for non-strings', () => {
-    expect(isWhitespaceString(null)).toBe(false)
-    expect(isWhitespaceString(undefined)).toBe(false)
+    expect(isWhitespaceString(null)).toBeFalsy()
+    // @ts-expect-error testing undefined
+    expect(isWhitespaceString()).toBeFalsy()
   })
 })
 
-describe('isEmptyStringOrWhitespace', () => {
+describe(isEmptyStringOrWhitespace, () => {
   it('should return true for empty or whitespace strings', () => {
-    expect(isEmptyStringOrWhitespace('')).toBe(true)
-    expect(isEmptyStringOrWhitespace(' ')).toBe(true)
-    expect(isEmptyStringOrWhitespace('\t')).toBe(true)
-    expect(isEmptyStringOrWhitespace('\n')).toBe(true)
+    expect(isEmptyStringOrWhitespace('')).toBeTruthy()
+    expect(isEmptyStringOrWhitespace(' ')).toBeTruthy()
+    expect(isEmptyStringOrWhitespace('\t')).toBeTruthy()
+    expect(isEmptyStringOrWhitespace('\n')).toBeTruthy()
   })
 
   it('should return false for non-empty non-whitespace strings', () => {
-    expect(isEmptyStringOrWhitespace('hello')).toBe(false)
-    expect(isEmptyStringOrWhitespace(' hello ')).toBe(false)
+    expect(isEmptyStringOrWhitespace('hello')).toBeFalsy()
+    expect(isEmptyStringOrWhitespace(' hello ')).toBeFalsy()
   })
 })
 
-describe('isNumbericString', () => {
+describe(isNumbericString, () => {
   it('should return true for numeric strings', () => {
-    expect(isNumbericString('123')).toBe(true)
-    expect(isNumbericString('0')).toBe(true)
-    expect(isNumbericString('-123')).toBe(true)
-    expect(isNumbericString('123.456')).toBe(true)
-    expect(isNumbericString('1e10')).toBe(true)
+    expect(isNumbericString('123')).toBeTruthy()
+    expect(isNumbericString('0')).toBeTruthy()
+    expect(isNumbericString('-123')).toBeTruthy()
+    expect(isNumbericString('123.456')).toBeTruthy()
+    expect(isNumbericString('1e10')).toBeTruthy()
   })
 
   it('should return false for non-numeric strings', () => {
-    expect(isNumbericString('hello')).toBe(false)
-    expect(isNumbericString('123abc')).toBe(false)
-    expect(isNumbericString('')).toBe(false)
-    expect(isNumbericString(' ')).toBe(false)
+    expect(isNumbericString('hello')).toBeFalsy()
+    expect(isNumbericString('123abc')).toBeFalsy()
+    expect(isNumbericString('')).toBeFalsy()
+    expect(isNumbericString(' ')).toBeFalsy()
   })
 
   it('should return false for non-strings', () => {
-    expect(isNumbericString(123)).toBe(false)
-    expect(isNumbericString(null)).toBe(false)
-    expect(isNumbericString(undefined)).toBe(false)
+    expect(isNumbericString(123)).toBeFalsy()
+    expect(isNumbericString(null)).toBeFalsy()
+    // @ts-expect-error testing undefined
+    expect(isNumbericString()).toBeFalsy()
   })
 })
 
-describe('isNumber', () => {
+describe(isNumber, () => {
   it('should return true for numbers', () => {
-    expect(isNumber(0)).toBe(true)
-    expect(isNumber(123)).toBe(true)
-    expect(isNumber(-123)).toBe(true)
-    expect(isNumber(123.456)).toBe(true)
-    expect(isNumber(Infinity)).toBe(true)
-    expect(isNumber(-Infinity)).toBe(true)
-    expect(isNumber(Number.NaN)).toBe(true)
+    expect(isNumber(0)).toBeTruthy()
+    expect(isNumber(123)).toBeTruthy()
+    expect(isNumber(-123)).toBeTruthy()
+    expect(isNumber(123.456)).toBeTruthy()
+    expect(isNumber(Infinity)).toBeTruthy()
+    expect(isNumber(-Infinity)).toBeTruthy()
+    expect(isNumber(Number.NaN)).toBeTruthy()
   })
 
   it('should return false for non-numbers', () => {
-    expect(isNumber('123')).toBe(false)
-    expect(isNumber(true)).toBe(false)
-    expect(isNumber(null)).toBe(false)
-    expect(isNumber(undefined)).toBe(false)
-    expect(isNumber({})).toBe(false)
+    expect(isNumber('123')).toBeFalsy()
+    expect(isNumber(true)).toBeFalsy()
+    expect(isNumber(null)).toBeFalsy()
+    // @ts-expect-error testing undefined
+    expect(isNumber()).toBeFalsy()
+    expect(isNumber({})).toBeFalsy()
   })
 })
 
-describe('isZero', () => {
+describe(isZero, () => {
   it('should return true for zero', () => {
-    expect(isZero(0)).toBe(true)
+    expect(isZero(0)).toBeTruthy()
   })
 
   it('should return false for non-zero values', () => {
-    expect(isZero(1)).toBe(false)
-    expect(isZero(-1)).toBe(false)
-    expect(isZero('0')).toBe(false)
-    expect(isZero(false)).toBe(false)
-    expect(isZero(null)).toBe(false)
+    expect(isZero(1)).toBeFalsy()
+    expect(isZero(-1)).toBeFalsy()
+    expect(isZero('0')).toBeFalsy()
+    expect(isZero(false)).toBeFalsy()
+    expect(isZero(null)).toBeFalsy()
   })
 })
 
-describe('isNaN', () => {
+describe(isNaN, () => {
   it('should return true for NaN', () => {
-    expect(isNaN(Number.NaN)).toBe(true)
-    expect(isNaN(0 / 0)).toBe(true)
+    expect(isNaN(Number.NaN)).toBeTruthy()
+    expect(isNaN(0 / 0)).toBeTruthy()
   })
 
   it('should return false for non-NaN values', () => {
-    expect(isNaN(0)).toBe(false)
-    expect(isNaN(123)).toBe(false)
-    expect(isNaN('NaN')).toBe(false)
-    expect(isNaN(undefined)).toBe(false)
-    expect(isNaN(null)).toBe(false)
+    expect(isNaN(0)).toBeFalsy()
+    expect(isNaN(123)).toBeFalsy()
+    expect(isNaN('NaN')).toBeFalsy()
+    // @ts-expect-error testing undefined
+    expect(isNaN()).toBeFalsy()
+    expect(isNaN(null)).toBeFalsy()
   })
 })
 
-describe('isInteger', () => {
+describe(isInteger, () => {
   it('should return true for integers', () => {
-    expect(isInteger(0)).toBe(true)
-    expect(isInteger(123)).toBe(true)
-    expect(isInteger(-123)).toBe(true)
+    expect(isInteger(0)).toBeTruthy()
+    expect(isInteger(123)).toBeTruthy()
+    expect(isInteger(-123)).toBeTruthy()
   })
 
   it('should return false for non-integers', () => {
-    expect(isInteger(123.456)).toBe(false)
-    expect(isInteger(Infinity)).toBe(false)
-    expect(isInteger(Number.NaN)).toBe(false)
-    expect(isInteger('123')).toBe(false)
-    expect(isInteger(null)).toBe(false)
+    expect(isInteger(123.456)).toBeFalsy()
+    expect(isInteger(Infinity)).toBeFalsy()
+    expect(isInteger(Number.NaN)).toBeFalsy()
+    expect(isInteger('123')).toBeFalsy()
+    expect(isInteger(null)).toBeFalsy()
   })
 })
 
-describe('isBigInt', () => {
+describe(isBigInt, () => {
   it('should return true for bigints', () => {
-    expect(isBigInt(123n)).toBe(true)
-    expect(isBigInt(123n)).toBe(true)
+    expect(isBigInt(123n)).toBeTruthy()
+    expect(isBigInt(123n)).toBeTruthy()
   })
 
   it('should return false for non-bigints', () => {
-    expect(isBigInt(123)).toBe(false)
-    expect(isBigInt('123')).toBe(false)
-    expect(isBigInt(null)).toBe(false)
+    expect(isBigInt(123)).toBeFalsy()
+    expect(isBigInt('123')).toBeFalsy()
+    expect(isBigInt(null)).toBeFalsy()
   })
 })
 
-describe('isBoolean', () => {
+describe(isBoolean, () => {
   it('should return true for booleans', () => {
-    expect(isBoolean(true)).toBe(true)
-    expect(isBoolean(false)).toBe(true)
+    expect(isBoolean(true)).toBeTruthy()
+    expect(isBoolean(false)).toBeTruthy()
   })
 
   it('should return false for non-booleans', () => {
-    expect(isBoolean(1)).toBe(false)
-    expect(isBoolean(0)).toBe(false)
-    expect(isBoolean('true')).toBe(false)
-    expect(isBoolean(null)).toBe(false)
+    expect(isBoolean(1)).toBeFalsy()
+    expect(isBoolean(0)).toBeFalsy()
+    expect(isBoolean('true')).toBeFalsy()
+    expect(isBoolean(null)).toBeFalsy()
   })
 })
 
-describe('isTruthy', () => {
+describe(isTruthy, () => {
   it('should return true for truthy values', () => {
-    expect(isTruthy(true)).toBe(true)
-    expect(isTruthy(1)).toBe(true)
-    expect(isTruthy('hello')).toBe(true)
-    expect(isTruthy({})).toBe(true)
-    expect(isTruthy([])).toBe(true)
+    expect(isTruthy(true)).toBeTruthy()
+    expect(isTruthy(1)).toBeTruthy()
+    expect(isTruthy('hello')).toBeTruthy()
+    expect(isTruthy({})).toBeTruthy()
+    expect(isTruthy([])).toBeTruthy()
   })
 
   it('should return false for falsy values', () => {
-    expect(isTruthy(false)).toBe(false)
-    expect(isTruthy(0)).toBe(false)
-    expect(isTruthy('')).toBe(false)
-    expect(isTruthy(null)).toBe(false)
-    expect(isTruthy(undefined)).toBe(false)
-    expect(isTruthy(Number.NaN)).toBe(false)
+    expect(isTruthy(false)).toBeFalsy()
+    expect(isTruthy(0)).toBeFalsy()
+    expect(isTruthy('')).toBeFalsy()
+    expect(isTruthy(null)).toBeFalsy()
+    // @ts-expect-error testing undefined
+    expect(isTruthy()).toBeFalsy()
+    expect(isTruthy(Number.NaN)).toBeFalsy()
   })
 })
 
-describe('isFunction', () => {
+describe(isFunction, () => {
   it('should return true for functions', () => {
-    expect(isFunction(() => {})).toBe(true)
-    expect(isFunction(function () {})).toBe(true)
-    expect(isFunction(async () => {})).toBe(true)
+    expect(isFunction(() => {})).toBeTruthy()
+    // oxlint-disable-next-line func-names
+    expect(isFunction(function () {})).toBeTruthy()
+    expect(isFunction(async () => {})).toBeTruthy()
 
-    expect(isFunction(class {})).toBe(true)
+    expect(isFunction(class {})).toBeTruthy()
   })
 
   it('should return false for non-functions', () => {
-    expect(isFunction({})).toBe(false)
-    expect(isFunction([])).toBe(false)
-    expect(isFunction(null)).toBe(false)
-    expect(isFunction(undefined)).toBe(false)
+    expect(isFunction({})).toBeFalsy()
+    expect(isFunction([])).toBeFalsy()
+    expect(isFunction(null)).toBeFalsy()
+    // @ts-expect-error testing undefined
+    expect(isFunction()).toBeFalsy()
   })
 })
 
-describe('isArray', () => {
+describe(isArray, () => {
   it('should return true for arrays', () => {
-    expect(isArray([])).toBe(true)
-    expect(isArray([1, 2, 3])).toBe(true)
-    expect(isArray([])).toBe(true)
+    expect(isArray([])).toBeTruthy()
+    expect(isArray([1, 2, 3])).toBeTruthy()
+    expect(isArray([])).toBeTruthy()
   })
 
   it('should return false for non-arrays', () => {
-    expect(isArray({})).toBe(false)
-    expect(isArray('array')).toBe(false)
-    expect(isArray(null)).toBe(false)
-    expect(isArray(undefined)).toBe(false)
+    expect(isArray({})).toBeFalsy()
+    expect(isArray('array')).toBeFalsy()
+    expect(isArray(null)).toBeFalsy()
+    // @ts-expect-error testing undefined
+    expect(isArray()).toBeFalsy()
   })
 })
 
-describe('isEmptyArray', () => {
+describe(isEmptyArray, () => {
   it('should return true for empty arrays', () => {
-    expect(isEmptyArray([])).toBe(true)
+    expect(isEmptyArray([])).toBeTruthy()
   })
 
   it('should return false for non-empty arrays', () => {
-    expect(isEmptyArray([1])).toBe(false)
-    expect(isEmptyArray([1, 2, 3])).toBe(false)
+    expect(isEmptyArray([1])).toBeFalsy()
+    expect(isEmptyArray([1, 2, 3])).toBeFalsy()
   })
 
   it('should return false for non-arrays', () => {
-    expect(isEmptyArray({})).toBe(false)
-    expect(isEmptyArray(null)).toBe(false)
+    expect(isEmptyArray({})).toBeFalsy()
+    expect(isEmptyArray(null)).toBeFalsy()
   })
 })
 
-describe('isNonEmptyArray', () => {
+describe(isNonEmptyArray, () => {
   it('should return true for non-empty arrays', () => {
-    expect(isNonEmptyArray([1])).toBe(true)
-    expect(isNonEmptyArray([1, 2, 3])).toBe(true)
+    expect(isNonEmptyArray([1])).toBeTruthy()
+    expect(isNonEmptyArray([1, 2, 3])).toBeTruthy()
   })
 
   it('should return false for empty arrays', () => {
-    expect(isNonEmptyArray([])).toBe(false)
+    expect(isNonEmptyArray([])).toBeFalsy()
   })
 
   it('should return false for non-arrays', () => {
-    expect(isNonEmptyArray({})).toBe(false)
-    expect(isNonEmptyArray(null)).toBe(false)
+    expect(isNonEmptyArray({})).toBeFalsy()
+    expect(isNonEmptyArray(null)).toBeFalsy()
   })
 })
 
-describe('isObject', () => {
+describe(isObject, () => {
   it('should return true for objects', () => {
-    expect(isObject({})).toBe(true)
-    expect(isObject([])).toBe(true)
-    expect(isObject(new Map())).toBe(true)
-    expect(isObject(new Set())).toBe(true)
-    expect(isObject(() => {})).toBe(true)
+    expect(isObject({})).toBeTruthy()
+    expect(isObject([])).toBeTruthy()
+    expect(isObject(new Map())).toBeTruthy()
+    expect(isObject(new Set())).toBeTruthy()
+    expect(isObject(() => {})).toBeTruthy()
   })
 
   it('should return false for primitives and null', () => {
-    expect(isObject(null)).toBe(false)
-    expect(isObject(undefined)).toBe(false)
-    expect(isObject(123)).toBe(false)
-    expect(isObject('string')).toBe(false)
-    expect(isObject(true)).toBe(false)
+    expect(isObject(null)).toBeFalsy()
+    // @ts-expect-error testing undefined
+    expect(isObject()).toBeFalsy()
+    expect(isObject(123)).toBeFalsy()
+    expect(isObject('string')).toBeFalsy()
+    expect(isObject(true)).toBeFalsy()
   })
 })
 
-describe('isEmptyObject', () => {
+describe(isEmptyObject, () => {
   it('should return true for empty objects', () => {
-    expect(isEmptyObject({})).toBe(true)
+    expect(isEmptyObject({})).toBeTruthy()
   })
 
   it('should return false for non-empty objects', () => {
-    expect(isEmptyObject({ a: 1 })).toBe(false)
+    expect(isEmptyObject({ a: 1 })).toBeFalsy()
   })
 
   it('should return false for Map and Set', () => {
-    expect(isEmptyObject(new Map())).toBe(false)
-    expect(isEmptyObject(new Set())).toBe(false)
+    expect(isEmptyObject(new Map())).toBeFalsy()
+    expect(isEmptyObject(new Set())).toBeFalsy()
   })
 
   it('should return false for non-objects', () => {
-    expect(isEmptyObject(null)).toBe(false)
-    expect(isEmptyObject(undefined)).toBe(false)
+    expect(isEmptyObject(null)).toBeFalsy()
+    // @ts-expect-error testing undefined
+    expect(isEmptyObject()).toBeFalsy()
   })
 
   it('should return true for empty arrays', () => {
     // Empty arrays are considered empty objects (they have no own properties)
-    expect(isEmptyObject([])).toBe(true)
+    expect(isEmptyObject([])).toBeTruthy()
   })
 })
 
-describe('isMap', () => {
+describe(isMap, () => {
   it('should return true for Map instances', () => {
-    expect(isMap(new Map())).toBe(true)
-    expect(isMap(new Map([['a', 1]]))).toBe(true)
+    expect(isMap(new Map())).toBeTruthy()
+    expect(isMap(new Map([['a', 1]]))).toBeTruthy()
   })
 
   it('should return false for non-Map values', () => {
-    expect(isMap({})).toBe(false)
-    expect(isMap(new Set())).toBe(false)
-    expect(isMap([])).toBe(false)
-    expect(isMap(null)).toBe(false)
+    expect(isMap({})).toBeFalsy()
+    expect(isMap(new Set())).toBeFalsy()
+    expect(isMap([])).toBeFalsy()
+    expect(isMap(null)).toBeFalsy()
   })
 })
 
-describe('isEmptyMap', () => {
+describe(isEmptyMap, () => {
   it('should return true for empty Maps', () => {
-    expect(isEmptyMap(new Map())).toBe(true)
+    expect(isEmptyMap(new Map())).toBeTruthy()
   })
 
   it('should return false for non-empty Maps', () => {
     const map = new Map([['a', 1]])
-    expect(isEmptyMap(map)).toBe(false)
+    expect(isEmptyMap(map)).toBeFalsy()
   })
 
   it('should return false for non-Maps', () => {
-    expect(isEmptyMap({})).toBe(false)
-    expect(isEmptyMap(null)).toBe(false)
+    expect(isEmptyMap({})).toBeFalsy()
+    expect(isEmptyMap(null)).toBeFalsy()
   })
 })
 
-describe('isSet', () => {
+describe(isSet, () => {
   it('should return true for Set instances', () => {
-    expect(isSet(new Set())).toBe(true)
-    expect(isSet(new Set([1, 2, 3]))).toBe(true)
+    expect(isSet(new Set())).toBeTruthy()
+    expect(isSet(new Set([1, 2, 3]))).toBeTruthy()
   })
 
   it('should return false for non-Set values', () => {
-    expect(isSet({})).toBe(false)
-    expect(isSet(new Map())).toBe(false)
-    expect(isSet([])).toBe(false)
-    expect(isSet(null)).toBe(false)
+    expect(isSet({})).toBeFalsy()
+    expect(isSet(new Map())).toBeFalsy()
+    expect(isSet([])).toBeFalsy()
+    expect(isSet(null)).toBeFalsy()
   })
 })
 
-describe('isEmptySet', () => {
+describe(isEmptySet, () => {
   it('should return true for empty Sets', () => {
-    expect(isEmptySet(new Set())).toBe(true)
+    expect(isEmptySet(new Set())).toBeTruthy()
   })
 
   it('should return false for non-empty Sets', () => {
     const set = new Set([1, 2, 3])
-    expect(isEmptySet(set)).toBe(false)
+    expect(isEmptySet(set)).toBeFalsy()
   })
 
   it('should return false for non-Sets', () => {
-    expect(isEmptySet({})).toBe(false)
-    expect(isEmptySet(null)).toBe(false)
+    expect(isEmptySet({})).toBeFalsy()
+    expect(isEmptySet(null)).toBeFalsy()
   })
 })
 
-describe('isRegExp', () => {
+describe(isRegExp, () => {
   it('should return true for RegExp instances', () => {
-    expect(isRegExp(/test/)).toBe(true)
+    expect(isRegExp(/test/)).toBeTruthy()
     // eslint-disable-next-line prefer-regex-literals
-    expect(isRegExp(new RegExp('test'))).toBe(true)
+    expect(isRegExp(new RegExp('test'))).toBeTruthy()
   })
 
   it('should return false for non-RegExp values', () => {
-    expect(isRegExp('/test/')).toBe(false)
-    expect(isRegExp({})).toBe(false)
-    expect(isRegExp(null)).toBe(false)
+    expect(isRegExp('/test/')).toBeFalsy()
+    expect(isRegExp({})).toBeFalsy()
+    expect(isRegExp(null)).toBeFalsy()
   })
 })
 
-describe('isError', () => {
+describe(isError, () => {
   it('should return true for Error instances', () => {
-    expect(isError(new Error('error'))).toBe(true)
-    expect(isError(new TypeError('error'))).toBe(true)
-    expect(isError(new RangeError('error'))).toBe(true)
+    expect(isError(new Error('error'))).toBeTruthy()
+    expect(isError(new TypeError('error'))).toBeTruthy()
+    expect(isError(new RangeError('error'))).toBeTruthy()
   })
 
   it('should return false for non-Error values', () => {
-    expect(isError({})).toBe(false)
-    expect(isError({ message: 'error' })).toBe(false)
-    expect(isError(null)).toBe(false)
+    expect(isError({})).toBeFalsy()
+    expect(isError({ message: 'error' })).toBeFalsy()
+    expect(isError(null)).toBeFalsy()
   })
 })
 
-describe('isNativePromise', () => {
+describe(isNativePromise, () => {
   it('should return true for native Promise instances', () => {
-    expect(isNativePromise(Promise.resolve())).toBe(true)
-    // eslint-disable-next-line prefer-promise-reject-errors
-    expect(isNativePromise(Promise.reject().catch(() => {}))).toBe(true)
-    expect(isNativePromise(new Promise(() => {}))).toBe(true)
+    expect(isNativePromise(Promise.resolve())).toBeTruthy()
+    // eslint-disable-next-line prefer-promise-reject-errors, promise/prefer-await-to-then
+    expect(isNativePromise(Promise.reject().catch(() => {}))).toBeTruthy()
+    // oxlint-disable-next-line promise/avoid-new
+    expect(isNativePromise(new Promise(() => {}))).toBeTruthy()
   })
 
   it('should return false for non-Promise values', () => {
-    expect(isNativePromise({})).toBe(false)
-    expect(isNativePromise({ then: () => {}, catch: () => {} })).toBe(false)
-    expect(isNativePromise(null)).toBe(false)
+    expect(isNativePromise({})).toBeFalsy()
+    // oxlint-disable-next-line unicorn/no-thenable
+    expect(isNativePromise({ then: () => {}, catch: () => {} })).toBeFalsy()
+    expect(isNativePromise(null)).toBeFalsy()
   })
 })
 
-describe('isPromise', () => {
+describe(isPromise, () => {
   it('should return true for Promise instances', () => {
-    expect(isPromise(Promise.resolve())).toBe(true)
-    expect(isPromise(new Promise(() => {}))).toBe(true)
+    expect(isPromise(Promise.resolve())).toBeTruthy()
+    // oxlint-disable-next-line promise/avoid-new
+    expect(isPromise(new Promise(() => {}))).toBeTruthy()
   })
 
   it('should return true for promise-like objects', () => {
     const promiseLike = {
+      // oxlint-disable-next-line unicorn/no-thenable
       then: () => {},
       catch: () => {},
     }
-    expect(isPromise(promiseLike)).toBe(true)
+    expect(isPromise(promiseLike)).toBeTruthy()
   })
 
   it('should return false for non-promise values', () => {
-    expect(isPromise({})).toBe(false)
-    expect(isPromise({ then: () => {} })).toBe(false)
-    expect(isPromise(null)).toBe(false)
+    expect(isPromise({})).toBeFalsy()
+    // oxlint-disable-next-line unicorn/no-thenable
+    expect(isPromise({ then: () => {} })).toBeFalsy()
+    expect(isPromise(null)).toBeFalsy()
   })
 })
 
-describe('isIterable', () => {
+describe(isIterable, () => {
   it('should return true for iterable objects', () => {
-    expect(isIterable([])).toBe(true)
-    expect(isIterable('string')).toBe(true)
-    expect(isIterable(new Map())).toBe(true)
-    expect(isIterable(new Set())).toBe(true)
+    expect(isIterable([])).toBeTruthy()
+    expect(isIterable('string')).toBeTruthy()
+    expect(isIterable(new Map())).toBeTruthy()
+    expect(isIterable(new Set())).toBeTruthy()
   })
 
   it('should return false for non-iterable values', () => {
-    expect(isIterable({})).toBe(false)
-    expect(isIterable(123)).toBe(false)
-    expect(isIterable(null)).toBe(false)
-    expect(isIterable(undefined)).toBe(false)
+    expect(isIterable({})).toBeFalsy()
+    expect(isIterable(123)).toBeFalsy()
+    expect(isIterable(null)).toBeFalsy()
+    // @ts-expect-error testing undefined
+    expect(isIterable()).toBeFalsy()
   })
 })
 
-describe('isBlob', () => {
+describe(isBlob, () => {
   it('should return true for Blob instances', () => {
     const blob = new Blob(['test'])
-    expect(isBlob(blob)).toBe(true)
+    expect(isBlob(blob)).toBeTruthy()
   })
 
   it('should return false for non-Blob values', () => {
-    expect(isBlob({})).toBe(false)
-    expect(isBlob(null)).toBe(false)
+    expect(isBlob({})).toBeFalsy()
+    expect(isBlob(null)).toBeFalsy()
   })
 })
 
-describe('isFormData', () => {
+describe(isFormData, () => {
   it('should return true for FormData instances', () => {
     const formData = new FormData()
-    expect(isFormData(formData)).toBe(true)
+    expect(isFormData(formData)).toBeTruthy()
   })
 
   it('should return false for non-FormData values', () => {
-    expect(isFormData({})).toBe(false)
-    expect(isFormData(null)).toBe(false)
+    expect(isFormData({})).toBeFalsy()
+    expect(isFormData(null)).toBeFalsy()
   })
 })
 
-describe('isFile', () => {
+describe(isFile, () => {
   it('should return true for File instances', () => {
     const file = new File(['test'], 'test.txt')
-    expect(isFile(file)).toBe(true)
+    expect(isFile(file)).toBeTruthy()
   })
 
   it('should return false for non-File values', () => {
-    expect(isFile(new Blob(['test']))).toBe(false)
-    expect(isFile({})).toBe(false)
-    expect(isFile(null)).toBe(false)
+    expect(isFile(new Blob(['test']))).toBeFalsy()
+    expect(isFile({})).toBeFalsy()
+    expect(isFile(null)).toBeFalsy()
   })
 })
 
-describe('isUrlString', () => {
+describe(isUrlString, () => {
   it('should return true for valid URL strings', () => {
-    expect(isUrlString('http://example.com')).toBe(true)
-    expect(isUrlString('https://example.com')).toBe(true)
-    expect(isUrlString('https://example.com/path')).toBe(true)
-    expect(isUrlString('https://example.com/path?query=1')).toBe(true)
-    expect(isUrlString('ftp://example.com')).toBe(true)
+    expect(isUrlString('http://example.com')).toBeTruthy()
+    expect(isUrlString('https://example.com')).toBeTruthy()
+    expect(isUrlString('https://example.com/path')).toBeTruthy()
+    expect(isUrlString('https://example.com/path?query=1')).toBeTruthy()
+    expect(isUrlString('ftp://example.com')).toBeTruthy()
   })
 
   it('should return false for invalid URL strings', () => {
-    expect(isUrlString('not a url')).toBe(false)
-    expect(isUrlString('example.com')).toBe(false)
-    expect(isUrlString('/relative/path')).toBe(false)
-    expect(isUrlString('')).toBe(false)
+    expect(isUrlString('not a url')).toBeFalsy()
+    expect(isUrlString('example.com')).toBeFalsy()
+    expect(isUrlString('/relative/path')).toBeFalsy()
+    expect(isUrlString('')).toBeFalsy()
   })
 
   it('should return false for non-strings', () => {
-    expect(isUrlString(123)).toBe(false)
-    expect(isUrlString(null)).toBe(false)
-    expect(isUrlString(undefined)).toBe(false)
+    expect(isUrlString(123)).toBeFalsy()
+    expect(isUrlString(null)).toBeFalsy()
+    // @ts-expect-error testing undefined
+    expect(isUrlString()).toBeFalsy()
   })
 })
 
-describe('isDeepEqual', () => {
+describe(isDeepEqual, () => {
   it('should return true for equal primitives', () => {
-    expect(isDeepEqual(1, 1)).toBe(true)
-    expect(isDeepEqual('test', 'test')).toBe(true)
-    expect(isDeepEqual(true, true)).toBe(true)
-    expect(isDeepEqual(null, null)).toBe(true)
-    expect(isDeepEqual(undefined, undefined)).toBe(true)
+    expect(isDeepEqual(1, 1)).toBeTruthy()
+    expect(isDeepEqual('test', 'test')).toBeTruthy()
+    expect(isDeepEqual(true, true)).toBeTruthy()
+    expect(isDeepEqual(null, null)).toBeTruthy()
+    // @ts-expect-error testing undefined
+    expect(isDeepEqual()).toBeTruthy()
   })
 
   it('should return false for different primitives', () => {
-    expect(isDeepEqual(1, 2)).toBe(false)
-    expect(isDeepEqual('test', 'test2')).toBe(false)
-    expect(isDeepEqual(true, false)).toBe(false)
-    expect(isDeepEqual(null, undefined)).toBe(false)
+    expect(isDeepEqual(1, 2)).toBeFalsy()
+    expect(isDeepEqual('test', 'test2')).toBeFalsy()
+    expect(isDeepEqual(true, false)).toBeFalsy()
+    // @ts-expect-error testing undefined
+    expect(isDeepEqual(null)).toBeFalsy()
   })
 
   it('should return true for deeply equal arrays', () => {
-    expect(isDeepEqual([1, 2, 3], [1, 2, 3])).toBe(true)
-    expect(isDeepEqual([{ a: 1 }], [{ a: 1 }])).toBe(true)
+    expect(isDeepEqual([1, 2, 3], [1, 2, 3])).toBeTruthy()
+    expect(isDeepEqual([{ a: 1 }], [{ a: 1 }])).toBeTruthy()
     expect(
       isDeepEqual(
         [
@@ -668,31 +695,32 @@ describe('isDeepEqual', () => {
           [3, 4],
         ],
       ),
-    ).toBe(true)
+    ).toBeTruthy()
   })
 
   it('should return false for different arrays', () => {
-    expect(isDeepEqual([1, 2, 3], [1, 2, 4])).toBe(false)
-    expect(isDeepEqual([1, 2], [1, 2, 3])).toBe(false)
-    expect(isDeepEqual([{ a: 1 }], [{ a: 2 }])).toBe(false)
+    expect(isDeepEqual([1, 2, 3], [1, 2, 4])).toBeFalsy()
+    expect(isDeepEqual([1, 2], [1, 2, 3])).toBeFalsy()
+    expect(isDeepEqual([{ a: 1 }], [{ a: 2 }])).toBeFalsy()
   })
 
   it('should return true for deeply equal objects', () => {
-    expect(isDeepEqual({ a: 1 }, { a: 1 })).toBe(true)
-    expect(isDeepEqual({ a: 1, b: 2 }, { a: 1, b: 2 })).toBe(true)
-    expect(isDeepEqual({ a: { b: 1 } }, { a: { b: 1 } })).toBe(true)
+    expect(isDeepEqual({ a: 1 }, { a: 1 })).toBeTruthy()
+    expect(isDeepEqual({ a: 1, b: 2 }, { a: 1, b: 2 })).toBeTruthy()
+    expect(isDeepEqual({ a: { b: 1 } }, { a: { b: 1 } })).toBeTruthy()
   })
 
   it('should return false for different objects', () => {
-    expect(isDeepEqual({ a: 1 }, { a: 2 })).toBe(false)
-    expect(isDeepEqual({ a: 1 }, { a: 1, b: 2 })).toBe(false)
-    expect(isDeepEqual({ a: { b: 1 } }, { a: { b: 2 } })).toBe(false)
+    expect(isDeepEqual({ a: 1 }, { a: 2 })).toBeFalsy()
+    expect(isDeepEqual({ a: 1 }, { a: 1, b: 2 })).toBeFalsy()
+    expect(isDeepEqual({ a: { b: 1 } }, { a: { b: 2 } })).toBeFalsy()
   })
 
   it('should return false for different types', () => {
-    expect(isDeepEqual(1, '1')).toBe(false)
-    expect(isDeepEqual([], {})).toBe(false)
-    expect(isDeepEqual(null, undefined)).toBe(false)
+    expect(isDeepEqual(1, '1')).toBeFalsy()
+    expect(isDeepEqual([], {})).toBeFalsy()
+    // @ts-expect-error testing undefined
+    expect(isDeepEqual(null)).toBeFalsy()
   })
 
   it('should handle complex nested structures', () => {
@@ -708,18 +736,19 @@ describe('isDeepEqual', () => {
       a: [1, 2, { b: 4 }],
       c: { d: [4, 5, 6] },
     }
-    expect(isDeepEqual(obj1, obj2)).toBe(true)
-    expect(isDeepEqual(obj1, obj3)).toBe(false)
+    expect(isDeepEqual(obj1, obj2)).toBeTruthy()
+    expect(isDeepEqual(obj1, obj3)).toBeFalsy()
   })
 })
 
-describe('isHTMLElement', () => {
+describe(isHTMLElement, () => {
   it('should return false in Node.js environment', () => {
     // In Node.js environment, HTMLElement is not defined
     // The function will return false for any input
-    expect(isHTMLElement({})).toBe(false)
-    expect(isHTMLElement(null)).toBe(false)
-    expect(isHTMLElement(undefined)).toBe(false)
+    expect(isHTMLElement({})).toBeFalsy()
+    expect(isHTMLElement(null)).toBeFalsy()
+    // @ts-expect-error testing undefined
+    expect(isHTMLElement()).toBeFalsy()
   })
 
   // Note: In a browser environment with JSDOM, we could test with actual DOM elements

@@ -11,7 +11,7 @@ import {
   sortObject,
 } from '../src/object'
 
-describe('pick', () => {
+describe(pick, () => {
   it('should pick specified keys from object', () => {
     const obj = { a: 1, b: 2, c: 3, d: 4 }
     expect(pick(obj, ['a', 'c'])).toEqual({ a: 1, c: 3 })
@@ -39,7 +39,7 @@ describe('pick', () => {
   })
 })
 
-describe('omit', () => {
+describe(omit, () => {
   it('should omit specified keys from object', () => {
     const obj = { a: 1, b: 2, c: 3, d: 4 }
     expect(omit(obj, 'a', 'c')).toEqual({ b: 2, d: 4 })
@@ -68,50 +68,50 @@ describe('omit', () => {
   })
 })
 
-describe('hasOwn', () => {
+describe(hasOwn, () => {
   it('should return true for own properties', () => {
     const obj = { a: 1, b: 2 }
-    expect(hasOwn(obj, 'a')).toBe(true)
-    expect(hasOwn(obj, 'b')).toBe(true)
+    expect(hasOwn(obj, 'a')).toBeTruthy()
+    expect(hasOwn(obj, 'b')).toBeTruthy()
   })
 
   it('should return false for non-existent properties', () => {
     const obj = { a: 1, b: 2 }
-    expect(hasOwn(obj, 'c')).toBe(false)
+    expect(hasOwn(obj, 'c')).toBeFalsy()
   })
 
   it('should return false for inherited properties', () => {
     const obj = Object.create({ inherited: 'value' })
     // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
     obj.own = 'value'
-    expect(hasOwn(obj, 'own')).toBe(true)
-    expect(hasOwn(obj, 'inherited')).toBe(false)
+    expect(hasOwn(obj, 'own')).toBeTruthy()
+    expect(hasOwn(obj, 'inherited')).toBeFalsy()
   })
 
   it('should return false for null', () => {
-    expect(hasOwn(null, 'key')).toBe(false)
+    expect(hasOwn(null, 'key')).toBeFalsy()
   })
 
   it('should handle Symbol keys', () => {
     const sym = Symbol('test')
     const obj = { [sym]: 'value' }
-    expect(hasOwn(obj, sym)).toBe(true)
+    expect(hasOwn(obj, sym)).toBeTruthy()
   })
 
   it('should handle numeric keys', () => {
     const obj = { 0: 'a', 1: 'b' }
-    expect(hasOwn(obj, 0)).toBe(true)
-    expect(hasOwn(obj, 1)).toBe(true)
-    expect(hasOwn(obj, 2)).toBe(false)
+    expect(hasOwn(obj, 0)).toBeTruthy()
+    expect(hasOwn(obj, 1)).toBeTruthy()
+    expect(hasOwn(obj, 2)).toBeFalsy()
   })
 })
 
-describe('isKeyOf', () => {
+describe(isKeyOf, () => {
   it('should return true for keys in object', () => {
     const obj = { a: 1, b: 2, c: 3 }
-    expect(isKeyOf(obj, 'a')).toBe(true)
-    expect(isKeyOf(obj, 'b')).toBe(true)
-    expect(isKeyOf(obj, 'c')).toBe(true)
+    expect(isKeyOf(obj, 'a')).toBeTruthy()
+    expect(isKeyOf(obj, 'b')).toBeTruthy()
+    expect(isKeyOf(obj, 'c')).toBeTruthy()
   })
 
   it('should work with type narrowing', () => {
@@ -129,51 +129,52 @@ describe('isKeyOf', () => {
     const obj = Object.create({ inherited: 'value' })
     // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
     obj.own = 'value'
-    expect(isKeyOf(obj, 'own' as keyof typeof obj)).toBe(true)
-    expect(isKeyOf(obj, 'inherited' as keyof typeof obj)).toBe(true)
+    expect(isKeyOf(obj, 'own' as keyof typeof obj)).toBeTruthy()
+    expect(isKeyOf(obj, 'inherited' as keyof typeof obj)).toBeTruthy()
   })
 })
 
-describe('isPlainObject', () => {
+describe(isPlainObject, () => {
   it('should return true for plain objects', () => {
-    expect(isPlainObject({})).toBe(true)
-    expect(isPlainObject({ a: 1 })).toBe(true)
-    expect(isPlainObject(Object.create(null))).toBe(true)
+    expect(isPlainObject({})).toBeTruthy()
+    expect(isPlainObject({ a: 1 })).toBeTruthy()
+    expect(isPlainObject(Object.create(null))).toBeTruthy()
   })
 
   it('should return false for arrays', () => {
-    expect(isPlainObject([])).toBe(false)
-    expect(isPlainObject([1, 2, 3])).toBe(false)
+    expect(isPlainObject([])).toBeFalsy()
+    expect(isPlainObject([1, 2, 3])).toBeFalsy()
   })
 
   it('should return false for built-in objects', () => {
-    expect(isPlainObject(new Date())).toBe(false)
-    expect(isPlainObject(/regex/)).toBe(false)
-    expect(isPlainObject(new Map())).toBe(false)
-    expect(isPlainObject(new Set())).toBe(false)
-    expect(isPlainObject(new Error('error'))).toBe(false)
+    expect(isPlainObject(new Date())).toBeFalsy()
+    expect(isPlainObject(/regex/)).toBeFalsy()
+    expect(isPlainObject(new Map())).toBeFalsy()
+    expect(isPlainObject(new Set())).toBeFalsy()
+    expect(isPlainObject(new Error('error'))).toBeFalsy()
   })
 
   it('should return false for primitives', () => {
-    expect(isPlainObject(null)).toBe(false)
-    expect(isPlainObject(undefined)).toBe(false)
-    expect(isPlainObject(123)).toBe(false)
-    expect(isPlainObject('string')).toBe(false)
-    expect(isPlainObject(true)).toBe(false)
+    expect(isPlainObject(null)).toBeFalsy()
+    expect(isPlainObject(undefined)).toBeFalsy()
+    expect(isPlainObject(123)).toBeFalsy()
+    expect(isPlainObject('string')).toBeFalsy()
+    expect(isPlainObject(true)).toBeFalsy()
   })
 
   it('should return false for class instances', () => {
     class MyClass {}
-    expect(isPlainObject(new MyClass())).toBe(false)
+    expect(isPlainObject(new MyClass())).toBeFalsy()
   })
 
   it('should return false for functions', () => {
-    expect(isPlainObject(() => {})).toBe(false)
-    expect(isPlainObject(function () {})).toBe(false)
+    expect(isPlainObject(() => {})).toBeFalsy()
+    // oxlint-disable-next-line func-names
+    expect(isPlainObject(function () {})).toBeFalsy()
   })
 })
 
-describe('cleanObject', () => {
+describe(cleanObject, () => {
   it('should clean undefined by default', () => {
     const obj = { a: 1, b: undefined, c: 3 }
     expect(cleanObject(obj)).toEqual({ a: 1, c: 3 })
@@ -270,7 +271,7 @@ describe('cleanObject', () => {
   })
 })
 
-describe('sortObject', () => {
+describe(sortObject, () => {
   it('should sort object keys alphabetically', () => {
     const obj = { c: 3, a: 1, b: 2 }
     const result = sortObject(obj)
@@ -337,6 +338,6 @@ describe('sortObject', () => {
     })
     const result = sortObject(obj)
     const descriptor = Object.getOwnPropertyDescriptor(result, 'c')
-    expect(descriptor?.writable).toBe(false)
+    expect(descriptor?.writable).toBeFalsy()
   })
 })

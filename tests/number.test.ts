@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest'
 import { randomNumber, toInteger } from '../src/number'
 
-describe('randomNumber', () => {
+describe(randomNumber, () => {
   it('should return a number within the specified range', () => {
     const min = 1
     const max = 10
@@ -9,7 +9,7 @@ describe('randomNumber', () => {
 
     expect(result).toBeGreaterThanOrEqual(min)
     expect(result).toBeLessThan(max)
-    expect(Number.isInteger(result)).toBe(true)
+    expect(Number.isInteger(result)).toBeTruthy()
   })
 
   it('should handle single argument (max only)', () => {
@@ -18,7 +18,7 @@ describe('randomNumber', () => {
 
     expect(result).toBeGreaterThanOrEqual(0)
     expect(result).toBeLessThan(max)
-    expect(Number.isInteger(result)).toBe(true)
+    expect(Number.isInteger(result)).toBeTruthy()
   })
 
   it('should swap min and max when min > max', () => {
@@ -28,7 +28,7 @@ describe('randomNumber', () => {
 
     expect(result).toBeGreaterThanOrEqual(max)
     expect(result).toBeLessThan(min)
-    expect(Number.isInteger(result)).toBe(true)
+    expect(Number.isInteger(result)).toBeTruthy()
   })
 
   it('should include max value when includeMax is true', () => {
@@ -42,12 +42,12 @@ describe('randomNumber', () => {
       results.add(result)
       expect(result).toBeGreaterThanOrEqual(min)
       expect(result).toBeLessThanOrEqual(max)
-      expect(Number.isInteger(result)).toBe(true)
+      expect(Number.isInteger(result)).toBeTruthy()
     }
 
     // Should generate both min and max values
-    expect(results.has(min)).toBe(true)
-    expect(results.has(max)).toBe(true)
+    expect(results.has(min)).toBeTruthy()
+    expect(results.has(max)).toBeTruthy()
   })
 
   it('should not include max value when includeMax is false (default)', () => {
@@ -61,12 +61,12 @@ describe('randomNumber', () => {
       results.add(result)
       expect(result).toBeGreaterThanOrEqual(min)
       expect(result).toBeLessThan(max)
-      expect(Number.isInteger(result)).toBe(true)
+      expect(Number.isInteger(result)).toBeTruthy()
     }
 
     // Should only generate min value, not max
-    expect(results.has(min)).toBe(true)
-    expect(results.has(max)).toBe(false)
+    expect(results.has(min)).toBeTruthy()
+    expect(results.has(max)).toBeFalsy()
   })
 
   it('should handle equal min and max values', () => {
@@ -90,7 +90,7 @@ describe('randomNumber', () => {
 
     expect(result).toBeGreaterThanOrEqual(min)
     expect(result).toBeLessThanOrEqual(max)
-    expect(Number.isInteger(result)).toBe(true)
+    expect(Number.isInteger(result)).toBeTruthy()
   })
 
   it('should handle zero as min or max', () => {
@@ -108,7 +108,7 @@ describe('randomNumber', () => {
     const max = 5.7
     const result = randomNumber(min, max)
 
-    expect(Number.isInteger(result)).toBe(true)
+    expect(Number.isInteger(result)).toBeTruthy()
     expect(result).toBeGreaterThanOrEqual(Math.floor(min))
     expect(result).toBeLessThanOrEqual(Math.floor(max))
   })
@@ -118,13 +118,13 @@ describe('randomNumber', () => {
     const max = 3.1
     const result = randomNumber(min, max)
 
-    expect(Number.isInteger(result)).toBe(true)
+    expect(Number.isInteger(result)).toBeTruthy()
     expect(result).toBeGreaterThanOrEqual(1)
     expect(result).toBeLessThanOrEqual(3)
   })
 })
 
-describe('toInteger', () => {
+describe(toInteger, () => {
   it('should convert number to integer', () => {
     expect(toInteger(42)).toBe(42)
     expect(toInteger(3.14, { allowDecimal: true })).toBe(3)

@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest'
 import { getFileExtension, removeFileExtension } from '../src/file/extension'
 
-describe('removeFileExtension', () => {
+describe(removeFileExtension, () => {
   it('should remove common file extensions', () => {
     expect(removeFileExtension('document.txt')).toBe('document')
     expect(removeFileExtension('image.jpg')).toBe('image')
@@ -25,12 +25,12 @@ describe('removeFileExtension', () => {
     expect(removeFileExtension('Makefile')).toBe('Makefile')
   })
 
-  it.todo('should handle files starting with dots', () => {
-    expect(removeFileExtension('.gitignore')).toBe('.gitignore')
-    expect(removeFileExtension('.env')).toBe('.env')
-    expect(removeFileExtension('.bashrc')).toBe('.bashrc')
-    expect(removeFileExtension('.hidden.txt')).toBe('.hidden')
-  })
+  // it.todo('should handle files starting with dots', () => {
+  //   expect(removeFileExtension('.gitignore')).toBe('.gitignore')
+  //   expect(removeFileExtension('.env')).toBe('.env')
+  //   expect(removeFileExtension('.bashrc')).toBe('.bashrc')
+  //   expect(removeFileExtension('.hidden.txt')).toBe('.hidden')
+  // })
 
   it('should handle files with dots in directory path', () => {
     expect(removeFileExtension('path/to/file.txt')).toBe('path/to/file')
@@ -48,11 +48,11 @@ describe('removeFileExtension', () => {
     expect(removeFileExtension('...')).toBe('...')
   })
 
-  it.todo('should handle files ending with dots', () => {
-    expect(removeFileExtension('file.')).toBe('file')
-    expect(removeFileExtension('document..')).toBe('document.')
-    expect(removeFileExtension('name...')).toBe('name..')
-  })
+  // it.todo('should handle files ending with dots', () => {
+  //   expect(removeFileExtension('file.')).toBe('file')
+  //   expect(removeFileExtension('document..')).toBe('document.')
+  //   expect(removeFileExtension('name...')).toBe('name..')
+  // })
 
   it('should handle long extensions', () => {
     expect(removeFileExtension('file.backup')).toBe('file')
@@ -86,7 +86,7 @@ describe('removeFileExtension', () => {
   })
 })
 
-describe('getFileExtension', () => {
+describe(getFileExtension, () => {
   it('should get common file extensions', () => {
     expect(getFileExtension('document.txt')).toBe('txt')
     expect(getFileExtension('image.jpg')).toBe('jpg')

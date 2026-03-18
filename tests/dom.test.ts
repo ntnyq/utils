@@ -3,7 +3,7 @@ import { isElementVisibleInViewport, openExternalURL } from '../src/dom'
 
 const originalWindow = globalThis.window
 
-describe('isElementVisibleInViewport', () => {
+describe(isElementVisibleInViewport, () => {
   it('should detect visibility within viewport', () => {
     const element = {
       getBoundingClientRect: () => ({
@@ -18,7 +18,7 @@ describe('isElementVisibleInViewport', () => {
       innerWidth: 100,
       innerHeight: 100,
     } as unknown as Window
-    expect(isElementVisibleInViewport(element, targetWindow)).toBe(true)
+    expect(isElementVisibleInViewport(element, targetWindow)).toBeTruthy()
   })
 
   it('should detect element outside viewport', () => {
@@ -34,11 +34,11 @@ describe('isElementVisibleInViewport', () => {
       innerWidth: 100,
       innerHeight: 100,
     } as unknown as Window
-    expect(isElementVisibleInViewport(element, targetWindow)).toBe(false)
+    expect(isElementVisibleInViewport(element, targetWindow)).toBeFalsy()
   })
 })
 
-describe('openExternalURL', () => {
+describe(openExternalURL, () => {
   beforeEach(() => {
     // @ts-expect-error assign
     globalThis.window = { open: vi.fn(() => ({ closed: false })) }

@@ -16,10 +16,10 @@ export function isPlainObject<Value = unknown>(
   const prototype: unknown = Object.getPrototypeOf(value)
 
   return (
-    (prototype === null
-      || prototype === Object.prototype
-      || Object.getPrototypeOf(prototype) === null)
-    && !(Symbol.toStringTag in value)
-    && !(Symbol.iterator in value)
+    (prototype === null ||
+      prototype === Object.prototype ||
+      Object.getPrototypeOf(prototype) === null) &&
+    !(Symbol.toStringTag in value) &&
+    !(Symbol.iterator in value)
   )
 }

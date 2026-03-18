@@ -17,6 +17,7 @@
 
 export function once<T extends unknown[]>(func: (...args: T) => void) {
   let called = false
+  // oxlint-disable-next-line func-names
   return function (this: unknown, ...args: T): boolean {
     if (called) {
       return false

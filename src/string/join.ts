@@ -21,5 +21,5 @@ export function join(
   if (!Array.isArray(array) || !array.length) {
     return ''
   }
-  return array.filter(v => Boolean(v) || v === 0).join(separator)
+  return array.filter(i => Boolean(i) || i === 0).join(separator)
 }

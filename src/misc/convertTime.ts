@@ -9,10 +9,14 @@
 export const TIME_UNITS = {
   MILLISECOND: 1,
   SECOND: 1000,
-  MINUTE: (60 * 1000) as 60000,
-  HOUR: (60 * 60 * 1000) as 3600000,
-  DAY: (24 * 60 * 60 * 1000) as 86400000,
-  WEEK: (7 * 24 * 60 * 60 * 1000) as 604800000,
+  // oxlint-disable-next-line no-magic-numbers
+  MINUTE: (60 * 1000) as 60_000,
+  // oxlint-disable-next-line no-magic-numbers
+  HOUR: (60 * 60 * 1000) as 3_600_000,
+  // oxlint-disable-next-line no-magic-numbers
+  DAY: (24 * 60 * 60 * 1000) as 86_400_000,
+  // oxlint-disable-next-line no-magic-numbers
+  WEEK: (7 * 24 * 60 * 60 * 1000) as 604_800_000,
 } as const
 
 export type TimeUnit = keyof typeof TIME_UNITS

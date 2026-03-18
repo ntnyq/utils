@@ -19,7 +19,7 @@ import {
 } from '../src/misc'
 
 describe('storage unit conversion', () => {
-  describe('STORAGE_UNITS', () => {
+  describe('Constants STORAGE_UNITS', () => {
     it('should have correct values', () => {
       expect(STORAGE_UNITS).toMatchInlineSnapshot(`
         {
@@ -33,37 +33,37 @@ describe('storage unit conversion', () => {
     })
   })
 
-  describe('convertToBytes', () => {
+  describe(convertToBytes, () => {
     it('should convert MB to bytes by default', () => {
-      expect(convertToBytes(1)).toBe(1048576)
-      expect(convertToBytes(5)).toBe(5242880)
+      expect(convertToBytes(1)).toBe(1_048_576)
+      expect(convertToBytes(5)).toBe(5_242_880)
     })
 
     it('should convert different units to bytes', () => {
       expect(convertToBytes(1, 'BYTE')).toBe(1)
       expect(convertToBytes(1, 'KB')).toBe(1024)
-      expect(convertToBytes(1, 'MB')).toBe(1048576)
-      expect(convertToBytes(1, 'GB')).toBe(1073741824)
-      expect(convertToBytes(1, 'TB')).toBe(1099511627776)
+      expect(convertToBytes(1, 'MB')).toBe(1_048_576)
+      expect(convertToBytes(1, 'GB')).toBe(1_073_741_824)
+      expect(convertToBytes(1, 'TB')).toBe(1_099_511_627_776)
     })
   })
 
-  describe('convertFromBytes', () => {
+  describe(convertFromBytes, () => {
     it('should convert bytes to MB by default', () => {
-      expect(convertFromBytes(1048576)).toBe(1)
-      expect(convertFromBytes(5242880)).toBe(5)
+      expect(convertFromBytes(1_048_576)).toBe(1)
+      expect(convertFromBytes(5_242_880)).toBe(5)
     })
 
     it('should convert bytes to different units', () => {
       expect(convertFromBytes(1024, 'BYTE')).toBe(1024)
       expect(convertFromBytes(1024, 'KB')).toBe(1)
-      expect(convertFromBytes(1048576, 'MB')).toBe(1)
-      expect(convertFromBytes(1073741824, 'GB')).toBe(1)
-      expect(convertFromBytes(1099511627776, 'TB')).toBe(1)
+      expect(convertFromBytes(1_048_576, 'MB')).toBe(1)
+      expect(convertFromBytes(1_073_741_824, 'GB')).toBe(1)
+      expect(convertFromBytes(1_099_511_627_776, 'TB')).toBe(1)
     })
   })
 
-  describe('convertStorageUnit', () => {
+  describe(convertStorageUnit, () => {
     it('should convert between units', () => {
       expect(convertStorageUnit(1, 'GB', 'MB')).toBe(1024)
       expect(convertStorageUnit(2048, 'MB', 'GB')).toBe(2)
@@ -79,7 +79,7 @@ describe('storage unit conversion', () => {
 })
 
 describe('time unit conversion', () => {
-  describe('TIME_UNITS', () => {
+  describe('Constants TIME_UNITS', () => {
     it('should have correct values', () => {
       expect(TIME_UNITS).toMatchInlineSnapshot(`
         {
@@ -94,7 +94,7 @@ describe('time unit conversion', () => {
     })
   })
 
-  describe('convertToMilliseconds', () => {
+  describe(convertToMilliseconds, () => {
     it('should convert seconds to milliseconds by default', () => {
       expect(convertToMilliseconds(1)).toBe(1000)
       expect(convertToMilliseconds(5)).toBe(5000)
@@ -103,14 +103,14 @@ describe('time unit conversion', () => {
     it('should convert different units to milliseconds', () => {
       expect(convertToMilliseconds(1, 'MILLISECOND')).toBe(1)
       expect(convertToMilliseconds(1, 'SECOND')).toBe(1000)
-      expect(convertToMilliseconds(1, 'MINUTE')).toBe(60000)
-      expect(convertToMilliseconds(1, 'HOUR')).toBe(3600000)
-      expect(convertToMilliseconds(1, 'DAY')).toBe(86400000)
-      expect(convertToMilliseconds(1, 'WEEK')).toBe(604800000)
+      expect(convertToMilliseconds(1, 'MINUTE')).toBe(60_000)
+      expect(convertToMilliseconds(1, 'HOUR')).toBe(3_600_000)
+      expect(convertToMilliseconds(1, 'DAY')).toBe(86_400_000)
+      expect(convertToMilliseconds(1, 'WEEK')).toBe(604_800_000)
     })
   })
 
-  describe('convertFromMilliseconds', () => {
+  describe(convertFromMilliseconds, () => {
     it('should convert milliseconds to seconds by default', () => {
       expect(convertFromMilliseconds(1000)).toBe(1)
       expect(convertFromMilliseconds(5000)).toBe(5)
@@ -119,14 +119,14 @@ describe('time unit conversion', () => {
     it('should convert milliseconds to different units', () => {
       expect(convertFromMilliseconds(1000, 'MILLISECOND')).toBe(1000)
       expect(convertFromMilliseconds(1000, 'SECOND')).toBe(1)
-      expect(convertFromMilliseconds(60000, 'MINUTE')).toBe(1)
-      expect(convertFromMilliseconds(3600000, 'HOUR')).toBe(1)
-      expect(convertFromMilliseconds(86400000, 'DAY')).toBe(1)
-      expect(convertFromMilliseconds(604800000, 'WEEK')).toBe(1)
+      expect(convertFromMilliseconds(60_000, 'MINUTE')).toBe(1)
+      expect(convertFromMilliseconds(3_600_000, 'HOUR')).toBe(1)
+      expect(convertFromMilliseconds(86_400_000, 'DAY')).toBe(1)
+      expect(convertFromMilliseconds(604_800_000, 'WEEK')).toBe(1)
     })
   })
 
-  describe('convertTimeUnit', () => {
+  describe(convertTimeUnit, () => {
     it('should convert between units', () => {
       expect(convertTimeUnit(1, 'HOUR', 'MINUTE')).toBe(60)
       expect(convertTimeUnit(120, 'SECOND', 'MINUTE')).toBe(2)
@@ -141,7 +141,7 @@ describe('time unit conversion', () => {
   })
 })
 
-describe('clamp', () => {
+describe(clamp, () => {
   it('should clamp within range', () => {
     expect(clamp(5, 0, 10)).toBe(5)
     expect(clamp(-5, 0, 10)).toBe(0)
@@ -153,7 +153,7 @@ describe('clamp', () => {
   })
 })
 
-describe('warnOnce', () => {
+describe(warnOnce, () => {
   it('should warn only once per message', () => {
     const spy = vi.spyOn(console, 'warn').mockImplementation(() => {})
     warnOnce('msg')
@@ -164,7 +164,7 @@ describe('warnOnce', () => {
   })
 })
 
-describe('waitFor', () => {
+describe(waitFor, () => {
   it('should resolve after specified ms', async () => {
     const start = Date.now()
     await waitFor(10)
@@ -192,10 +192,10 @@ describe('throttle/debounce', () => {
     fn()
     fn()
     // Leading-edge debounce: first call invokes immediately
-    expect(spy).toHaveBeenCalledTimes(1)
+    expect(spy).toHaveBeenCalledOnce()
     vi.advanceTimersByTime(50)
     // No trailing call in current implementation
-    expect(spy).toHaveBeenCalledTimes(1)
+    expect(spy).toHaveBeenCalledOnce()
     vi.useRealTimers()
   })
 
@@ -207,7 +207,7 @@ describe('throttle/debounce', () => {
     fn.cancel()
     vi.advanceTimersByTime(60)
     // First call already executed; cancel prevents further calls
-    expect(spy).toHaveBeenCalledTimes(1)
+    expect(spy).toHaveBeenCalledOnce()
     vi.useRealTimers()
   })
 })

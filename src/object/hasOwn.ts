@@ -8,5 +8,6 @@ export function hasOwn<T>(object: T, key: PropertyKey): boolean {
   if (object === null) {
     return false
   }
+  // oxlint-disable-next-line prefer-object-has-own
   return Object.prototype.hasOwnProperty.call(object, key)
 }

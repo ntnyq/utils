@@ -52,6 +52,7 @@ export interface ToIntegerOptions {
  * @param options - Options for the conversion.
  * @returns The converted integer.
  */
+// oxlint-disable-next-line complexity
 export function toInteger(
   value: unknown,
   options: ToIntegerOptions = {},

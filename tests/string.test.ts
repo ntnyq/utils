@@ -13,7 +13,7 @@ import {
   unindent,
 } from '../src/string'
 
-describe('ensurePrefix', () => {
+describe(ensurePrefix, () => {
   it('should add prefix if not present', () => {
     expect(ensurePrefix('world', 'hello-')).toBe('hello-world')
     expect(ensurePrefix('test', 'pre-')).toBe('pre-test')
@@ -33,7 +33,7 @@ describe('ensurePrefix', () => {
   })
 })
 
-describe('ensureSuffix', () => {
+describe(ensureSuffix, () => {
   it('should add suffix if not present', () => {
     expect(ensureSuffix('hello', '-world')).toBe('hello-world')
     expect(ensureSuffix('test', '.txt')).toBe('test.txt')
@@ -53,32 +53,33 @@ describe('ensureSuffix', () => {
   })
 })
 
-describe('escapeStringRegexp', () => {
+describe(escapeStringRegexp, () => {
   it('should escape special regex characters', () => {
-    expect(escapeStringRegexp('hello.world')).toBe('hello\\.world')
-    expect(escapeStringRegexp('a+b')).toBe('a\\+b')
-    expect(escapeStringRegexp('a*b')).toBe('a\\*b')
-    expect(escapeStringRegexp('a?b')).toBe('a\\?b')
+    expect(escapeStringRegexp('hello.world')).toBe(String.raw`hello\.world`)
+    expect(escapeStringRegexp('a+b')).toBe(String.raw`a\+b`)
+    expect(escapeStringRegexp('a*b')).toBe(String.raw`a\*b`)
+    expect(escapeStringRegexp('a?b')).toBe(String.raw`a\?b`)
   })
 
   it('should escape brackets', () => {
-    expect(escapeStringRegexp('[abc]')).toBe('\\[abc\\]')
-    expect(escapeStringRegexp('(abc)')).toBe('\\(abc\\)')
-    expect(escapeStringRegexp('{abc}')).toBe('\\{abc\\}')
+    expect(escapeStringRegexp('[abc]')).toBe(String.raw`\[abc\]`)
+    expect(escapeStringRegexp('(abc)')).toBe(String.raw`\(abc\)`)
+    expect(escapeStringRegexp('{abc}')).toBe(String.raw`\{abc\}`)
   })
 
   it('should escape pipe and caret', () => {
-    expect(escapeStringRegexp('a|b')).toBe('a\\|b')
-    expect(escapeStringRegexp('^abc')).toBe('\\^abc')
+    expect(escapeStringRegexp('a|b')).toBe(String.raw`a\|b`)
+    expect(escapeStringRegexp('^abc')).toBe(String.raw`\^abc`)
   })
 
   it('should escape backslash and dollar', () => {
-    expect(escapeStringRegexp('a\\b')).toBe('a\\\\b')
-    expect(escapeStringRegexp('$100')).toBe('\\$100')
+    expect(escapeStringRegexp(String.raw`a\b`)).toBe(String.raw`a\\b`)
+    expect(escapeStringRegexp('$100')).toBe(String.raw`\$100`)
   })
 
   it('should escape hyphen', () => {
-    expect(escapeStringRegexp('a-b')).toBe('a\\x2db')
+    // oxlint-disable-next-line unicorn/no-hex-escape, unicorn/escape-case
+    expect(escapeStringRegexp('a-b')).toBe(String.raw`a\x2db`)
   })
 
   it('should handle empty string', () => {
@@ -86,7 +87,7 @@ describe('escapeStringRegexp', () => {
   })
 })
 
-describe('getStringLength', () => {
+describe(getStringLength, () => {
   it('should count ASCII characters', () => {
     expect(getStringLength('hello')).toBe(5)
     expect(getStringLength('12345')).toBe(5)
@@ -106,7 +107,7 @@ describe('getStringLength', () => {
   })
 })
 
-describe('join', () => {
+describe(join, () => {
   it('should join array with default separator', () => {
     expect(join(['a', 'b', 'c'])).toBe('abc')
   })
@@ -140,7 +141,7 @@ describe('join', () => {
   })
 })
 
-describe('createPadString', () => {
+describe(createPadString, () => {
   it('should pad string to specified length', () => {
     const pad = createPadString({ length: 5, char: '0' })
     expect(pad('1')).toBe('00001')
@@ -164,7 +165,7 @@ describe('createPadString', () => {
   })
 })
 
-describe('randomString', () => {
+describe(randomString, () => {
   it('should generate string of specified length', () => {
     expect(randomString(10).length).toBe(10)
     expect(randomString(20).length).toBe(20)
@@ -178,7 +179,7 @@ describe('randomString', () => {
   it('should use custom charset', () => {
     const result = randomString(10, 'ABC')
     expect(result.length).toBe(10)
-    expect(/^[ABC]+$/.test(result)).toBe(true)
+    expect(/^[ABC]+$/.test(result)).toBeTruthy()
   })
 
   it('should generate different strings', () => {
@@ -189,14 +190,14 @@ describe('randomString', () => {
 
   it('should use default charset containing alphanumeric', () => {
     const result = randomString(100)
-    expect(/[0-9a-z]/i.test(result)).toBe(true)
+    expect(/[0-9a-z]/i.test(result)).toBeTruthy()
   })
 })
 
-describe('slash', () => {
+describe(slash, () => {
   it('should replace backslashes with slashes', () => {
-    expect(slash('a\\b\\c')).toBe('a/b/c')
-    expect(slash('path\\to\\file')).toBe('path/to/file')
+    expect(slash(String.raw`a\b\c`)).toBe('a/b/c')
+    expect(slash(String.raw`path\to\file`)).toBe('path/to/file')
   })
 
   it('should leave forward slashes unchanged', () => {
@@ -204,7 +205,7 @@ describe('slash', () => {
   })
 
   it('should handle mixed slashes', () => {
-    expect(slash('a\\b/c\\d')).toBe('a/b/c/d')
+    expect(slash(String.raw`a\b/c\d`)).toBe('a/b/c/d')
   })
 
   it('should handle empty string', () => {
@@ -212,7 +213,7 @@ describe('slash', () => {
   })
 })
 
-describe('slugify', () => {
+describe(slugify, () => {
   it('should convert to lowercase', () => {
     expect(slugify('HELLO WORLD')).toBe('hello-world')
   })
@@ -255,7 +256,7 @@ describe('slugify', () => {
   })
 })
 
-describe('unindent', () => {
+describe(unindent, () => {
   it('should remove common indentation', () => {
     expect(
       unindent`
@@ -305,7 +306,7 @@ describe('unindent', () => {
   })
 })
 
-describe('getStringSimilarity', () => {
+describe(getStringSimilarity, () => {
   it('should return 1 for same string', () => {
     expect(getStringSimilarity('hello', 'hello')).toBe(1)
     expect(getStringSimilarity('hello', 'hello', { sliceLength: 2 })).toBe(1)

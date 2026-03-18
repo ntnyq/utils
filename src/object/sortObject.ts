@@ -17,12 +17,13 @@ export interface SortObjectOptions {
  * Sort object properties
  */
 export function sortObject<T extends Record<string, any>>(
-  obj: T,
+  object: T,
   options: SortObjectOptions = {},
 ) {
   const { compareFn = (a, b) => a.localeCompare(b) } = options
 
-  function sortKeys<T extends Record<string, any>>(obj: T) {
+  function sortKeys<R extends Record<string, any>>(obj: R) {
+    // oxlint-disable-next-line unicorn/no-array-sort
     const sortedKeys = Object.keys(obj).sort(compareFn)
     const result = {}
 
@@ -46,5 +47,5 @@ export function sortObject<T extends Record<string, any>>(
 
     return result
   }
-  return sortKeys(obj) as T
+  return sortKeys(object) as T
 }

@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest'
 import { escapeHTML, unescapeHTML } from '../src/html'
 
-describe('escapeHTML', () => {
+describe(escapeHTML, () => {
   it('should escape basic characters', () => {
     expect(escapeHTML('&')).toBe('&amp;')
     expect(escapeHTML('<')).toBe('&lt;')
@@ -17,7 +17,7 @@ describe('escapeHTML', () => {
   })
 })
 
-describe('unescapeHTML', () => {
+describe(unescapeHTML, () => {
   it('should unescape common entities', () => {
     expect(unescapeHTML('&amp;')).toBe('&')
     expect(unescapeHTML('&lt;')).toBe('<')

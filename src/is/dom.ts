@@ -16,10 +16,10 @@ export function isHTMLElement(value: unknown): value is HTMLElement {
   }
 
   return (
-    typeof value === 'object'
-    && value !== null
-    && 'nodeType' in value
-    && (value as Node).nodeType === Node.ELEMENT_NODE
-    && value instanceof HTMLElement
+    typeof value === 'object' &&
+    value !== null &&
+    'nodeType' in value &&
+    (value as Node).nodeType === Node.ELEMENT_NODE &&
+    value instanceof HTMLElement
   )
 }

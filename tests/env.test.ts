@@ -1,13 +1,13 @@
 import { describe, expect, it, vi } from 'vitest'
 import { isBrowser } from '../src/env'
 
-describe('isBrowser', () => {
+describe(isBrowser, () => {
   it('should return false in node-like environment', () => {
     // Ensure no browser globals (use stubGlobal to override)
     vi.stubGlobal('window', undefined)
     vi.stubGlobal('document', undefined)
     vi.stubGlobal('self', undefined)
-    expect(isBrowser()).toBe(false)
+    expect(isBrowser()).toBeFalsy()
   })
 
   it('should return true when browser globals exist', () => {
@@ -21,6 +21,6 @@ describe('isBrowser', () => {
     // navigator is provided by Vitest environment; keep as-is
     vi.stubGlobal('self', win)
 
-    expect(isBrowser()).toBe(true)
+    expect(isBrowser()).toBeTruthy()
   })
 })

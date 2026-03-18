@@ -13,21 +13,16 @@ function validateHexColor(hex: string) {
 }
 
 function normalizeHexString(hex: string) {
-  return hex.length === 6 ? hex : hex.replace(/./g, '$&$&')
+  return hex.length === 6 ? hex : hex.replaceAll(/./g, '$&$&')
 }
 
 export class Color {
-  public red: number = 0
-  public green: number = 0
-  public blue: number = 0
-  public alpha: number = 1
+  public red = 0
+  public green = 0
+  public blue = 0
+  public alpha = 1
 
-  constructor(
-    red: number = 0,
-    green: number = 0,
-    blue: number = 0,
-    alpha: number = 1,
-  ) {
+  constructor(red = 0, green = 0, blue = 0, alpha = 1) {
     this.red = red
     this.green = green
     this.blue = blue

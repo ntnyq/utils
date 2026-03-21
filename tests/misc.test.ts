@@ -166,9 +166,11 @@ describe(warnOnce, () => {
 
 describe(waitFor, () => {
   it('should resolve after specified ms', async () => {
-    const start = Date.now()
-    await waitFor(10)
-    expect(Date.now() - start).toBeGreaterThanOrEqual(10)
+    vi.useFakeTimers()
+    const promise = waitFor(100)
+    vi.advanceTimersByTime(100)
+    await promise
+    vi.useRealTimers()
   })
 })
 

@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { randomNumber, toInteger } from '../src/number'
+import { randomNumber, toInteger, toNumber } from '../src/number'
 
 describe(randomNumber, () => {
   it('should return a number within the specified range', () => {
@@ -229,5 +229,39 @@ describe(toInteger, () => {
     // Test with decimal inputs and ranges
     expect(toInteger(2.7, { min: 3, max: 10, allowDecimal: true })).toBe(3)
     expect(toInteger(12.3, { min: 3, max: 10, allowDecimal: true })).toBe(10)
+  })
+})
+
+describe(toNumber, () => {
+  it('should return the number as-is when given a number', () => {
+    expect(toNumber(42)).toBe(42)
+    expect(toNumber(3.14)).toBe(3.14)
+    expect(toNumber(-100)).toBe(-100)
+    expect(toNumber(0)).toBe(0)
+  })
+
+  it('should convert a numeric string to a number', () => {
+    expect(toNumber('42')).toBe(42)
+    expect(toNumber('3.14')).toBe(3.14)
+    expect(toNumber('-100')).toBe(-100)
+    expect(toNumber('0')).toBe(0)
+  })
+
+  it('should parse only the leading numeric part of a string', () => {
+    expect(toNumber('3.14abc')).toBe(3.14)
+    expect(toNumber('10px')).toBe(10)
+  })
+
+  it('should throw TypeError when given NaN', () => {
+    expect(() => toNumber(Number.NaN)).toThrow(TypeError)
+    expect(() => toNumber(Number.NaN)).toThrow(
+      'Expected a valid number, got NaN',
+    )
+  })
+
+  it('should throw TypeError when given a non-numeric string', () => {
+    expect(() => toNumber('abc')).toThrow(TypeError)
+    expect(() => toNumber('abc')).toThrow('Expected a valid number, got NaN')
+    expect(() => toNumber('')).toThrow(TypeError)
   })
 })

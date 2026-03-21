@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest'
 import {
   getObjectType,
+  isAllEmpty,
   isArray,
   isBigInt,
   isBlob,
@@ -513,6 +514,30 @@ describe(isEmptySet, () => {
   it('should return false for non-Sets', () => {
     expect(isEmptySet({})).toBeFalsy()
     expect(isEmptySet(null)).toBeFalsy()
+  })
+})
+
+describe(isAllEmpty, () => {
+  it('should return true for all supported empty values', () => {
+    expect(isAllEmpty(null)).toBeTruthy()
+    // @ts-expect-error testing undefined
+    expect(isAllEmpty()).toBeTruthy()
+    expect(isAllEmpty(undefined)).toBeTruthy()
+    expect(isAllEmpty('')).toBeTruthy()
+    expect(isAllEmpty([])).toBeTruthy()
+    expect(isAllEmpty({})).toBeTruthy()
+    expect(isAllEmpty(new Set())).toBeTruthy()
+    expect(isAllEmpty(new Map())).toBeTruthy()
+  })
+
+  it('should return false for non-empty values', () => {
+    expect(isAllEmpty(' ')).toBeFalsy()
+    expect(isAllEmpty([1])).toBeFalsy()
+    expect(isAllEmpty({ a: 1 })).toBeFalsy()
+    expect(isAllEmpty(new Set([1]))).toBeFalsy()
+    expect(isAllEmpty(new Map([['a', 1]]))).toBeFalsy()
+    expect(isAllEmpty(0)).toBeFalsy()
+    expect(isAllEmpty(false)).toBeFalsy()
   })
 })
 

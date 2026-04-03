@@ -10,5 +10,6 @@ export function clamp(
   min: number = Number.NEGATIVE_INFINITY,
   max: number = Number.POSITIVE_INFINITY,
 ): number {
-  return Math.min(Math.max(value, min), max)
+  const [low, high] = [Math.min(min, max), Math.max(min, max)]
+  return Math.min(Math.max(value, low), high)
 }

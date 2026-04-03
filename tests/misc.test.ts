@@ -151,6 +151,12 @@ describe(clamp, () => {
   it('should handle default min/max', () => {
     expect(clamp(5)).toBe(5)
   })
+
+  it('should handle min greater than max', () => {
+    expect(clamp(5, 10, 0)).toBe(5)
+    expect(clamp(-5, 10, 0)).toBe(0)
+    expect(clamp(15, 10, 0)).toBe(10)
+  })
 })
 
 describe(warnOnce, () => {

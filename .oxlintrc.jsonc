@@ -169,6 +169,8 @@
         "unicorn/no-null": "off",
         "unicorn/no-useless-undefined": "off",
         "vitest/prefer-called-times": "off",
+        "vitest/require-test-timeout": "off",
+        "vitest/require-mock-type-parameters": "off",
         "vitest/no-importing-vitest-globals": "off",
         "vitest/prefer-strict-boolean-matchers": "off",
       },

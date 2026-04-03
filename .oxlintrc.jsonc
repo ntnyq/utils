@@ -48,6 +48,7 @@
     "oxc/no-barrel-file": "off",
     "oxc/no-optional-chaining": "off",
     "oxc/no-rest-spread-properties": "off",
+    "promise/avoid-new": "off",
     "promise/prefer-await-to-callbacks": "off",
     "typescript/no-non-null-assertion": "off",
     "typescript/no-empty-object-type": "off",
@@ -115,9 +116,14 @@
           1000, 1024,
         ],
         "ignoreArrayIndexes": true,
+        "ignoreDefaultValues": true,
         "enforceConst": true,
         "detectObjects": false,
       },
+    ],
+    "no-use-before-define": [
+      "warn",
+      { "functions": false, "classes": true, "variables": true },
     ],
   },
   "overrides": [

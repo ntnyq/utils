@@ -8,11 +8,6 @@ export type MayBe<T> = T | undefined
 export type Nullable<T> = T | null
 
 /**
- * Overwrite some keys type
- */
-export type Overwrite<T, U> = Pick<T, Exclude<keyof T, keyof U>> & U
-
-/**
  * Prettify object type
  */
 export type Prettify<T> = { [K in keyof T]: T[K] } & {}

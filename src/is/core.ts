@@ -53,7 +53,7 @@ export function isNumber(value: unknown): value is number {
 export function isZero(value: unknown): value is 0 {
   return value === 0
 }
-export function isNaN(value: unknown): value is typeof Number.NaN {
+export function isNaN(value: unknown): boolean {
   return Number.isNaN(value)
 }
 export function isInteger(value: unknown): value is number {

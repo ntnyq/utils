@@ -26,8 +26,10 @@ export type TimeUnit = keyof typeof TIME_UNITS
  * @param value - The time value.
  * @param fromUnit - The source unit (default: 'SECOND').
  * @returns The time in milliseconds.
+ *
  * @example
- * ```ts
+ *
+ * ```typescript
  * convertToMilliseconds(5, 'SECOND') // 5000
  * convertToMilliseconds(2, 'MINUTE') // 120000
  * convertToMilliseconds(1, 'HOUR') // 3600000
@@ -45,8 +47,10 @@ export function convertToMilliseconds(
  * @param milliseconds - The time in milliseconds.
  * @param toUnit - The target unit (default: 'SECOND').
  * @returns The time in the specified unit.
+ *
  * @example
- * ```ts
+ *
+ * ```typescript
  * convertFromMilliseconds(5000, 'SECOND') // 5
  * convertFromMilliseconds(120000, 'MINUTE') // 2
  * convertFromMilliseconds(3600000, 'HOUR') // 1
@@ -65,8 +69,10 @@ export function convertFromMilliseconds(
  * @param fromUnit - The source unit.
  * @param toUnit - The target unit.
  * @returns The converted time.
+ *
  * @example
- * ```ts
+ *
+ * ```typescript
  * convertTimeUnit(1, 'HOUR', 'MINUTE') // 60
  * convertTimeUnit(120, 'SECOND', 'MINUTE') // 2
  * convertTimeUnit(2, 'WEEK', 'DAY') // 14

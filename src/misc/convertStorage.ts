@@ -24,8 +24,10 @@ export type StorageUnit = keyof typeof STORAGE_UNITS
  * @param value - The size value.
  * @param fromUnit - The source unit (default: 'MB').
  * @returns The size in bytes.
+ *
  * @example
- * ```ts
+ *
+ * ```typescript
  * convertToBytes(5, 'MB') // 5242880
  * convertToBytes(1, 'GB') // 1073741824
  * convertToBytes(512, 'KB') // 524288
@@ -43,8 +45,10 @@ export function convertToBytes(
  * @param bytes - The size in bytes.
  * @param toUnit - The target unit (default: 'MB').
  * @returns The size in the specified unit.
+ *
  * @example
- * ```ts
+ *
+ * ```typescript
  * convertFromBytes(5242880, 'MB') // 5
  * convertFromBytes(1073741824, 'GB') // 1
  * convertFromBytes(524288, 'KB') // 512
@@ -63,8 +67,10 @@ export function convertFromBytes(
  * @param fromUnit - The source unit.
  * @param toUnit - The target unit.
  * @returns The converted size.
+ *
  * @example
- * ```ts
+ *
+ * ```typescript
  * convertStorageUnit(1, 'GB', 'MB') // 1024
  * convertStorageUnit(2048, 'MB', 'GB') // 2
  * convertStorageUnit(1024, 'KB', 'MB') // 1

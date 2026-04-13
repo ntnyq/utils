@@ -1,5 +1,6 @@
+// oxlint-disable oxc/approx-constant
 import { describe, expect, it } from 'vitest'
-import { randomNumber, toInteger, toNumber } from '../src/number'
+import { randomNumber, round, toInteger, toNumber } from '../src/number'
 
 describe(randomNumber, () => {
   it('should return a number within the specified range', () => {
@@ -263,5 +264,63 @@ describe(toNumber, () => {
     expect(() => toNumber('abc')).toThrow(TypeError)
     expect(() => toNumber('abc')).toThrow('Expected a valid number, got NaN')
     expect(() => toNumber('')).toThrow(TypeError)
+  })
+})
+
+describe(round, () => {
+  it('should round to nearest integer by default', () => {
+    expect(round(1.2345)).toBe(1)
+    expect(round(1.5)).toBe(2)
+    expect(round(1.6)).toBe(2)
+    expect(round(2.4)).toBe(2)
+  })
+
+  it('should round to specified decimal places', () => {
+    expect(round(1.2345, 2)).toBe(1.23)
+    expect(round(1.2345, 3)).toBe(1.235)
+    expect(round(1.2345, 4)).toBe(1.2345)
+  })
+
+  it('should handle negative numbers correctly', () => {
+    expect(round(-1.2345)).toBe(-1)
+    expect(round(-1.5)).toBe(-1) // JavaScript Math.round uses banker's rounding
+    expect(round(-1.2345, 2)).toBe(-1.23)
+    expect(round(-1.6)).toBe(-2)
+  })
+
+  it('should handle zero decimal places explicitly', () => {
+    expect(round(1.7, 0)).toBe(2)
+    expect(round(1.2, 0)).toBe(1)
+  })
+
+  it('should handle large decimal places', () => {
+    expect(round(3.141_592_65, 5)).toBe(3.141_59)
+    expect(round(3.141_592_65, 8)).toBe(3.141_592_65)
+  })
+
+  it('should handle zero', () => {
+    expect(round(0)).toBe(0)
+    expect(round(0, 2)).toBe(0)
+  })
+
+  it('should handle very small numbers', () => {
+    expect(round(0.000_01, 5)).toBe(0.000_01)
+    expect(round(0.000_01, 4)).toBe(0)
+  })
+
+  it('should handle very large numbers', () => {
+    expect(round(1_234_567.89, 1)).toBe(1_234_567.9)
+    expect(round(1_234_567.89, 0)).toBe(1_234_568)
+  })
+
+  it('should maintain precision for common use cases', () => {
+    expect(round(0.1 + 0.2, 1)).toBe(0.3)
+    expect(round(0.1 + 0.2, 2)).toBe(0.3)
+  })
+
+  it('should handle negative decimal places', () => {
+    // Rounding to tens, hundreds, etc
+    expect(round(1234.56, -1)).toBe(1230)
+    expect(round(1234.56, -2)).toBe(1200)
   })
 })

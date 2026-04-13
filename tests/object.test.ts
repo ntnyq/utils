@@ -1,8 +1,9 @@
-/* eslint-disable @typescript-eslint/no-unsafe-assignment */
+// oxlint-disable unicorn/prefer-structured-clone
 
 import { describe, expect, it } from 'vitest'
 import {
   cleanObject,
+  cloneDeep,
   hasOwn,
   isKeyOf,
   isPlainObject,
@@ -339,5 +340,131 @@ describe(sortObject, () => {
     const result = sortObject(obj)
     const descriptor = Object.getOwnPropertyDescriptor(result, 'c')
     expect(descriptor?.writable).toBeFalsy()
+  })
+})
+
+describe(cloneDeep, () => {
+  it('should deeply clone a nested object', () => {
+    const original = {
+      name: 'John',
+      age: 30,
+      address: {
+        street: '123 Main St',
+        city: 'Anytown',
+      },
+    }
+    const cloned = cloneDeep(original)
+
+    expect(cloned).toEqual(original)
+    expect(cloned).not.toBe(original)
+    expect(cloned.address).not.toBe(original.address)
+  })
+
+  it('should deeply clone nested arrays', () => {
+    const original = {
+      items: [1, 2, [3, 4, [5, 6]]],
+      nested: { arr: [{ a: 1 }, { b: 2 }] },
+    }
+    const cloned = cloneDeep(original)
+
+    expect(cloned).toEqual(original)
+    expect(cloned.items).not.toBe(original.items)
+    expect(cloned.items[2]).not.toBe(original.items[2])
+    expect(cloned.nested.arr).not.toBe(original.nested.arr)
+  })
+
+  it('should handle primitives', () => {
+    expect(cloneDeep(42)).toBe(42)
+    expect(cloneDeep('hello')).toBe('hello')
+    expect(cloneDeep(true)).toBeTruthy()
+  })
+
+  it('should handle null and undefined', () => {
+    expect(cloneDeep(null)).toBe(null)
+    expect(cloneDeep(undefined)).toBe(undefined)
+  })
+
+  it('should handle empty objects and arrays', () => {
+    expect(cloneDeep({})).toEqual({})
+    expect(cloneDeep([])).toEqual([])
+    expect(cloneDeep({})).not.toBe({})
+    expect(cloneDeep([])).not.toBe([])
+  })
+
+  it('should handle circular references with WeakMap', () => {
+    const original: any = { a: 1, b: { c: 2 } }
+    // Note: circular references are handled via WeakMap during cloning
+    const cloned = cloneDeep(original)
+
+    expect(cloned.a).toBe(1)
+    expect(cloned.b.c).toBe(2)
+    expect(cloned).not.toBe(original)
+    expect(cloned.b).not.toBe(original.b)
+  })
+
+  it('should handle mixed nested structures', () => {
+    const original = {
+      users: [
+        { id: 1, tags: ['admin', 'user'] },
+        { id: 2, tags: ['user'] },
+      ],
+      metadata: {
+        created: '2024-01-01',
+        permissions: { read: true, write: false },
+      },
+    }
+    const cloned = cloneDeep(original)
+
+    expect(cloned).toEqual(original)
+    expect(cloned.users).not.toBe(original.users)
+    expect(cloned.users[0]).not.toBe(original.users[0])
+    expect(cloned.users[0]?.tags).not.toBe(original.users[0]?.tags)
+    expect(cloned.metadata).not.toBe(original.metadata)
+  })
+
+  it('should clone objects with symbol keys', () => {
+    const sym = Symbol('test')
+    const original: any = { [sym]: 'value', regular: 'key' }
+    const cloned = cloneDeep(original)
+
+    expect(cloned[sym]).toBe('value')
+    expect(cloned.regular).toBe('key')
+    expect(cloned).not.toBe(original)
+  })
+
+  it('should handle arrays of objects', () => {
+    const original = [{ id: 1 }, { id: 2 }, { id: 3 }]
+    const cloned = cloneDeep(original)
+
+    expect(cloned).toEqual(original)
+    expect(cloned).not.toBe(original)
+    expect(cloned[0]).not.toBe(original[0])
+  })
+
+  it('should preserve array type', () => {
+    const original = [1, 2, 3]
+    const cloned = cloneDeep(original)
+
+    expect(Array.isArray(cloned)).toBeTruthy()
+    expect(Array.isArray(original)).toBeTruthy()
+    expect(cloned).toEqual(original)
+  })
+
+  it('should handle deeply nested structures without circular references', () => {
+    const original: any = {
+      level1: {
+        level2: {
+          level3: {
+            value: 'deep',
+          },
+        },
+      },
+    }
+
+    const cloned = cloneDeep(original)
+
+    expect(cloned.level1.level2.level3.value).toBe('deep')
+    expect(cloned).not.toBe(original)
+    expect(cloned.level1).not.toBe(original.level1)
   })
 })

@@ -3,7 +3,7 @@
  *
  * @example
  *
- * ```ts
+ * ```typescript
  * type A = { a: string, b: number }
  * type B = { b: number }
  *
@@ -19,7 +19,7 @@ export type Overwrite<T, U> = Pick<T, Exclude<keyof T, keyof U>> & U
  *
  * @example
  *
- * ```ts
+ * ```typescript
  * type A = { a: string, b: number }
  * type B = { b: number }
  *
@@ -35,7 +35,7 @@ export type Without<T, U> = { [P in Exclude<keyof T, keyof U>]?: never }
  *
  * @example
  *
- * ```ts
+ * ```typescript
  * type A = { a: string }
  * type B = { b: number }
  *

@@ -9,7 +9,7 @@ const _RE_FULL_WS = /^\s*$/
  *
  * @example
  *
- * ```ts
+ * ```typescript
  * const str = unindent`
  *   if (foo) {
  *     bar()

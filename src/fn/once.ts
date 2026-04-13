@@ -6,7 +6,7 @@
  *
  * @example
  *
- * ```ts
+ * ```typescript
  * const initialize = once(() => {
  *   console.log('Initialized')
  * })

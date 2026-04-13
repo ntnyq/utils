@@ -8,7 +8,7 @@ import type { Awaitable, InteropModuleDefault } from '../types'
  *
  * @example
  *
- * ```ts
+ * ```typescript
  * import { interopDefault } from '@ntnyq/utils'
  *
  * const { unindent } = await interopDefault(import('@ntnyq/utils'))

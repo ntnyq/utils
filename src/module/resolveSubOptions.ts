@@ -8,7 +8,7 @@ import type { ResolvedOptions } from '../types'
  *
  * @example
  *
- * ```ts
+ * ```typescript
  * import { resolveSubOptions } from '@ntnyq/utils'
  *
  * interface Options {

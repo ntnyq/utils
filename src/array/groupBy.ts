@@ -35,7 +35,7 @@ import { isFunction } from '../is'
  */
 export function groupBy<T>(
   array: T[],
-  key: string | ((item: T) => string),
+  key: string | number | ((item: T) => string | number),
 ): Record<string, T[]> {
   return array.reduce(
     (result, item) => {

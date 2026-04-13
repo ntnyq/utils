@@ -2,7 +2,9 @@ import { describe, expect, it } from 'vitest'
 import {
   at,
   chunk,
+  filterFalsy,
   flattenArrayable,
+  groupBy,
   intersect,
   isArrayEqual,
   last,
@@ -201,6 +203,98 @@ describe(uniqueBy, () => {
   it('should keep only first item if equalFn always returns true', () => {
     const arr = [1, 2, 3]
     expect(uniqueBy(arr, () => true)).toEqual([1])
+  })
+})
+
+describe(filterFalsy, () => {
+  it('should filter out falsy values', () => {
+    const mixedArray = [0, 1, false, 2, '', 3, null, 4, undefined, 5]
+    expect(filterFalsy(mixedArray)).toEqual([1, 2, 3, 4, 5])
+  })
+
+  it('should handle array with all falsy values', () => {
+    const falsyArray = [0, false, '', null, undefined]
+    expect(filterFalsy(falsyArray)).toEqual([])
+  })
+
+  it('should handle array with all truthy values', () => {
+    const truthyArray = [1, 'hello', true, 2, 'world']
+    expect(filterFalsy(truthyArray)).toEqual([1, 'hello', true, 2, 'world'])
+  })
+
+  it('should handle empty array', () => {
+    expect(filterFalsy([])).toEqual([])
+  })
+
+  it('should keep objects and arrays even though they are truthy', () => {
+    const arr = [0, { a: 1 }, [], 1, null]
+    expect(filterFalsy(arr)).toEqual([{ a: 1 }, [], 1])
+  })
+
+  it('should handle NaN as falsy', () => {
+    const arr = [1, Number.NaN, 2, 3]
+    expect(filterFalsy(arr)).toEqual([1, 2, 3])
+  })
+})
+
+describe(groupBy, () => {
+  it('should group by function that returns age value', () => {
+    const data = [
+      { name: 'Alice', age: 30 },
+      { name: 'Bob', age: 25 },
+      { name: 'Charlie', age: 30 },
+    ]
+    const result = groupBy(data, item => String(item.age))
+    expect(result).toEqual({
+      '25': [{ name: 'Bob', age: 25 }],
+      '30': [
+        { name: 'Alice', age: 30 },
+        { name: 'Charlie', age: 30 },
+      ],
+    })
+  })
+
+  it('should group by function that returns string property', () => {
+    const data = [
+      { name: 'Alice', age: 30 },
+      { name: 'Bob', age: 25 },
+      { name: 'Charlie', age: 30 },
+    ]
+    const result = groupBy(data, item => item.name.length)
+    expect(result).toEqual({
+      '3': [{ name: 'Bob', age: 25 }],
+      '5': [{ name: 'Alice', age: 30 }],
+      '7': [{ name: 'Charlie', age: 30 }],
+    })
+  })
+
+  it('should handle empty array', () => {
+    expect(groupBy([], 'key')).toEqual({})
+  })
+
+  it('should group by function with different types', () => {
+    const data = [
+      { id: 1, type: 'a' },
+      { id: 2, type: 'b' },
+      { id: 3, type: 'a' },
+    ]
+    const result = groupBy(data, item => item.type)
+    expect(result).toEqual({
+      a: [
+        { id: 1, type: 'a' },
+        { id: 3, type: 'a' },
+      ],
+      b: [{ id: 2, type: 'b' }],
+    })
+  })
+
+  it('should work with primitive array using function', () => {
+    const data = ['apple', 'banana', 'apricot', 'blueberry']
+    const result = groupBy(data, item => item[0]!)
+    expect(result).toEqual({
+      a: ['apple', 'apricot'],
+      b: ['banana', 'blueberry'],
+    })
   })
 })
 

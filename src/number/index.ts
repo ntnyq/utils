@@ -1,3 +1,4 @@
 export * from './random'
 export * from './toInteger'
 export * from './toNumber'
+export * from './round'

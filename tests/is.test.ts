@@ -1,3 +1,5 @@
+import { nanoid } from 'nanoid'
+import { v4 as uuid } from 'uuid'
 import { describe, expect, it } from 'vitest'
 import {
   getObjectType,
@@ -24,6 +26,8 @@ import {
   isNaN,
   isNativePromise,
   isNil,
+  isNanoID,
+  isUUID,
   isNonEmptyArray,
   isNonEmptyString,
   isNull,
@@ -778,4 +782,54 @@ describe(isHTMLElement, () => {
 
   // Note: In a browser environment with JSDOM, we could test with actual DOM elements
   // The isHTMLElement function requires Node and HTMLElement globals which are not available in Node.js
+})
+
+describe(isNanoID, () => {
+  it('should return true for valid NanoID strings', () => {
+    expect(isNanoID('V1StGXR8_Z5jdHi6B-myT')).toBeTruthy()
+    // cSpell: disable-next-line
+    expect(isNanoID('v1stgxr8_z5jdhI6b-myt')).toBeTruthy()
+  })
+
+  it('should return false for invalid NanoID strings', () => {
+    expect(isNanoID('')).toBeFalsy()
+    expect(isNanoID('short')).toBeFalsy()
+    expect(isNanoID('this-is-not-a-nanoid')).toBeFalsy()
+    expect(isNanoID(123)).toBeFalsy()
+    expect(isNanoID(null)).toBeFalsy()
+  })
+
+  it('should return true for 100 generated NanoID strings', () => {
+    const ONE_HUNDRED_NANO_IDS = Array.from({ length: 100 }, () => nanoid())
+
+    ONE_HUNDRED_NANO_IDS.forEach(id => {
+      expect(isNanoID(id)).toBeTruthy()
+    })
+  })
+})
+
+describe(isUUID, () => {
+  it('should return true for valid UUID strings', () => {
+    expect(isUUID('123e4567-e89b-12d3-a456-426614174000')).toBeTruthy()
+    expect(isUUID('123e4567-e89b-12d3-a456-426614174000')).toBeTruthy()
+  })
+
+  it('should return false for invalid UUID strings', () => {
+    expect(isUUID('')).toBeFalsy()
+    expect(isUUID('not-a-uuid')).toBeFalsy()
+    // too short
+    expect(isUUID('123e4567-e89b-12d3-a456-42661417400')).toBeFalsy()
+    // too long
+    expect(isUUID('123e4567-e89b-12d3-a456-4266141740000')).toBeFalsy()
+    expect(isUUID(123)).toBeFalsy()
+    expect(isUUID(null)).toBeFalsy()
+  })
+
+  it('should return true for 100 generated UUID strings', () => {
+    const ONE_HUNDRED_UUIDS = Array.from({ length: 100 }, () => uuid())
+
+    ONE_HUNDRED_UUIDS.forEach(id => {
+      expect(isUUID(id)).toBeTruthy()
+    })
+  })
 })

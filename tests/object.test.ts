@@ -10,6 +10,7 @@ import {
   omit,
   pick,
   sortObject,
+  objectOmit,
 } from '../src/object'
 
 describe(pick, () => {
@@ -451,7 +452,7 @@ describe(cloneDeep, () => {
   })
 
   it('should handle deeply nested structures without circular references', () => {
-    const original: any = {
+    const original = {
       level1: {
         level2: {
           level3: {
@@ -466,5 +467,47 @@ describe(cloneDeep, () => {
     expect(cloned.level1.level2.level3.value).toBe('deep')
     expect(cloned).not.toBe(original)
     expect(cloned.level1).not.toBe(original.level1)
+  })
+})
+
+describe(objectOmit, () => {
+  it('should omit specified keys from object and return new object', () => {
+    const obj = { a: 1, b: 2, c: 3, d: 4, e: undefined }
+    expect(objectOmit(obj, ['a', 'c'])).toEqual({ b: 2, d: 4, e: undefined })
+    // original object should not be mutated
+    expect(obj).toEqual({ a: 1, b: 2, c: 3, d: 4, e: undefined })
+  })
+
+  it('should return same object when omitting no keys', () => {
+    const obj = { a: 1, b: 2, c: 3 }
+    expect(objectOmit(obj)).toEqual({ a: 1, b: 2, c: 3 })
+    // original object should not be mutated
+    expect(obj).toEqual({ a: 1, b: 2, c: 3 })
+  })
+
+  it('should handle omitting non-existent keys', () => {
+    const obj = { a: 1, b: 2 }
+    // @ts-expect-error test non-existent key
+    expect(objectOmit(obj, ['c'])).toEqual({
+      a: 1,
+      b: 2,
+    })
+    // original object should not be mutated
+    expect(obj).toEqual({ a: 1, b: 2 })
+  })
+
+  it('should option omitUndefined work', () => {
+    const obj = { a: 1, b: undefined, c: 3 }
+    expect(objectOmit(obj, ['b'], { omitUndefined: true })).toEqual({
+      a: 1,
+      c: 3,
+    })
+  })
+
+  it('should handle omitting all keys', () => {
+    const obj = { a: 1, b: 2 }
+    expect(objectOmit(obj, ['a', 'b'])).toEqual({})
+    // original object should not be mutated
+    expect(obj).toEqual({ a: 1, b: 2 })
   })
 })

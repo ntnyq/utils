@@ -95,11 +95,13 @@ export function isMap<Key = unknown, Value = unknown>(
 ): value is Map<Key, Value> {
   return getObjectType(value) === 'Map'
 }
+export function isEmptyMap(value: unknown): value is Map<never, never> {
+  return isMap(value) && value.size === 0
+}
 
 export function isSet<Value = unknown>(value: unknown): value is Set<Value> {
   return getObjectType(value) === 'Set'
 }
-
 export function isEmptySet(value: unknown): value is Set<never> {
   return isSet(value) && value.size === 0
 }
@@ -107,7 +109,6 @@ export function isEmptySet(value: unknown): value is Set<never> {
 export function isObject(value: unknown): value is object {
   return (typeof value === 'object' || isFunction(value)) && !isNull(value)
 }
-
 export function isEmptyObject(value: unknown): value is {} {
   return (
     isObject(value) &&
@@ -116,9 +117,8 @@ export function isEmptyObject(value: unknown): value is {} {
     Object.keys(value).length === 0
   )
 }
-
-export function isEmptyMap(value: unknown): value is Map<never, never> {
-  return isMap(value) && value.size === 0
+export function isRecord(value: unknown): value is Record<string, unknown> {
+  return isObject(value) && !isArray(value)
 }
 
 export function isRegExp(value: unknown): value is RegExp {

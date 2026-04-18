@@ -4,7 +4,7 @@ import {
   isEmptyString,
   isNaN,
   isNull,
-  isObject,
+  isRecord,
   isUndefined,
   isZero,
 } from '../is'
@@ -67,56 +67,71 @@ export interface CleanObjectOptions {
   recursive?: boolean
 }
 
+export type CleanObjectResult<T> = T extends readonly unknown[]
+  ? T
+  : T extends Record<string, unknown>
+    ? {
+        [K in keyof T]?: CleanObjectResult<T[K]>
+      }
+    : T
+
+function shouldCleanValue(
+  value: unknown,
+  options: Required<CleanObjectOptions>,
+): boolean {
+  return (
+    (options.cleanUndefined && isUndefined(value)) ||
+    (options.cleanNull && isNull(value)) ||
+    (options.cleanZero && isZero(value)) ||
+    (options.cleanNaN && isNaN(value)) ||
+    (options.cleanEmptyString && isEmptyString(value)) ||
+    (options.cleanEmptyArray && isEmptyArray(value)) ||
+    (options.cleanEmptyObject && isEmptyObject(value))
+  )
+}
+
 /**
  * clean undefined, null, zero, empty string, empty array, empty object from object
  * @param obj - object to be cleaned
  * @param options - clean options
  * @returns cleaned object
  */
-export function cleanObject<T extends object>(
+export function cleanObject<T extends Record<string, unknown>>(
   obj: T,
   options: CleanObjectOptions = {},
-): T {
-  const {
-    cleanUndefined = true,
-    cleanNull = true,
-    cleanNaN = true,
-    cleanZero = false,
-    cleanEmptyString = false,
-    cleanEmptyArray = false,
-    cleanEmptyObject = false,
-    recursive = true,
-  } = options
+): CleanObjectResult<T> {
+  const resolvedOptions: Required<CleanObjectOptions> = {
+    cleanUndefined: true,
+    cleanNull: true,
+    cleanNaN: true,
+    cleanZero: false,
+    cleanEmptyString: false,
+    cleanEmptyArray: false,
+    cleanEmptyObject: false,
+    recursive: true,
+    ...options,
+  }
 
-  Object.keys(obj).forEach(key => {
-    const v = obj[key as keyof typeof obj]
+  if (!isRecord(obj)) {
+    return {} as CleanObjectResult<T>
+  }
 
-    if (cleanUndefined && isUndefined(v)) {
-      delete obj[key as keyof typeof obj]
-    }
-    if (cleanNull && isNull(v)) {
-      delete obj[key as keyof typeof obj]
-    }
-    if (cleanZero && isZero(v)) {
-      delete obj[key as keyof typeof obj]
-    }
-    if (cleanNaN && isNaN(v)) {
-      delete obj[key as keyof typeof obj]
-    }
-    if (cleanEmptyString && isEmptyString(v)) {
-      delete obj[key as keyof typeof obj]
-    }
-    if (cleanEmptyArray && isEmptyArray(v)) {
-      delete obj[key as keyof typeof obj]
-    }
-    if (cleanEmptyObject && isEmptyObject(v)) {
-      delete obj[key as keyof typeof obj]
-    }
+  const result = obj as Record<string, unknown>
 
-    if (recursive && isObject(v)) {
-      cleanObject(v, options)
-    }
-  })
+  for (const key of Object.keys(result)) {
+    const value = result[key]
 
-  return obj
+    if (shouldCleanValue(value, resolvedOptions)) {
+      delete result[key]
+    } else if (resolvedOptions.recursive && isRecord(value)) {
+      const cleanedValue = cleanObject(value, resolvedOptions)
+      result[key] = cleanedValue
+
+      if (resolvedOptions.cleanEmptyObject && isEmptyObject(cleanedValue)) {
+        delete result[key]
+      }
+    }
+  }
+
+  return obj as CleanObjectResult<T>
 }

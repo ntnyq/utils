@@ -8,6 +8,15 @@ function isASCII(value: string): boolean {
  * Counts graphemes in a given string
  * @param value - A string to count graphemes.
  * @returns The number of graphemes in `value`.
+ * @example
+ *
+ * ```typescript
+ * import { getStringLength } from '@ntnyq/utils'
+ *
+ * const result = getStringLength('👋🌍')
+ * console.log(result) // => 2
+ * ```
+ *
  */
 export function getStringLength(value: string): number {
   if (isASCII(value)) {

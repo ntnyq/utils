@@ -12,6 +12,15 @@ const RE_UUID =
  *
  * @param value - The value to check.
  * @returns true if the value is a NanoID string, otherwise false.
+ * @example
+ *
+ * ```typescript
+ * import { isNanoID } from '@ntnyq/utils'
+ *
+ * const result = isNanoID('V1StGXR8_Z5jdHi6B-myT')
+ * console.log(result) // => true
+ * ```
+ *
  */
 export function isNanoID(value: unknown): boolean {
   if (!isString(value)) {
@@ -26,6 +35,15 @@ export function isNanoID(value: unknown): boolean {
  * @description This function validates UUID strings of versions 1 to 8, ensuring they follow the standard format.
  * @param value - The value to check.
  * @returns true if the value is a UUID string, otherwise false.
+ * @example
+ *
+ * ```typescript
+ * import { isUUID } from '@ntnyq/utils'
+ *
+ * const result = isUUID('123e4567-e89b-12d3-a456-426614174000')
+ * console.log(result) // => true
+ * ```
+ *
  */
 export function isUUID(value: unknown): boolean {
   if (!isString(value)) {

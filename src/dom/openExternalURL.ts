@@ -14,6 +14,14 @@ export interface OpenExternalURLOptions {
  * @param url - URL to open
  * @param options - open options
  * @returns window proxy
+ * @example
+ *
+ * ```typescript
+ * import { openExternalURL } from '@ntnyq/utils'
+ *
+ * openExternalURL('https://github.com', { target: '_blank' })
+ * ```
+ *
  */
 export function openExternalURL(
   url: string | URL,

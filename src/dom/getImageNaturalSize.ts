@@ -44,6 +44,21 @@ export interface GetImageNaturalSizeOptions {
 
 const getImageSizeCache = new Map<string, Promise<ImageSize>>()
 
+/**
+ * Gets the natural width and height of an image source.
+ * @param source - The image URL, Blob, or File to inspect.
+ * @param options - Options for timeout, decoding, cross-origin mode, and caching.
+ * @returns A promise that resolves with the image's natural size.
+ *
+ * @example
+ *
+ * ```typescript
+ * import { getImageNaturalSize } from '@ntnyq/utils'
+ *
+ * const size = await getImageNaturalSize('/logo.png')
+ * console.log(size.width, size.height) // => natural image size
+ * ```
+ */
 export async function getImageNaturalSize(
   source: string | Blob | File,
   options: GetImageNaturalSizeOptions = {},

@@ -32,6 +32,8 @@
   "scripts": {
     "build": "tsdown",
     "dev": "tsdown --watch src",
+    "docs:build": "pnpm -C docs run build",
+    "docs:dev": "pnpm -C docs run dev",
     "format": "oxfmt",
     "format:check": "oxfmt --check",
     "lint": "oxlint",

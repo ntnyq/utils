@@ -95,6 +95,20 @@ function shouldCleanValue(
  * @param obj - object to be cleaned
  * @param options - clean options
  * @returns cleaned object
+ * @example
+ *
+ * ```typescript
+ * import { cleanObject } from '@ntnyq/utils'
+ *
+ * const result = cleanObject({
+ *   name: 'Alice',
+ *   age: undefined,
+ *   meta: { active: true, note: null },
+ * })
+ *
+ * console.log(result) // => { name: 'Alice', meta: { active: true } }
+ * ```
+ *
  */
 export function cleanObject<T extends Record<string, unknown>>(
   obj: T,

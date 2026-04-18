@@ -47,10 +47,19 @@ export interface ToIntegerOptions {
 }
 
 /**
- * Transforms a value to an integer.
- * @param value - The value to convert to an integer.
- * @param options - Options for the conversion.
- * @returns The converted integer.
+ * Converts a value to an integer using the provided conversion options.
+ * @param value - The value to convert.
+ * @param options - Options that control error handling, range limits, and decimal support.
+ * @returns The converted integer result.
+ *
+ * @example
+ *
+ * ```typescript
+ * import { toInteger } from '@ntnyq/utils'
+ *
+ * const result = toInteger('42')
+ * console.log(result) // => 42
+ * ```
  */
 // oxlint-disable-next-line complexity
 export function toInteger(

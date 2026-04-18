@@ -5,6 +5,16 @@ import { isNull, isObject } from '../is'
  * @param value The value to be cloned.
  * @param hash - A WeakMap to track already cloned objects and handle circular references.
  * @returns A deep clone of the input value.
+ * @example
+ *
+ * ```typescript
+ * import { cloneDeep } from '@ntnyq/utils'
+ *
+ * const original = { user: { name: 'Alice' } }
+ * const cloned = cloneDeep(original)
+ * console.log(cloned.user === original.user) // => false
+ * ```
+ *
  */
 export function cloneDeep<T>(
   value: T,

@@ -6,6 +6,15 @@ import { randomNumber } from '../number'
  * @param length - string length
  * @param chars - string chars
  * @returns random string
+ * @example
+ *
+ * ```typescript
+ * import { randomString } from '@ntnyq/utils'
+ *
+ * const result = randomString(8)
+ * console.log(result.length) // => 8
+ * ```
+ *
  */
 export function randomString(
   length = 16,

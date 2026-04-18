@@ -12,6 +12,15 @@ import {
  * Check if value is empty
  * @param value - The value to check
  * @returns True if the value is `null`, `undefined`, empty string, empty array, empty object, empty set, empty map, false otherwise
+ * @example
+ *
+ * ```typescript
+ * import { isAllEmpty } from '@ntnyq/utils'
+ *
+ * const result = isAllEmpty([undefined, null, ''])
+ * console.log(result) // => true
+ * ```
+ *
  */
 export function isAllEmpty(value: unknown): boolean {
   if (

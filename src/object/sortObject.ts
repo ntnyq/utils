@@ -14,7 +14,19 @@ export interface SortObjectOptions {
 }
 
 /**
- * Sort object properties
+ * Sorts an object's keys and optionally sorts nested plain objects recursively.
+ * @param object - The object to sort.
+ * @param options - Sorting options such as recursion and a custom compare function.
+ * @returns A new object with keys sorted according to the provided options.
+ *
+ * @example
+ *
+ * ```typescript
+ * import { sortObject } from '@ntnyq/utils'
+ *
+ * const result = sortObject({ c: 3, a: 1, b: 2 })
+ * console.log(Object.keys(result)) // => ['a', 'b', 'c']
+ * ```
  */
 export function sortObject<T extends Record<string, any>>(
   object: T,

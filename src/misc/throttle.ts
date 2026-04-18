@@ -12,6 +12,15 @@ export interface ThrottleDebounceOptions {
  * @param callback - A function to be throttled
  * @param options - throttle options
  * @returns A throttled function
+ * @example
+ *
+ * ```typescript
+ * import { throttle } from '@ntnyq/utils'
+ *
+ * const onResize = throttle(() => console.log('resized'), 200)
+ * onResize()
+ * ```
+ *
  */
 export function throttle<
   // oxlint-disable-next-line typescript/no-invalid-void-type
@@ -84,6 +93,22 @@ export function throttle<
   return wrapper as T & { cancel: () => void }
 }
 
+/**
+ * Creates a debounced version of a function.
+ * @param delay - The debounce delay in milliseconds.
+ * @param callback - The function to debounce.
+ * @param options - Additional debounce options.
+ * @returns A debounced function with a cancel method.
+ *
+ * @example
+ *
+ * ```typescript
+ * import { debounce } from '@ntnyq/utils'
+ *
+ * const onSearch = debounce(() => console.log('search'), 300)
+ * onSearch()
+ * ```
+ */
 export function debounce<
   // oxlint-disable-next-line typescript/no-invalid-void-type
   T extends ((...args: any[]) => undefined | void) | undefined | null,

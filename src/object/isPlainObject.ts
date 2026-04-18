@@ -1,10 +1,19 @@
 import { isObject } from '../is'
 
 /**
- * Check if a value is a plain object (not an array, Date, RegExp, Map, Set, etc.)
- *
- * @param value - Checked value
+ * Checks whether a value is a plain object rather than a built-in or custom class instance.
+ * @param value - The value to check.
+ * @returns True if the value is a plain object.
  * @copyright {@link https://github.com/sindresorhus/is/blob/main/source/index.ts}
+ *
+ * @example
+ *
+ * ```typescript
+ * import { isPlainObject } from '@ntnyq/utils'
+ *
+ * const result = isPlainObject({ a: 1 })
+ * console.log(result) // => true
+ * ```
  */
 export function isPlainObject<Value = unknown>(
   value: unknown,

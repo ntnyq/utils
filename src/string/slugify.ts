@@ -4,7 +4,18 @@ const rSpecial = /[\s~`!@#$%^&*()\-_+=[\]{}|\\;:"'“”‘’<>,.?/]+/g
 const rCombining = /[\u0300-\u036F]/g
 
 /**
- * Default slugify function
+ * Converts a string into a URL-friendly slug.
+ * @param str - The string to convert.
+ * @returns A normalized, lowercase slug string.
+ *
+ * @example
+ *
+ * ```typescript
+ * import { slugify } from '@ntnyq/utils'
+ *
+ * const result = slugify('Hello, World!')
+ * console.log(result) // => 'hello-world'
+ * ```
  */
 export function slugify(str: string): string {
   return (

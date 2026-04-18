@@ -19,11 +19,13 @@
     "oxfmt",
     "oxlint",
     "pnpm",
+    "RGBA",
     "scule",
     "tsdown",
     "tsgo",
     "unrs",
     "vite",
+    "vitepress",
     "vitest"
   ],
   "cSpell.allowCompoundWords": true

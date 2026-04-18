@@ -13,6 +13,15 @@ export interface RamdomNumberOptions {
  * @param min - min value
  * @param max - max value
  * @returns random integer in range
+ * @example
+ *
+ * ```typescript
+ * import { randomNumber } from '@ntnyq/utils'
+ *
+ * const result = randomNumber(10)
+ * console.log(result) // => a number between 0 and 9
+ * ```
+ *
  */
 export function randomNumber(
   min: number,

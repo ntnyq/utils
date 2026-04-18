@@ -12,6 +12,15 @@ interface JoinOptions {
  * @param array - An array of strings or numbers.
  * @param options - An object of options.
  * @returns A string.
+ * @example
+ *
+ * ```typescript
+ * import { join } from '@ntnyq/utils'
+ *
+ * const result = join(['hello', '', 'world'], { separator: ' ' })
+ * console.log(result) // => 'hello world'
+ * ```
+ *
  */
 export function join(
   array: JoinableValue[],

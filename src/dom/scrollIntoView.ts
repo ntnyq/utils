@@ -6,10 +6,19 @@ interface Options extends ScrollIntoViewOptions {
 }
 
 /**
- * Scroll element into view if it is out of view.
+ * Scrolls an element into view when it is outside the visible area.
+ * @param element - The target element to reveal.
+ * @param options - Scrolling behavior and parent container options.
+ * @returns Nothing.
  *
- * @param element - element to scroll
- * @param options - scroll options
+ * @example
+ *
+ * ```typescript
+ * import { scrollElementIntoView } from '@ntnyq/utils'
+ *
+ * const element = document.getElementById('target')!
+ * scrollElementIntoView(element, { behavior: 'smooth' })
+ * ```
  */
 export function scrollElementIntoView(
   element: HTMLElement,

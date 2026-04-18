@@ -38,6 +38,16 @@ export interface FlatTreeOptions<
  * @param roots - Root nodes of the tree.
  * @param options - Flatten options.
  * @returns Flattened nodes.
+ * @example
+ *
+ * ```typescript
+ * import { flatTree } from '@ntnyq/utils'
+ *
+ * const tree = [{ id: 1, children: [{ id: 2, children: [] }] }]
+ * const result = flatTree(tree)
+ * console.log(result.map(item => item.id)) // => [1, 2]
+ * ```
+ *
  */
 export function flatTree<T extends Record<PropertyKey, any>, K extends keyof T>(
   roots: readonly T[],
@@ -45,10 +55,9 @@ export function flatTree<T extends Record<PropertyKey, any>, K extends keyof T>(
 ): T[]
 
 /**
- * Flatten tree nodes and map each visited node to a custom result.
- *
+ * Flattens tree nodes and maps each visited node to a custom result.
  * @param roots - Root nodes of the tree.
- * @param options - Flatten options with a `map` callback.
+ * @param options - Flatten options with a map callback.
  * @returns Flattened mapped results.
  */
 export function flatTree<
@@ -60,6 +69,12 @@ export function flatTree<
   options: FlatTreeOptions<T, K> & { map: (ctx: any) => R },
 ): R[]
 
+/**
+ * Internal implementation for the flatTree overloads.
+ * @param roots - Root nodes of the tree.
+ * @param options - Flattening options.
+ * @returns A flattened array of original nodes or mapped values.
+ */
 export function flatTree<
   T extends Record<PropertyKey, any>,
   K extends keyof T,

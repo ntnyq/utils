@@ -5,7 +5,7 @@
  * @returns a promise that resolves after ms milliseconds
  *
  * @example
- * ```
+ * ```typescript
  * import { waitFor } from '@ntnyq/utils'
  * await waitFor(3e3)
  * // do somthing after 3 seconds

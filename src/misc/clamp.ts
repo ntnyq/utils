@@ -4,6 +4,15 @@
  * @param min - the minimum value to clamp
  * @param max - the maximum value to clamp
  * @returns the new value
+ * @example
+ *
+ * ```typescript
+ * import { clamp } from '@ntnyq/utils'
+ *
+ * const result = clamp(15, 0, 10)
+ * console.log(result) // => 10
+ * ```
+ *
  */
 export function clamp(
   value: number,

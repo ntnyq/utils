@@ -3,6 +3,15 @@
  * @param array - The array to split
  * @param size - The size of each chunk
  * @returns An array of arrays, where each sub-array has `size` elements from the original array.
+ * @example
+ *
+ * ```typescript
+ * import { chunk } from '@ntnyq/utils'
+ *
+ * const result = chunk([1, 2, 3, 4], 2)
+ * console.log(result) // => [[1, 2], [3, 4]]
+ * ```
+ *
  */
 export function chunk<T>(array: T[], size: number): T[][] {
   const result: T[][] = []

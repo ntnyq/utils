@@ -15,6 +15,22 @@ export interface GetStringSimilarityOptions {
   caseSensitive?: boolean
 }
 
+/**
+ * Calculates the similarity score between two strings.
+ * @param str1 - The first string to compare.
+ * @param str2 - The second string to compare.
+ * @param options - Options for controlling the comparison behavior.
+ * @returns A similarity score between 0 and 1.
+ *
+ * @example
+ *
+ * ```typescript
+ * import { getStringSimilarity } from '@ntnyq/utils'
+ *
+ * const result = getStringSimilarity('hello', 'hallo')
+ * console.log(result > 0.5) // => true
+ * ```
+ */
 export function getStringSimilarity(
   str1: string,
   str2: string,

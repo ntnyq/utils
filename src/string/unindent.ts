@@ -3,18 +3,23 @@ import { isString } from '../is'
 const _RE_FULL_WS = /^\s*$/
 
 /**
- * Remove common leading whitespace from a template string
+ * Removes the common leading whitespace from a template string or plain string.
  * Empty lines at the beginning and end of the template string are also removed.
- * @param input - template string
+ * @param input - The template string or string value to normalize.
+ * @returns The unindented string.
  *
  * @example
  *
  * ```typescript
+ * import { unindent } from '@ntnyq/utils'
+ *
  * const str = unindent`
  *   if (foo) {
  *     bar()
  *   }
  * `
+ *
+ * console.log(str)
  * ```
  */
 export function unindent(input: TemplateStringsArray | string): string {

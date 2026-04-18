@@ -4,6 +4,15 @@ import { isNaN, isNumber, isString } from '../is'
  * Converts `value` to a number.
  * @param value The value to process.
  * @returns Returns the number.
+ * @example
+ *
+ * ```typescript
+ * import { toNumber } from '@ntnyq/utils'
+ *
+ * const result = toNumber('3.14')
+ * console.log(result) // => 3.14
+ * ```
+ *
  */
 export function toNumber(value: string | number): number {
   if (!isString(value) && !isNumber(value)) {

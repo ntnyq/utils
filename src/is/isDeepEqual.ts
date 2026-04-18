@@ -1,7 +1,19 @@
 import { getObjectType, isArray, isObject } from './core'
 
 /**
- * check if two values are deeply equal
+ * Checks whether two values are deeply equal.
+ * @param value1 - The first value to compare.
+ * @param value2 - The second value to compare.
+ * @returns True if the two values are deeply equal, or false otherwise.
+ *
+ * @example
+ *
+ * ```typescript
+ * import { isDeepEqual } from '@ntnyq/utils'
+ *
+ * const result = isDeepEqual({ a: 1 }, { a: 1 })
+ * console.log(result) // => true
+ * ```
  */
 export function isDeepEqual(value1: any, value2: any): boolean {
   const type1 = getObjectType(value1)

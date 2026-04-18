@@ -67,14 +67,6 @@ export interface CleanObjectOptions {
   recursive?: boolean
 }
 
-export type CleanObjectResult<T> = T extends readonly unknown[]
-  ? T
-  : T extends Record<string, unknown>
-    ? {
-        [K in keyof T]?: CleanObjectResult<T[K]>
-      }
-    : T
-
 function shouldCleanValue(
   value: unknown,
   options: Required<CleanObjectOptions>,
@@ -110,10 +102,10 @@ function shouldCleanValue(
  * ```
  *
  */
-export function cleanObject<T extends Record<string, unknown>>(
-  obj: T,
+export function cleanObject<T extends object>(
+  obj?: T | undefined | null,
   options: CleanObjectOptions = {},
-): CleanObjectResult<T> {
+): T {
   const resolvedOptions: Required<CleanObjectOptions> = {
     cleanUndefined: true,
     cleanNull: true,
@@ -127,7 +119,7 @@ export function cleanObject<T extends Record<string, unknown>>(
   }
 
   if (!isRecord(obj)) {
-    return {} as CleanObjectResult<T>
+    return {} as T
   }
 
   const result = obj as Record<string, unknown>
@@ -147,5 +139,5 @@ export function cleanObject<T extends Record<string, unknown>>(
     }
   }
 
-  return obj as CleanObjectResult<T>
+  return obj as T
 }

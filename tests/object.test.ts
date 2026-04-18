@@ -178,11 +178,9 @@ describe(isPlainObject, () => {
 
 describe(cleanObject, () => {
   it('should return empty object when input is null', () => {
-    // @ts-expect-error
     expect(cleanObject(null)).toEqual({})
   })
   it('should return empty object when input is undefined', () => {
-    // @ts-expect-error
     expect(cleanObject(undefined)).toEqual({})
   })
 

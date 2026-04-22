@@ -1,6 +1,12 @@
 // oxlint-disable oxc/approx-constant
 import { describe, expect, it } from 'vitest'
-import { randomNumber, round, toInteger, toNumber } from '../src/number'
+import {
+  randomNumber,
+  round,
+  toFixed,
+  toInteger,
+  toNumber,
+} from '../src/number'
 
 describe(randomNumber, () => {
   it('should return a number within the specified range', () => {
@@ -264,6 +270,45 @@ describe(toNumber, () => {
     expect(() => toNumber('abc')).toThrow(TypeError)
     expect(() => toNumber('abc')).toThrow('Expected a valid number, got NaN')
     expect(() => toNumber('')).toThrow(TypeError)
+  })
+})
+
+describe(toFixed, () => {
+  it('should format with default options (2 digits, omit trailing zeros)', () => {
+    expect(toFixed(123.456)).toBe('123.46')
+    expect(toFixed(123.4)).toBe('123.4')
+    expect(toFixed(123)).toBe('123')
+    expect(toFixed(1.005)).toBe('1')
+  })
+
+  it('should format with custom digits', () => {
+    expect(toFixed(123.456, { digits: 1 })).toBe('123.5')
+    expect(toFixed(123.456, { digits: 3 })).toBe('123.456')
+    expect(toFixed(123.456, { digits: 0 })).toBe('123')
+  })
+
+  it('should keep trailing zeros when omitTrailingZeros is false', () => {
+    expect(toFixed(123.4, { omitTrailingZeros: false })).toBe('123.40')
+    expect(toFixed(123.4, { digits: 3, omitTrailingZeros: false })).toBe(
+      '123.400',
+    )
+    expect(toFixed(123, { omitTrailingZeros: false })).toBe('123.00')
+  })
+
+  it('should handle negative numbers', () => {
+    expect(toFixed(-123.456)).toBe('-123.46')
+    expect(toFixed(-123.4)).toBe('-123.4')
+    expect(toFixed(-123)).toBe('-123')
+  })
+
+  it('should handle zero', () => {
+    expect(toFixed(0)).toBe('0')
+    expect(toFixed(0, { omitTrailingZeros: false })).toBe('0.00')
+  })
+
+  it('should handle integer inputs', () => {
+    expect(toFixed(42)).toBe('42')
+    expect(toFixed(42, { omitTrailingZeros: false })).toBe('42.00')
   })
 })
 

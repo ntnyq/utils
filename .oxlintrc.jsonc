@@ -58,6 +58,7 @@
     "typescript/no-dynamic-delete": "off",
     "typescript/consistent-indexed-object-style": "off",
     "typescript/consistent-type-imports": "off",
+    "typescript/explicit-member-accessibility": "off",
     "typescript/explicit-function-return-type": "off",
     "typescript/explicit-module-boundary-types": "off",
     "unicorn/filename-case": "off",

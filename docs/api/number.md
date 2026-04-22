@@ -7,12 +7,13 @@ outline: deep
 
 Helpers for random numbers, rounding, and number coercion.
 
-This section documents 4 exported methods from the number module.
+This section documents 5 exported methods from the number module.
 
 ## Methods
 
 - [randomNumber](#randomnumber)
 - [round](#round)
+- [toFixed](#tofixed)
 - [toInteger](#tointeger)
 - [toNumber](#tonumber)
 
@@ -62,6 +63,36 @@ import { round } from '@ntnyq/utils'
 
 round(1.2345) //=> 1
 round(1.2345, 2) //=> 1.23
+```
+
+---
+
+## toFixed
+
+Formats a number using fixed-point notation.
+
+### Parameters
+
+- **num**: The number to format.
+- **options**: An object containing formatting options.
+  - **digits**: The number of digits after the decimal point. Default is `2`.
+  - **omitTrailingZeros**: Whether to omit trailing zeros after the decimal point. Default is `true`.
+
+### Returns
+
+A string representing the formatted number.
+
+### Example
+
+```ts
+import { toFixed } from '@ntnyq/utils'
+
+toFixed(123.456) // => '123.46'
+toFixed(123.456, { digits: 1 }) // => '123.5'
+toFixed(123.4, { omitTrailingZeros: false }) // => '123.40'
+toFixed(123.4, { digits: 3, omitTrailingZeros: false }) // => '123.400'
+toFixed(123.4, { digits: 3 }) // => '123.4'
+toFixed(123.0) // => '123'
 ```
 
 ---

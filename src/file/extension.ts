@@ -14,7 +14,24 @@
  *
  */
 export function removeFileExtension(filename: string): string {
-  return filename.replace(/\.[^/.]+$/, '')
+  const lastSlashIndex = Math.max(
+    filename.lastIndexOf('/'),
+    filename.lastIndexOf('\\'),
+  )
+  const basenameIndex = lastSlashIndex + 1
+  const basename = filename.slice(basenameIndex)
+
+  if (!basename || /^\.+$/u.test(basename)) {
+    return filename
+  }
+
+  // Dotfiles like `.env` are treated as filenames without extension.
+  if (basename.startsWith('.') && !basename.slice(1).includes('.')) {
+    return filename
+  }
+
+  const nextBasename = basename.replace(/\.[^/.]*$/u, '')
+  return filename.slice(0, basenameIndex) + nextBasename
 }
 
 /**
@@ -35,6 +52,6 @@ export function getFileExtension(filePath?: string): string | undefined {
   if (!filePath) {
     return undefined
   }
-  const match = filePath.match(/\.([^.]+)$/)
+  const match = filePath.match(/\.([^.]+)$/u)
   return match?.[1]
 }

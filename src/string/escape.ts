@@ -15,6 +15,6 @@
  */
 export function escapeStringRegexp(value: string): string {
   return value
-    .replaceAll(/[|\\{}()[\]^$+*?.]/g, '\\$&')
+    .replaceAll(/[|\\{}()[\]^$+*?.]/gu, '\\$&')
     .replaceAll('-', '\\x2d')
 }

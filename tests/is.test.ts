@@ -53,7 +53,7 @@ describe(getObjectType, () => {
     expect(getObjectType(new Map())).toBe('Map')
     expect(getObjectType(new Set())).toBe('Set')
     expect(getObjectType(new Date())).toBe('Date')
-    expect(getObjectType(/test/)).toBe('RegExp')
+    expect(getObjectType(/test/u)).toBe('RegExp')
     expect(getObjectType(new Error('error'))).toBe('Error')
     expect(getObjectType(Promise.resolve())).toBe('Promise')
     expect(getObjectType(null)).toBe('Null')
@@ -352,8 +352,7 @@ describe(isTruthy, () => {
 describe(isFunction, () => {
   it('should return true for functions', () => {
     expect(isFunction(() => {})).toBeTruthy()
-    // oxlint-disable-next-line func-names
-    expect(isFunction(function () {})).toBeTruthy()
+    expect(isFunction(Math.max)).toBeTruthy()
     expect(isFunction(async () => {})).toBeTruthy()
 
     expect(isFunction(class {})).toBeTruthy()
@@ -547,9 +546,9 @@ describe(isAllEmpty, () => {
 
 describe(isRegExp, () => {
   it('should return true for RegExp instances', () => {
-    expect(isRegExp(/test/)).toBeTruthy()
+    expect(isRegExp(/test/u)).toBeTruthy()
     // eslint-disable-next-line prefer-regex-literals
-    expect(isRegExp(new RegExp('test'))).toBeTruthy()
+    expect(isRegExp(new RegExp('test', 'u'))).toBeTruthy()
   })
 
   it('should return false for non-RegExp values', () => {

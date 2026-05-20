@@ -1,7 +1,7 @@
 import { describe, expectTypeOf, it } from 'vitest'
 import type { ElementOf } from '../src/types/utils'
 
-describe('Type ElementOf', () => {
+describe('type ElementOf', () => {
   it('should infer element type for array', () => {
     expectTypeOf<ElementOf<[1, 2, 3]>>().toEqualTypeOf<1 | 2 | 3>()
     expectTypeOf<ElementOf<string[]>>().toEqualTypeOf<string>()

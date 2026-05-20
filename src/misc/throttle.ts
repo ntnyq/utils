@@ -59,7 +59,7 @@ export function throttle<
     }
 
     // oxlint-disable-next-line unicorn/no-this-assignment, typescript/no-this-alias
-    const _this = this
+    const that = this
     const now = Date.now()
     const elapsed = now - lastExec
 
@@ -69,7 +69,7 @@ export function throttle<
 
     function exec(cur?: number) {
       lastExec = cur || Date.now()
-      callback.apply(_this, args)
+      callback.apply(that, args)
     }
 
     if (isDebounce && !timeoutId) {

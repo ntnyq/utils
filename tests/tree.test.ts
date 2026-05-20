@@ -18,7 +18,7 @@ describe(flatTree, () => {
 
     const result = flatTree(tree)
 
-    expect(result.map(node => node.id)).toEqual([
+    expect(result.map(node => node.id)).toStrictEqual([
       'a',
       'a-1',
       'a-2',
@@ -28,7 +28,7 @@ describe(flatTree, () => {
   })
 
   it('should return empty array for empty roots', () => {
-    expect(flatTree([])).toEqual([])
+    expect(flatTree([])).toStrictEqual([])
   })
 
   it('should not include nodes when includeSelf is false', () => {
@@ -41,7 +41,7 @@ describe(flatTree, () => {
 
     const result = flatTree(tree, { includeSelf: false })
 
-    expect(result).toEqual([])
+    expect(result).toStrictEqual([])
   })
 
   it('should support custom children key', () => {
@@ -59,7 +59,12 @@ describe(flatTree, () => {
 
     const result = flatTree(tree, { childrenKey: 'nodes' })
 
-    expect(result.map(node => node.id)).toEqual(['x', 'x-1', 'x-2', 'x-2-1'])
+    expect(result.map(node => node.id)).toStrictEqual([
+      'x',
+      'x-1',
+      'x-2',
+      'x-2-1',
+    ])
   })
 
   it('should ignore non-array children', () => {
@@ -71,7 +76,7 @@ describe(flatTree, () => {
 
     const result = flatTree(tree)
 
-    expect(result.map(node => node.id)).toEqual(['a', 'b', 'c'])
+    expect(result.map(node => node.id)).toStrictEqual(['a', 'b', 'c'])
   })
 
   it('should map each node with complete traversal context', () => {
@@ -95,7 +100,7 @@ describe(flatTree, () => {
       }),
     })
 
-    expect(result).toEqual([
+    expect(result).toStrictEqual([
       {
         id: 'root',
         parentId: null,
@@ -141,7 +146,7 @@ describe(flatTree, () => {
       map,
     })
 
-    expect(result).toEqual([])
+    expect(result).toStrictEqual([])
     expect(map).not.toHaveBeenCalled()
   })
 })

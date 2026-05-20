@@ -153,14 +153,14 @@ describe(toInteger, () => {
   })
 
   it('should handle null and undefined', () => {
-    expect(toInteger(null)).toBe(null) // 'useDefault' returns original value
-    expect(toInteger(undefined)).toBe(undefined)
-    expect(toInteger(null, { onError: 'useDefault', defaultValue: 42 })).toBe(
-      null,
-    )
+    expect(toInteger(null)).toBeNull() // 'useDefault' returns original value
+    expect(toInteger(undefined)).toBeUndefined()
+    expect(
+      toInteger(null, { onError: 'useDefault', defaultValue: 42 }),
+    ).toBeNull()
     expect(
       toInteger(undefined, { onError: 'useDefault', defaultValue: 42 }),
-    ).toBe(undefined)
+    ).toBeUndefined()
   })
 
   it('should handle NaN', () => {
@@ -177,9 +177,11 @@ describe(toInteger, () => {
   })
 
   it('should handle onError option', () => {
-    expect(() => toInteger('', { onError: 'throwError' })).toThrow()
-    expect(() => toInteger(null, { onError: 'throwError' })).toThrow()
-    expect(() => toInteger('abc', { onError: 'throwError' })).toThrow()
+    expect(() => toInteger('', { onError: 'throwError' })).toThrow(
+      /empty string/u,
+    )
+    expect(() => toInteger(null, { onError: 'throwError' })).toThrow(/null/u)
+    expect(() => toInteger('abc', { onError: 'throwError' })).toThrow(/nan/iu)
 
     expect(toInteger('', { onError: 'returnOriginal' })).toBe('')
     expect(toInteger(null, { onError: 'returnOriginal' })).toBe(0) // returns defaultValue when onError is 'returnOriginal'
@@ -197,7 +199,9 @@ describe(toInteger, () => {
     expect(
       toInteger(5, { min: 10, outOfRange: 'useDefault', defaultValue: 99 }),
     ).toBe(99)
-    expect(() => toInteger(5, { min: 10, outOfRange: 'throwError' })).toThrow()
+    expect(() => toInteger(5, { min: 10, outOfRange: 'throwError' })).toThrow(
+      /out of range/u,
+    )
   })
 
   it('should handle boolean values', () => {
@@ -221,7 +225,7 @@ describe(toInteger, () => {
   it('should handle decimal restriction', () => {
     expect(() =>
       toInteger(3.14, { allowDecimal: false, onError: 'throwError' }),
-    ).toThrow()
+    ).toThrow(/decimal values are not allowed/iu)
     expect(
       toInteger(3.14, { allowDecimal: false, onError: 'returnOriginal' }),
     ).toBe(3.14)

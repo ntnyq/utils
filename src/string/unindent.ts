@@ -1,6 +1,6 @@
 import { isString } from '../is'
 
-const _RE_FULL_WS = /^\s*$/
+const RE_FULL_WS = /^\s*$/u
 
 /**
  * Removes the common leading whitespace from a template string or plain string.
@@ -24,13 +24,13 @@ const _RE_FULL_WS = /^\s*$/
  */
 export function unindent(input: TemplateStringsArray | string): string {
   const lines = (isString(input) ? input : input[0])?.split('\n') ?? []
-  const whitespaceLines = lines.map(line => _RE_FULL_WS.test(line))
+  const whitespaceLines = lines.map(line => RE_FULL_WS.test(line))
 
   const commonIndent = lines.reduce((min, line, idx) => {
     if (whitespaceLines[idx]) {
       return min
     }
-    const indent = line.match(/^\s*/)?.[0].length
+    const indent = line.match(/^\s*/u)?.[0].length
     return indent === undefined ? min : Math.min(min, indent)
   }, Number.POSITIVE_INFINITY)
 

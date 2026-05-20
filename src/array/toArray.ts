@@ -15,6 +15,6 @@ import type { Arrayable, Nullable } from '../types'
  *
  */
 export function toArray<T>(array?: Nullable<Arrayable<T>>): T[] {
-  array = array ?? []
+  array ??= []
   return Array.isArray(array) ? array : [array]
 }

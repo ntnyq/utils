@@ -1,7 +1,7 @@
 // eslint-disable-next-line no-control-regex
-const rControl = /[\u0000-\u001F]/g
-const rSpecial = /[\s~`!@#$%^&*()\-_+=[\]{}|\\;:"'“”‘’<>,.?/]+/g
-const rCombining = /[\u0300-\u036F]/g
+const rControl = /[\u0000-\u001F]/gu
+const rSpecial = /[\s~`!@#$%^&*()\-_+=[\]{}|\\;:"'“”‘’<>,.?/]+/gu
+const rCombining = /[\u0300-\u036F]/gu
 
 /**
  * Converts a string into a URL-friendly slug.
@@ -28,11 +28,11 @@ export function slugify(str: string): string {
       // Replace special characters
       .replace(rSpecial, '-')
       // Remove continuos separators
-      .replaceAll(/-{2,}/g, '-')
+      .replaceAll(/-{2,}/gu, '-')
       // Remove prefixing and trailing separators
-      .replaceAll(/^-+|-+$/g, '')
+      .replaceAll(/^-+|-+$/gu, '')
       // ensure it doesn't start with a number (#121)
-      .replace(/^(\d)/, '_$1')
+      .replace(/^(\d)/u, '_$1')
       // lowercase
       .toLowerCase()
   )

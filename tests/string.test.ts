@@ -167,19 +167,19 @@ describe(createPadString, () => {
 
 describe(randomString, () => {
   it('should generate string of specified length', () => {
-    expect(randomString(10).length).toBe(10)
-    expect(randomString(20).length).toBe(20)
-    expect(randomString(1).length).toBe(1)
+    expect(randomString(10)).toHaveLength(10)
+    expect(randomString(20)).toHaveLength(20)
+    expect(randomString(1)).toHaveLength(1)
   })
 
   it('should use default length of 16', () => {
-    expect(randomString().length).toBe(16)
+    expect(randomString()).toHaveLength(16)
   })
 
   it('should use custom charset', () => {
     const result = randomString(10, 'ABC')
-    expect(result.length).toBe(10)
-    expect(/^[ABC]+$/.test(result)).toBeTruthy()
+    expect(result).toHaveLength(10)
+    expect(/^[ABC]+$/u.test(result)).toBeTruthy()
   })
 
   it('should generate different strings', () => {
@@ -190,7 +190,7 @@ describe(randomString, () => {
 
   it('should use default charset containing alphanumeric', () => {
     const result = randomString(100)
-    expect(/[0-9a-z]/i.test(result)).toBeTruthy()
+    expect(/[0-9a-z]/iu.test(result)).toBeTruthy()
   })
 })
 

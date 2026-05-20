@@ -16,57 +16,57 @@ import {
 describe(pick, () => {
   it('should pick specified keys from object', () => {
     const obj = { a: 1, b: 2, c: 3, d: 4 }
-    expect(pick(obj, ['a', 'c'])).toEqual({ a: 1, c: 3 })
-    expect(pick(obj, ['b', 'd'])).toEqual({ b: 2, d: 4 })
+    expect(pick(obj, ['a', 'c'])).toStrictEqual({ a: 1, c: 3 })
+    expect(pick(obj, ['b', 'd'])).toStrictEqual({ b: 2, d: 4 })
   })
 
   it('should return empty object when picking empty array', () => {
     const obj = { a: 1, b: 2, c: 3, d: 4 }
-    expect(pick(obj, [])).toEqual({})
+    expect(pick(obj, [])).toStrictEqual({})
   })
 
   it('should ignore non-existent keys', () => {
     const obj = { a: 1, b: 2, c: 3, d: 4 }
-    expect(pick(obj, ['a', 'e' as keyof typeof obj])).toEqual({ a: 1 })
+    expect(pick(obj, ['a', 'e' as keyof typeof obj])).toStrictEqual({ a: 1 })
   })
 
   it('should pick from nested object', () => {
     const nested = { x: 1, y: { z: 2 }, w: 'test' }
-    expect(pick(nested, ['x', 'y'])).toEqual({ x: 1, y: { z: 2 } })
+    expect(pick(nested, ['x', 'y'])).toStrictEqual({ x: 1, y: { z: 2 } })
   })
 
   it('should handle picking all keys', () => {
     const obj = { a: 1, b: 2 }
-    expect(pick(obj, ['a', 'b'])).toEqual({ a: 1, b: 2 })
+    expect(pick(obj, ['a', 'b'])).toStrictEqual({ a: 1, b: 2 })
   })
 })
 
 describe(omit, () => {
   it('should omit specified keys from object', () => {
     const obj = { a: 1, b: 2, c: 3, d: 4 }
-    expect(omit(obj, 'a', 'c')).toEqual({ b: 2, d: 4 })
+    expect(omit(obj, 'a', 'c')).toStrictEqual({ b: 2, d: 4 })
   })
 
   it('should return same object when omitting no keys', () => {
     const obj = { a: 1, b: 2, c: 3 }
-    expect(omit(obj)).toEqual({ a: 1, b: 2, c: 3 })
+    expect(omit(obj)).toStrictEqual({ a: 1, b: 2, c: 3 })
   })
 
   it('should handle omitting non-existent keys', () => {
     const obj = { a: 1, b: 2 }
-    expect(omit(obj, 'c' as keyof typeof obj)).toEqual({ a: 1, b: 2 })
+    expect(omit(obj, 'c' as keyof typeof obj)).toStrictEqual({ a: 1, b: 2 })
   })
 
   it('should mutate original object', () => {
     const obj = { a: 1, b: 2, c: 3 }
     const result = omit(obj, 'b')
     expect(result).toBe(obj)
-    expect(obj).toEqual({ a: 1, c: 3 })
+    expect(obj).toStrictEqual({ a: 1, c: 3 })
   })
 
   it('should handle omitting all keys', () => {
     const obj = { a: 1, b: 2 }
-    expect(omit(obj, 'a', 'b')).toEqual({})
+    expect(omit(obj, 'a', 'b')).toStrictEqual({})
   })
 })
 
@@ -150,7 +150,7 @@ describe(isPlainObject, () => {
 
   it('should return false for built-in objects', () => {
     expect(isPlainObject(new Date())).toBeFalsy()
-    expect(isPlainObject(/regex/)).toBeFalsy()
+    expect(isPlainObject(/regex/u)).toBeFalsy()
     expect(isPlainObject(new Map())).toBeFalsy()
     expect(isPlainObject(new Set())).toBeFalsy()
     expect(isPlainObject(new Error('error'))).toBeFalsy()
@@ -171,77 +171,85 @@ describe(isPlainObject, () => {
 
   it('should return false for functions', () => {
     expect(isPlainObject(() => {})).toBeFalsy()
-    // oxlint-disable-next-line func-names
-    expect(isPlainObject(function () {})).toBeFalsy()
+    expect(isPlainObject(Math.max)).toBeFalsy()
   })
 })
 
 describe(cleanObject, () => {
   it('should return empty object when input is null', () => {
-    expect(cleanObject(null)).toEqual({})
+    expect(cleanObject(null)).toStrictEqual({})
   })
   it('should return empty object when input is undefined', () => {
-    expect(cleanObject(undefined)).toEqual({})
+    expect(cleanObject(undefined)).toStrictEqual({})
   })
 
   it('should clean undefined by default', () => {
     const obj = { a: 1, b: undefined, c: 3 }
-    expect(cleanObject(obj)).toEqual({ a: 1, c: 3 })
+    expect(cleanObject(obj)).toStrictEqual({ a: 1, c: 3 })
   })
 
   it('should clean null by default', () => {
     const obj = { a: 1, b: null, c: 3 }
-    expect(cleanObject(obj)).toEqual({ a: 1, c: 3 })
+    expect(cleanObject(obj)).toStrictEqual({ a: 1, c: 3 })
   })
 
   it('should not clean NaN by default (bug: cleanNaN uses isZero instead of isNaN)', () => {
     const obj = { a: 1, b: Number.NaN, c: 3 }
-    expect(cleanObject(obj)).toEqual({ a: 1, c: 3 })
+    expect(cleanObject(obj)).toStrictEqual({ a: 1, c: 3 })
   })
 
   it('should clean zero by default (bug: cleanNaN removes zero values)', () => {
     const obj = { a: 1, b: 0, c: 3 }
-    expect(cleanObject(obj)).toEqual({ a: 1, b: 0, c: 3 })
+    expect(cleanObject(obj)).toStrictEqual({ a: 1, b: 0, c: 3 })
   })
 
   it('should clean zero when cleanZero is true', () => {
     const obj = { a: 1, b: 0, c: 3 }
-    expect(cleanObject(obj, { cleanZero: true })).toEqual({ a: 1, c: 3 })
+    expect(cleanObject(obj, { cleanZero: true })).toStrictEqual({ a: 1, c: 3 })
   })
 
   it('should not clean empty string by default', () => {
     const obj = { a: 1, b: '', c: 3 }
-    expect(cleanObject(obj)).toEqual({ a: 1, b: '', c: 3 })
+    expect(cleanObject(obj)).toStrictEqual({ a: 1, b: '', c: 3 })
   })
 
   it('should clean empty string when cleanEmptyString is true', () => {
     const obj = { a: 1, b: '', c: 3 }
-    expect(cleanObject(obj, { cleanEmptyString: true })).toEqual({ a: 1, c: 3 })
+    expect(cleanObject(obj, { cleanEmptyString: true })).toStrictEqual({
+      a: 1,
+      c: 3,
+    })
   })
 
   it('should not clean empty array by default', () => {
     const obj = { a: 1, b: [], c: 3 }
-    expect(cleanObject(obj)).toEqual({ a: 1, b: [], c: 3 })
+    expect(cleanObject(obj)).toStrictEqual({ a: 1, b: [], c: 3 })
   })
 
   it('should clean empty array when cleanEmptyArray is true', () => {
     const obj = { a: 1, b: [], c: 3 }
-    expect(cleanObject(obj, { cleanEmptyArray: true })).toEqual({ a: 1, c: 3 })
+    expect(cleanObject(obj, { cleanEmptyArray: true })).toStrictEqual({
+      a: 1,
+      c: 3,
+    })
   })
 
   it('should not clean empty object by default', () => {
     const obj = { a: 1, b: {}, c: 3 }
-    expect(cleanObject(obj)).toEqual({ a: 1, b: {}, c: 3 })
+    expect(cleanObject(obj)).toStrictEqual({ a: 1, b: {}, c: 3 })
   })
 
   it('should clean empty object when cleanEmptyObject is true', () => {
     const obj = { a: 1, b: {}, c: 3 }
-    expect(cleanObject(obj, { cleanEmptyObject: true })).toEqual({ a: 1, c: 3 })
+    expect(cleanObject(obj, { cleanEmptyObject: true })).toStrictEqual({
+      a: 1,
+      c: 3,
+    })
   })
 
   it('should not clean undefined when cleanUndefined is false', () => {
     const obj = { a: 1, b: undefined, c: 3 }
-    expect(cleanObject(obj, { cleanUndefined: false })).toEqual({
+    expect(cleanObject(obj, { cleanUndefined: false })).toStrictEqual({
       a: 1,
       b: undefined,
       c: 3,
@@ -250,12 +258,12 @@ describe(cleanObject, () => {
 
   it('should recursively clean nested objects by default', () => {
     const obj = { a: 1, b: { c: null, d: 2 }, e: 3 }
-    expect(cleanObject(obj)).toEqual({ a: 1, b: { d: 2 }, e: 3 })
+    expect(cleanObject(obj)).toStrictEqual({ a: 1, b: { d: 2 }, e: 3 })
   })
 
   it('should not recursively clean when recursive is false', () => {
     const obj = { a: 1, b: { c: null, d: 2 }, e: 3 }
-    expect(cleanObject(obj, { recursive: false })).toEqual({
+    expect(cleanObject(obj, { recursive: false })).toStrictEqual({
       a: 1,
       b: { c: null, d: 2 },
       e: 3,
@@ -270,7 +278,7 @@ describe(cleanObject, () => {
         cleanZero: true,
         cleanEmptyArray: true,
       }),
-    ).toEqual({ a: 1 })
+    ).toStrictEqual({ a: 1 })
   })
 
   it('should mutate original object', () => {
@@ -284,13 +292,13 @@ describe(sortObject, () => {
   it('should sort object keys alphabetically', () => {
     const obj = { c: 3, a: 1, b: 2 }
     const result = sortObject(obj)
-    expect(Object.keys(result)).toEqual(['a', 'b', 'c'])
-    expect(result).toEqual({ a: 1, b: 2, c: 3 })
+    expect(Object.keys(result)).toStrictEqual(['a', 'b', 'c'])
+    expect(result).toStrictEqual({ a: 1, b: 2, c: 3 })
   })
 
   it('should handle empty object', () => {
     const obj = {}
-    expect(sortObject(obj)).toEqual({})
+    expect(sortObject(obj)).toStrictEqual({})
   })
 
   it('should sort using custom compare function', () => {
@@ -298,21 +306,21 @@ describe(sortObject, () => {
     const result = sortObject(obj, {
       compareFn: (a, b) => b.localeCompare(a), // reverse order
     })
-    expect(Object.keys(result)).toEqual(['c', 'b', 'a'])
+    expect(Object.keys(result)).toStrictEqual(['c', 'b', 'a'])
   })
 
   it('should not sort nested objects by default', () => {
     const obj = { c: 3, a: 1, nested: { z: 3, x: 1, y: 2 } }
     const result = sortObject(obj)
-    expect(Object.keys(result)).toEqual(['a', 'c', 'nested'])
-    expect(Object.keys(result.nested)).toEqual(['z', 'x', 'y'])
+    expect(Object.keys(result)).toStrictEqual(['a', 'c', 'nested'])
+    expect(Object.keys(result.nested)).toStrictEqual(['z', 'x', 'y'])
   })
 
   it('should sort nested objects when deep is true', () => {
     const obj = { c: 3, a: 1, nested: { z: 3, x: 1, y: 2 } }
     const result = sortObject(obj, { deep: true })
-    expect(Object.keys(result)).toEqual(['a', 'c', 'nested'])
-    expect(Object.keys(result.nested)).toEqual(['x', 'y', 'z'])
+    expect(Object.keys(result)).toStrictEqual(['a', 'c', 'nested'])
+    expect(Object.keys(result.nested)).toStrictEqual(['x', 'y', 'z'])
   })
 
   it('should handle deeply nested objects', () => {
@@ -327,15 +335,15 @@ describe(sortObject, () => {
       },
     }
     const result = sortObject(obj, { deep: true })
-    expect(Object.keys(result)).toEqual(['a', 'z'])
-    expect(Object.keys(result.a)).toEqual(['b', 'c'])
-    expect(Object.keys(result.a.b)).toEqual(['x', 'y'])
+    expect(Object.keys(result)).toStrictEqual(['a', 'z'])
+    expect(Object.keys(result.a)).toStrictEqual(['b', 'c'])
+    expect(Object.keys(result.a.b)).toStrictEqual(['x', 'y'])
   })
 
   it('should not modify arrays in values', () => {
     const obj = { c: [3, 2, 1], a: 1, b: 2 }
     const result = sortObject(obj)
-    expect(result.c).toEqual([3, 2, 1])
+    expect(result.c).toStrictEqual([3, 2, 1])
   })
 
   it('should preserve property descriptors', () => {
@@ -363,7 +371,7 @@ describe(cloneDeep, () => {
     }
     const cloned = cloneDeep(original)
 
-    expect(cloned).toEqual(original)
+    expect(cloned).toStrictEqual(original)
     expect(cloned).not.toBe(original)
     expect(cloned.address).not.toBe(original.address)
   })
@@ -375,7 +383,7 @@ describe(cloneDeep, () => {
     }
     const cloned = cloneDeep(original)
 
-    expect(cloned).toEqual(original)
+    expect(cloned).toStrictEqual(original)
     expect(cloned.items).not.toBe(original.items)
     expect(cloned.items[2]).not.toBe(original.items[2])
     expect(cloned.nested.arr).not.toBe(original.nested.arr)
@@ -388,13 +396,13 @@ describe(cloneDeep, () => {
   })
 
   it('should handle null and undefined', () => {
-    expect(cloneDeep(null)).toBe(null)
-    expect(cloneDeep(undefined)).toBe(undefined)
+    expect(cloneDeep(null)).toBeNull()
+    expect(cloneDeep(undefined)).toBeUndefined()
   })
 
   it('should handle empty objects and arrays', () => {
-    expect(cloneDeep({})).toEqual({})
-    expect(cloneDeep([])).toEqual([])
+    expect(cloneDeep({})).toStrictEqual({})
+    expect(cloneDeep([])).toStrictEqual([])
     expect(cloneDeep({})).not.toBe({})
     expect(cloneDeep([])).not.toBe([])
   })
@@ -423,7 +431,7 @@ describe(cloneDeep, () => {
     }
     const cloned = cloneDeep(original)
 
-    expect(cloned).toEqual(original)
+    expect(cloned).toStrictEqual(original)
     expect(cloned.users).not.toBe(original.users)
     expect(cloned.users[0]).not.toBe(original.users[0])
     expect(cloned.users[0]?.tags).not.toBe(original.users[0]?.tags)
@@ -444,7 +452,7 @@ describe(cloneDeep, () => {
     const original = [{ id: 1 }, { id: 2 }, { id: 3 }]
     const cloned = cloneDeep(original)
 
-    expect(cloned).toEqual(original)
+    expect(cloned).toStrictEqual(original)
     expect(cloned).not.toBe(original)
     expect(cloned[0]).not.toBe(original[0])
   })
@@ -455,7 +463,7 @@ describe(cloneDeep, () => {
 
     expect(Array.isArray(cloned)).toBeTruthy()
     expect(Array.isArray(original)).toBeTruthy()
-    expect(cloned).toEqual(original)
+    expect(cloned).toStrictEqual(original)
   })
 
   it('should handle deeply nested structures without circular references', () => {
@@ -480,32 +488,36 @@ describe(cloneDeep, () => {
 describe(objectOmit, () => {
   it('should omit specified keys from object and return new object', () => {
     const obj = { a: 1, b: 2, c: 3, d: 4, e: undefined }
-    expect(objectOmit(obj, ['a', 'c'])).toEqual({ b: 2, d: 4, e: undefined })
+    expect(objectOmit(obj, ['a', 'c'])).toStrictEqual({
+      b: 2,
+      d: 4,
+      e: undefined,
+    })
     // original object should not be mutated
-    expect(obj).toEqual({ a: 1, b: 2, c: 3, d: 4, e: undefined })
+    expect(obj).toStrictEqual({ a: 1, b: 2, c: 3, d: 4, e: undefined })
   })
 
   it('should return same object when omitting no keys', () => {
     const obj = { a: 1, b: 2, c: 3 }
-    expect(objectOmit(obj)).toEqual({ a: 1, b: 2, c: 3 })
+    expect(objectOmit(obj)).toStrictEqual({ a: 1, b: 2, c: 3 })
     // original object should not be mutated
-    expect(obj).toEqual({ a: 1, b: 2, c: 3 })
+    expect(obj).toStrictEqual({ a: 1, b: 2, c: 3 })
   })
 
   it('should handle omitting non-existent keys', () => {
     const obj = { a: 1, b: 2 }
     // @ts-expect-error test non-existent key
-    expect(objectOmit(obj, ['c'])).toEqual({
+    expect(objectOmit(obj, ['c'])).toStrictEqual({
       a: 1,
       b: 2,
     })
     // original object should not be mutated
-    expect(obj).toEqual({ a: 1, b: 2 })
+    expect(obj).toStrictEqual({ a: 1, b: 2 })
   })
 
   it('should option omitUndefined work', () => {
     const obj = { a: 1, b: undefined, c: 3 }
-    expect(objectOmit(obj, ['b'], { omitUndefined: true })).toEqual({
+    expect(objectOmit(obj, ['b'], { omitUndefined: true })).toStrictEqual({
       a: 1,
       c: 3,
     })
@@ -513,8 +525,8 @@ describe(objectOmit, () => {
 
   it('should handle omitting all keys', () => {
     const obj = { a: 1, b: 2 }
-    expect(objectOmit(obj, ['a', 'b'])).toEqual({})
+    expect(objectOmit(obj, ['a', 'b'])).toStrictEqual({})
     // original object should not be mutated
-    expect(obj).toEqual({ a: 1, b: 2 })
+    expect(obj).toStrictEqual({ a: 1, b: 2 })
   })
 })

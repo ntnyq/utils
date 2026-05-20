@@ -1,5 +1,7 @@
 packages:
   - docs
 
-onlyBuiltDependencies:
-  - esbuild
+allowBuilds:
+  esbuild: true
+
+minimumReleaseAge: 0

@@ -31,5 +31,5 @@ export interface ToFixedOptions {
 export function toFixed(num: number, options: ToFixedOptions = {}): string {
   const { digits = 2, omitTrailingZeros = true } = options
   const fixed = (Math.round(num * 10 ** digits) / 10 ** digits).toFixed(digits)
-  return omitTrailingZeros ? fixed.replace(/\.?0+$/, '') : fixed
+  return omitTrailingZeros ? fixed.replace(/\.?0+$/u, '') : fixed
 }

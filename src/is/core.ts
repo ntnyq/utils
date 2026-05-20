@@ -163,7 +163,7 @@ export function isNonEmptyString(value: unknown): value is NonEmptyString {
  * ```
  */
 export function isWhitespaceString(value: unknown): value is Whitespace {
-  return isString(value) && /^\s*$/.test(value)
+  return isString(value) && /^\s*$/u.test(value)
 }
 
 /**

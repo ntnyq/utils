@@ -19,7 +19,7 @@ import {
 } from '../src/misc'
 
 describe('storage unit conversion', () => {
-  describe('Constants STORAGE_UNITS', () => {
+  describe('constants STORAGE_UNITS', () => {
     it('should have correct values', () => {
       expect(STORAGE_UNITS).toMatchInlineSnapshot(`
         {
@@ -79,7 +79,7 @@ describe('storage unit conversion', () => {
 })
 
 describe('time unit conversion', () => {
-  describe('Constants TIME_UNITS', () => {
+  describe('constants TIME_UNITS', () => {
     it('should have correct values', () => {
       expect(TIME_UNITS).toMatchInlineSnapshot(`
         {

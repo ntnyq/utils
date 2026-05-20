@@ -1,11 +1,11 @@
 import { isString } from './core'
 
 // Regular expression for validating NanoID strings (21 characters, URL-friendly)
-const RE_NANO_ID = /^[0-9a-zA-Z_-]{21}$/
+const RE_NANO_ID = /^[0-9a-zA-Z_-]{21}$/u
 
 // Regular expression for validating UUID v1 to v8
 const RE_UUID =
-  /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i
+  /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/iu
 
 /**
  * Check if the value is a NanoID string.

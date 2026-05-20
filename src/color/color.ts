@@ -1,6 +1,6 @@
 import { createPadString } from '../string'
 
-const RE_VALID_HEX_COLOR = /^#(?:[0-9a-f]{6}|[0-9a-f]{3})$/i
+const RE_VALID_HEX_COLOR = /^#(?:[0-9a-f]{6}|[0-9a-f]{3})$/iu
 
 function validateHexColor(hex: string) {
   if (hex.length !== 4 && hex.length !== 7) {
@@ -13,7 +13,7 @@ function validateHexColor(hex: string) {
 }
 
 function normalizeHexString(hex: string) {
-  return hex.length === 6 ? hex : hex.replaceAll(/./g, '$&$&')
+  return hex.length === 6 ? hex : hex.replaceAll(/./gu, '$&$&')
 }
 
 export class Color {
@@ -48,7 +48,7 @@ export class Color {
     }
 
     const [red, green, blue] = normalizeHexString(hex.slice(1))
-      .match(/.{2}/g)
+      .match(/.{2}/gu)
       ?.map(value => Number.parseInt(value, 16)) ?? [0, 0, 0]
     return new Color(red, green, blue)
   }

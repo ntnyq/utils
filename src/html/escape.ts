@@ -6,7 +6,7 @@ const htmlEscapeMap = {
   '"': '&quot;',
 }
 
-const htmlEscapeRegexp = /[&<>'"]/g
+const htmlEscapeRegexp = /[&<>'"]/gu
 
 /**
  * Escapes HTML special characters in a string.
@@ -43,7 +43,7 @@ const htmlUnescapeMap = {
 }
 
 // eslint-disable-next-line regexp/no-unused-capturing-group
-const htmlUnescapeRegexp = /&(amp|#38|lt|#60|gt|#62|apos|#39|quot|#34);/g
+const htmlUnescapeRegexp = /&(amp|#38|lt|#60|gt|#62|apos|#39|quot|#34);/gu
 
 /**
  * Unescapes HTML entities in a string.

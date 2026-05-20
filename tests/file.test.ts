@@ -25,12 +25,12 @@ describe(removeFileExtension, () => {
     expect(removeFileExtension('Makefile')).toBe('Makefile')
   })
 
-  // it.todo('should handle files starting with dots', () => {
-  //   expect(removeFileExtension('.gitignore')).toBe('.gitignore')
-  //   expect(removeFileExtension('.env')).toBe('.env')
-  //   expect(removeFileExtension('.bashrc')).toBe('.bashrc')
-  //   expect(removeFileExtension('.hidden.txt')).toBe('.hidden')
-  // })
+  it('should handle files starting with dots', () => {
+    expect(removeFileExtension('.gitignore')).toBe('.gitignore')
+    expect(removeFileExtension('.env')).toBe('.env')
+    expect(removeFileExtension('.bashrc')).toBe('.bashrc')
+    expect(removeFileExtension('.hidden.txt')).toBe('.hidden')
+  })
 
   it('should handle files with dots in directory path', () => {
     expect(removeFileExtension('path/to/file.txt')).toBe('path/to/file')
@@ -48,11 +48,11 @@ describe(removeFileExtension, () => {
     expect(removeFileExtension('...')).toBe('...')
   })
 
-  // it.todo('should handle files ending with dots', () => {
-  //   expect(removeFileExtension('file.')).toBe('file')
-  //   expect(removeFileExtension('document..')).toBe('document.')
-  //   expect(removeFileExtension('name...')).toBe('name..')
-  // })
+  it('should handle files ending with dots', () => {
+    expect(removeFileExtension('file.')).toBe('file')
+    expect(removeFileExtension('document..')).toBe('document.')
+    expect(removeFileExtension('name...')).toBe('name..')
+  })
 
   it('should handle long extensions', () => {
     expect(removeFileExtension('file.backup')).toBe('file')

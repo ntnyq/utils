@@ -6,7 +6,7 @@ describe(noop, () => {
     expect(noop()).toBeUndefined()
   })
 
-  it('NOOP should be alias of noop', () => {
+  it('nOOP should be alias of noop', () => {
     expect(NOOP).toBe(noop)
     const spy = vi.fn()
     // Ensure it can be used interchangeably

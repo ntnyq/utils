@@ -18,24 +18,24 @@ import {
 
 describe(toArray, () => {
   it('should convert undefined to empty array', () => {
-    expect(toArray()).toEqual([])
-    expect(toArray(undefined)).toEqual([])
+    expect(toArray()).toStrictEqual([])
+    expect(toArray(undefined)).toStrictEqual([])
   })
 
   it('should convert null to empty array', () => {
-    expect(toArray(null)).toEqual([])
+    expect(toArray(null)).toStrictEqual([])
   })
 
   it('should keep arrays as-is', () => {
-    expect(toArray([1, 2, 3])).toEqual([1, 2, 3])
-    expect(toArray([])).toEqual([])
+    expect(toArray([1, 2, 3])).toStrictEqual([1, 2, 3])
+    expect(toArray([])).toStrictEqual([])
   })
 
   it('should wrap non-array values in array', () => {
-    expect(toArray(1)).toEqual([1])
-    expect(toArray('hello')).toEqual(['hello'])
-    expect(toArray(true)).toEqual([true])
-    expect(toArray({ a: 1 })).toEqual([{ a: 1 }])
+    expect(toArray(1)).toStrictEqual([1])
+    expect(toArray('hello')).toStrictEqual(['hello'])
+    expect(toArray(true)).toStrictEqual([true])
+    expect(toArray({ a: 1 })).toStrictEqual([{ a: 1 }])
   })
 })
 
@@ -58,22 +58,25 @@ describe(intersect, () => {
   })
 
   it('should return common elements', () => {
-    expect(intersect([1, 2, 3, 4], [3, 4, 5, 6])).toEqual([3, 4])
-    expect(intersect(['a', 'b', 'c'], ['b', 'c', 'd'])).toEqual(['b', 'c'])
+    expect(intersect([1, 2, 3, 4], [3, 4, 5, 6])).toStrictEqual([3, 4])
+    expect(intersect(['a', 'b', 'c'], ['b', 'c', 'd'])).toStrictEqual([
+      'b',
+      'c',
+    ])
   })
 
   it('should return empty array when no intersection', () => {
-    expect(intersect([1, 2, 3], [4, 5, 6])).toEqual([])
-    expect(intersect([], [1, 2, 3])).toEqual([])
-    expect(intersect([1, 2, 3], [])).toEqual([])
+    expect(intersect([1, 2, 3], [4, 5, 6])).toStrictEqual([])
+    expect(intersect([], [1, 2, 3])).toStrictEqual([])
+    expect(intersect([1, 2, 3], [])).toStrictEqual([])
   })
 
   it('should handle empty arrays', () => {
-    expect(intersect([], [])).toEqual([])
+    expect(intersect([], [])).toStrictEqual([])
   })
 
   it('should handle duplicate elements', () => {
-    expect(intersect([1, 1, 2, 2], [1, 2, 3])).toEqual([1, 1, 2, 2])
+    expect(intersect([1, 1, 2, 2], [1, 2, 3])).toStrictEqual([1, 1, 2, 2])
   })
 })
 
@@ -123,8 +126,8 @@ describe(last, () => {
 
 describe(chunk, () => {
   it('should split array into chunks', () => {
-    expect(chunk([1, 2, 3, 4, 5], 2)).toEqual([[1, 2], [3, 4], [5]])
-    expect(chunk([1, 2, 3, 4, 5, 6], 2)).toEqual([
+    expect(chunk([1, 2, 3, 4, 5], 2)).toStrictEqual([[1, 2], [3, 4], [5]])
+    expect(chunk([1, 2, 3, 4, 5, 6], 2)).toStrictEqual([
       [1, 2],
       [3, 4],
       [5, 6],
@@ -132,23 +135,23 @@ describe(chunk, () => {
   })
 
   it('should handle chunk size equal to array length', () => {
-    expect(chunk([1, 2, 3], 3)).toEqual([[1, 2, 3]])
+    expect(chunk([1, 2, 3], 3)).toStrictEqual([[1, 2, 3]])
   })
 
   it('should handle chunk size larger than array length', () => {
-    expect(chunk([1, 2, 3], 5)).toEqual([[1, 2, 3]])
+    expect(chunk([1, 2, 3], 5)).toStrictEqual([[1, 2, 3]])
   })
 
   it('should handle empty array', () => {
-    expect(chunk([], 2)).toEqual([])
+    expect(chunk([], 2)).toStrictEqual([])
   })
 
   it('should handle chunk size of 1', () => {
-    expect(chunk([1, 2, 3], 1)).toEqual([[1], [2], [3]])
+    expect(chunk([1, 2, 3], 1)).toStrictEqual([[1], [2], [3]])
   })
 
   it('should work with different types', () => {
-    expect(chunk(['a', 'b', 'c', 'd'], 2)).toEqual([
+    expect(chunk(['a', 'b', 'c', 'd'], 2)).toStrictEqual([
       ['a', 'b'],
       ['c', 'd'],
     ])
@@ -157,24 +160,24 @@ describe(chunk, () => {
 
 describe(unique, () => {
   it('should remove duplicate primitives', () => {
-    expect(unique([1, 2, 2, 3, 3, 3])).toEqual([1, 2, 3])
-    expect(unique(['a', 'b', 'b', 'c'])).toEqual(['a', 'b', 'c'])
+    expect(unique([1, 2, 2, 3, 3, 3])).toStrictEqual([1, 2, 3])
+    expect(unique(['a', 'b', 'b', 'c'])).toStrictEqual(['a', 'b', 'c'])
   })
 
   it('should handle empty array', () => {
-    expect(unique([])).toEqual([])
+    expect(unique([])).toStrictEqual([])
   })
 
   it('should handle array with no duplicates', () => {
-    expect(unique([1, 2, 3])).toEqual([1, 2, 3])
+    expect(unique([1, 2, 3])).toStrictEqual([1, 2, 3])
   })
 
   it('should keep first occurrence order', () => {
-    expect(unique([3, 1, 2, 3, 1])).toEqual([3, 1, 2])
+    expect(unique([3, 1, 2, 3, 1])).toStrictEqual([3, 1, 2])
   })
 
   it('should handle mixed types', () => {
-    expect(unique([1, '1', 2, '2', 1, '1'])).toEqual([1, '1', 2, '2'])
+    expect(unique([1, '1', 2, '2', 1, '1'])).toStrictEqual([1, '1', 2, '2'])
   })
 })
 
@@ -182,58 +185,64 @@ describe(uniqueBy, () => {
   it('should remove duplicates by custom equality function', () => {
     const arr = [{ id: 1 }, { id: 2 }, { id: 1 }, { id: 3 }]
     const result = uniqueBy(arr, (a, b) => a.id === b.id)
-    expect(result).toEqual([{ id: 1 }, { id: 2 }, { id: 3 }])
+    expect(result).toStrictEqual([{ id: 1 }, { id: 2 }, { id: 3 }])
   })
 
   it('should handle case-insensitive string comparison', () => {
     const arr = ['Apple', 'banana', 'APPLE', 'Banana', 'cherry']
     const result = uniqueBy(arr, (a, b) => a.toLowerCase() === b.toLowerCase())
-    expect(result).toEqual(['Apple', 'banana', 'cherry'])
+    expect(result).toStrictEqual(['Apple', 'banana', 'cherry'])
   })
 
   it('should handle empty array', () => {
-    expect(uniqueBy([], () => true)).toEqual([])
+    expect(uniqueBy([], () => true)).toStrictEqual([])
   })
 
   it('should keep all items if equalFn always returns false', () => {
     const arr = [1, 2, 3]
-    expect(uniqueBy(arr, () => false)).toEqual([1, 2, 3])
+    expect(uniqueBy(arr, () => false)).toStrictEqual([1, 2, 3])
   })
 
   it('should keep only first item if equalFn always returns true', () => {
     const arr = [1, 2, 3]
-    expect(uniqueBy(arr, () => true)).toEqual([1])
+    expect(uniqueBy(arr, () => true)).toStrictEqual([1])
   })
 })
 
 describe(filterFalsy, () => {
   it('should filter out falsy values', () => {
     const mixedArray = [0, 1, false, 2, '', 3, null, 4, undefined, 5]
-    expect(filterFalsy(mixedArray)).toEqual([1, 2, 3, 4, 5])
+    expect(filterFalsy(mixedArray)).toStrictEqual([1, 2, 3, 4, 5])
   })
 
   it('should handle array with all falsy values', () => {
     const falsyArray = [0, false, '', null, undefined]
-    expect(filterFalsy(falsyArray)).toEqual([])
+    expect(filterFalsy(falsyArray)).toStrictEqual([])
   })
 
   it('should handle array with all truthy values', () => {
     const truthyArray = [1, 'hello', true, 2, 'world']
-    expect(filterFalsy(truthyArray)).toEqual([1, 'hello', true, 2, 'world'])
+    expect(filterFalsy(truthyArray)).toStrictEqual([
+      1,
+      'hello',
+      true,
+      2,
+      'world',
+    ])
   })
 
   it('should handle empty array', () => {
-    expect(filterFalsy([])).toEqual([])
+    expect(filterFalsy([])).toStrictEqual([])
   })
 
   it('should keep objects and arrays even though they are truthy', () => {
     const arr = [0, { a: 1 }, [], 1, null]
-    expect(filterFalsy(arr)).toEqual([{ a: 1 }, [], 1])
+    expect(filterFalsy(arr)).toStrictEqual([{ a: 1 }, [], 1])
   })
 
   it('should handle NaN as falsy', () => {
     const arr = [1, Number.NaN, 2, 3]
-    expect(filterFalsy(arr)).toEqual([1, 2, 3])
+    expect(filterFalsy(arr)).toStrictEqual([1, 2, 3])
   })
 })
 
@@ -245,7 +254,7 @@ describe(groupBy, () => {
       { name: 'Charlie', age: 30 },
     ]
     const result = groupBy(data, item => String(item.age))
-    expect(result).toEqual({
+    expect(result).toStrictEqual({
       '25': [{ name: 'Bob', age: 25 }],
       '30': [
         { name: 'Alice', age: 30 },
@@ -261,7 +270,7 @@ describe(groupBy, () => {
       { name: 'Charlie', age: 30 },
     ]
     const result = groupBy(data, item => item.name.length)
-    expect(result).toEqual({
+    expect(result).toStrictEqual({
       '3': [{ name: 'Bob', age: 25 }],
       '5': [{ name: 'Alice', age: 30 }],
       '7': [{ name: 'Charlie', age: 30 }],
@@ -269,7 +278,7 @@ describe(groupBy, () => {
   })
 
   it('should handle empty array', () => {
-    expect(groupBy([], 'key')).toEqual({})
+    expect(groupBy([], 'key')).toStrictEqual({})
   })
 
   it('should group by function with different types', () => {
@@ -279,7 +288,7 @@ describe(groupBy, () => {
       { id: 3, type: 'a' },
     ]
     const result = groupBy(data, item => item.type)
-    expect(result).toEqual({
+    expect(result).toStrictEqual({
       a: [
         { id: 1, type: 'a' },
         { id: 3, type: 'a' },
@@ -291,7 +300,7 @@ describe(groupBy, () => {
   it('should work with primitive array using function', () => {
     const data = ['apple', 'banana', 'apricot', 'blueberry']
     const result = groupBy(data, item => item[0]!)
-    expect(result).toEqual({
+    expect(result).toStrictEqual({
       a: ['apple', 'apricot'],
       b: ['banana', 'blueberry'],
     })
@@ -333,31 +342,31 @@ describe(remove, () => {
   it('should remove item from array and return true', () => {
     const arr = [1, 2, 3, 4]
     expect(remove(arr, 3)).toBeTruthy()
-    expect(arr).toEqual([1, 2, 4])
+    expect(arr).toStrictEqual([1, 2, 4])
   })
 
   it('should remove only first occurrence', () => {
     const arr = [1, 2, 3, 2, 4]
     expect(remove(arr, 2)).toBeTruthy()
-    expect(arr).toEqual([1, 3, 2, 4])
+    expect(arr).toStrictEqual([1, 3, 2, 4])
   })
 
   it('should return false when item not found', () => {
     const arr = [1, 2, 3]
     expect(remove(arr, 5)).toBeFalsy()
-    expect(arr).toEqual([1, 2, 3])
+    expect(arr).toStrictEqual([1, 2, 3])
   })
 
   it('should handle empty array', () => {
     const arr: number[] = []
     expect(remove(arr, 1)).toBeFalsy()
-    expect(arr).toEqual([])
+    expect(arr).toStrictEqual([])
   })
 
   it('should work with different types', () => {
     const arr = ['a', 'b', 'c']
     expect(remove(arr, 'b')).toBeTruthy()
-    expect(arr).toEqual(['a', 'c'])
+    expect(arr).toStrictEqual(['a', 'c'])
   })
 
   it('should return false for null array', () => {
@@ -370,21 +379,21 @@ describe(shuffle, () => {
   it('should return array with same length', () => {
     const arr = [1, 2, 3, 4, 5]
     const shuffled = shuffle([...arr])
-    expect(shuffled.length).toBe(arr.length)
+    expect(shuffled).toHaveLength(arr.length)
   })
 
   it('should contain all original elements', () => {
     const arr = [1, 2, 3, 4, 5]
     const shuffled = shuffle([...arr])
-    expect(shuffled.toSorted()).toEqual(arr)
+    expect(shuffled.toSorted()).toStrictEqual(arr)
   })
 
   it('should handle empty array', () => {
-    expect(shuffle([])).toEqual([])
+    expect(shuffle([])).toStrictEqual([])
   })
 
   it('should handle single element array', () => {
-    expect(shuffle([1])).toEqual([1])
+    expect(shuffle([1])).toStrictEqual([1])
   })
 
   it('should mutate original array', () => {
@@ -396,7 +405,7 @@ describe(shuffle, () => {
   it('should handle array with duplicate values', () => {
     const arr = [1, 1, 2, 2, 3]
     const shuffled = shuffle([...arr])
-    expect(shuffled.toSorted()).toEqual([1, 1, 2, 2, 3])
+    expect(shuffled.toSorted()).toStrictEqual([1, 1, 2, 2, 3])
   })
 })
 
@@ -407,57 +416,64 @@ describe(flattenArrayable, () => {
         [1, 2],
         [3, 4],
       ]),
-    ).toEqual([1, 2, 3, 4])
-    expect(flattenArrayable([1, [2, 3], 4])).toEqual([1, 2, 3, 4])
+    ).toStrictEqual([1, 2, 3, 4])
+    expect(flattenArrayable([1, [2, 3], 4])).toStrictEqual([1, 2, 3, 4])
   })
 
   it('should handle undefined and null', () => {
-    expect(flattenArrayable(undefined)).toEqual([])
-    expect(flattenArrayable(null)).toEqual([])
+    expect(flattenArrayable(undefined)).toStrictEqual([])
+    expect(flattenArrayable(null)).toStrictEqual([])
   })
 
   it('should convert non-array to array and flatten', () => {
-    expect(flattenArrayable(1)).toEqual([1])
-    expect(flattenArrayable([1])).toEqual([1])
+    expect(flattenArrayable(1)).toStrictEqual([1])
+    expect(flattenArrayable([1])).toStrictEqual([1])
   })
 
   it('should handle empty arrays', () => {
-    expect(flattenArrayable([])).toEqual([])
-    expect(flattenArrayable([[]])).toEqual([])
+    expect(flattenArrayable([])).toStrictEqual([])
+    expect(flattenArrayable([[]])).toStrictEqual([])
   })
 
   it('should handle mixed nested structures', () => {
-    expect(flattenArrayable([[1], 2, [3, [4]]])).toEqual([1, 2, 3, [4]])
+    expect(flattenArrayable([[1], 2, [3, [4]]])).toStrictEqual([1, 2, 3, [4]])
   })
 })
 
 describe(mergeArrayable, () => {
   it('should merge multiple arrays', () => {
-    expect(mergeArrayable([1, 2], [3, 4], [5, 6])).toEqual([1, 2, 3, 4, 5, 6])
+    expect(mergeArrayable([1, 2], [3, 4], [5, 6])).toStrictEqual([
+      1, 2, 3, 4, 5, 6,
+    ])
   })
 
   it('should handle single values', () => {
-    expect(mergeArrayable(1, 2, 3)).toEqual([1, 2, 3])
+    expect(mergeArrayable(1, 2, 3)).toStrictEqual([1, 2, 3])
   })
 
   it('should handle mixed arrays and single values', () => {
-    expect(mergeArrayable([1, 2], 3, [4, 5])).toEqual([1, 2, 3, 4, 5])
+    expect(mergeArrayable([1, 2], 3, [4, 5])).toStrictEqual([1, 2, 3, 4, 5])
   })
 
   it('should handle null and undefined', () => {
-    expect(mergeArrayable(null, undefined, [1, 2])).toEqual([1, 2])
-    expect(mergeArrayable([1], null, [2])).toEqual([1, 2])
+    expect(mergeArrayable(null, undefined, [1, 2])).toStrictEqual([1, 2])
+    expect(mergeArrayable([1], null, [2])).toStrictEqual([1, 2])
   })
 
   it('should handle empty arrays', () => {
-    expect(mergeArrayable([], [], [])).toEqual([])
+    expect(mergeArrayable([], [], [])).toStrictEqual([])
   })
 
   it('should handle no arguments', () => {
-    expect(mergeArrayable()).toEqual([])
+    expect(mergeArrayable()).toStrictEqual([])
   })
 
   it('should work with different types', () => {
-    expect(mergeArrayable(['a'], 'b', ['c', 'd'])).toEqual(['a', 'b', 'c', 'd'])
+    expect(mergeArrayable(['a'], 'b', ['c', 'd'])).toStrictEqual([
+      'a',
+      'b',
+      'c',
+      'd',
+    ])
   })
 })

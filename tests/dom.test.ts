@@ -83,7 +83,7 @@ describe(openExternalURL, () => {
     const proxy = openExternalURL('https://example.com')
     const spy = window.open as ReturnType<typeof vi.fn>
     expect(spy).toHaveBeenCalledWith('https://example.com', '_blank')
-    expect(proxy).toEqual({ closed: false })
+    expect(proxy).toStrictEqual({ closed: false })
   })
 
   it('should open URL with custom target', () => {
@@ -140,7 +140,7 @@ describe(getImageNaturalSize, () => {
     instance.naturalHeight = 360
     instance.onload?.()
 
-    await expect(promise).resolves.toEqual({ width: 640, height: 360 })
+    await expect(promise).resolves.toStrictEqual({ width: 640, height: 360 })
     expect(instance.decoding).toBe('async')
     expect(instance.crossOrigin).toBe('anonymous')
   })
@@ -172,11 +172,11 @@ describe(getImageNaturalSize, () => {
     const promise = getImageNaturalSize('https://example.com/timeout.png', {
       timeout: 10,
     })
-    const rejection = expect(promise).rejects.toThrow('within 10ms')
 
-    await vi.advanceTimersByTimeAsync(11)
-
-    await rejection
+    await Promise.all([
+      expect(promise).rejects.toThrow('within 10ms'),
+      vi.advanceTimersByTimeAsync(11),
+    ])
   })
 
   it('should cache promise for identical string source by default', async () => {
@@ -190,8 +190,8 @@ describe(getImageNaturalSize, () => {
     instance.naturalHeight = 200
     instance.onload?.()
 
-    await expect(first).resolves.toEqual({ width: 300, height: 200 })
-    await expect(second).resolves.toEqual({ width: 300, height: 200 })
+    await expect(first).resolves.toStrictEqual({ width: 300, height: 200 })
+    await expect(second).resolves.toStrictEqual({ width: 300, height: 200 })
   })
 
   it('should skip cache when cache option is false', async () => {
@@ -213,8 +213,8 @@ describe(getImageNaturalSize, () => {
     MockImage.instances[1]!.naturalHeight = 40
     MockImage.instances[1]!.onload?.()
 
-    await expect(first).resolves.toEqual({ width: 10, height: 20 })
-    await expect(second).resolves.toEqual({ width: 30, height: 40 })
+    await expect(first).resolves.toStrictEqual({ width: 10, height: 20 })
+    await expect(second).resolves.toStrictEqual({ width: 30, height: 40 })
   })
 
   it('should create and revoke object URL for blob source', async () => {
@@ -229,7 +229,7 @@ describe(getImageNaturalSize, () => {
     instance.naturalHeight = 80
     instance.onload?.()
 
-    await expect(promise).resolves.toEqual({ width: 120, height: 80 })
+    await expect(promise).resolves.toStrictEqual({ width: 120, height: 80 })
     expect(URL.revokeObjectURL).toHaveBeenCalledWith('blob:mock-url')
   })
 
@@ -246,6 +246,6 @@ describe(getImageNaturalSize, () => {
     instance.naturalHeight = 66
     instance.onload?.()
 
-    await expect(promise).resolves.toEqual({ width: 88, height: 66 })
+    await expect(promise).resolves.toStrictEqual({ width: 88, height: 66 })
   })
 })

@@ -32,7 +32,7 @@ export function slugify(str: string): string {
       // Remove prefixing and trailing separators
       .replaceAll(/^-+|-+$/gu, '')
       // ensure it doesn't start with a number (#121)
-      .replace(/^(\d)/u, '_$1')
+      .replace(/^\d/u, digit => `_${digit}`)
       // lowercase
       .toLowerCase()
   )

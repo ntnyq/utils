@@ -28,7 +28,7 @@ export function scrollElementIntoView(
   const { parent = body, ...scrollIntoViewOptions } = options
 
   if (parent === body) {
-    parent.scrollIntoView(scrollIntoViewOptions)
+    element.scrollIntoView(scrollIntoViewOptions)
     return
   }
 
@@ -40,6 +40,6 @@ export function scrollElementIntoView(
     : elementRect.top < parentRect.top || elementRect.bottom > parentRect.bottom
 
   if (isOutOfView) {
-    parent.scrollIntoView(scrollIntoViewOptions)
+    element.scrollIntoView(scrollIntoViewOptions)
   }
 }

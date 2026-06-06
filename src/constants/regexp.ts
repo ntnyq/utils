@@ -3,7 +3,7 @@
  *
  * 匹配 \<!-- 或 /* 开头的注释，直到 --> 或 *\/ 结尾
  */
-export const RE_COMMENTS: RegExp = /(?:<!--|\/\*)([\s\S]*?)(?:-->|\*\/)/gu
+export const RE_COMMENTS: RegExp = /(?:<!--|\/\*)(?:[\s\S]*?)(?:-->|\*\/)/gu
 
 /**
  * JavaScript line comment

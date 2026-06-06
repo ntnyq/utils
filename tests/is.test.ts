@@ -36,6 +36,7 @@ import {
   isNumbericString,
   isObject,
   isPromise,
+  isRecord,
   isRegExp,
   isSet,
   isString,
@@ -766,6 +767,29 @@ describe(isDeepEqual, () => {
     }
     expect(isDeepEqual(obj1, obj2)).toBeTruthy()
     expect(isDeepEqual(obj1, obj3)).toBeFalsy()
+  })
+
+  it('should compare symbol keys', () => {
+    const sym = Symbol('token')
+
+    expect(isDeepEqual({ [sym]: 1 }, { [sym]: 1 })).toBeTruthy()
+    expect(isDeepEqual({ [sym]: 1 }, { [sym]: 2 })).toBeFalsy()
+    expect(isDeepEqual({ [sym]: 1 }, {})).toBeFalsy()
+  })
+})
+
+describe(isRecord, () => {
+  it('should return true for plain objects and functions', () => {
+    expect(isRecord({})).toBeTruthy()
+    expect(isRecord({ a: 1 })).toBeTruthy()
+    expect(isRecord(() => {})).toBeTruthy()
+  })
+
+  it('should return false for arrays and nullish values', () => {
+    expect(isRecord([])).toBeFalsy()
+    expect(isRecord(null)).toBeFalsy()
+    // @ts-expect-error testing undefined
+    expect(isRecord()).toBeFalsy()
   })
 })
 

@@ -1,7 +1,12 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
-import { isElementVisibleInViewport, openExternalURL } from '../src/dom'
+import {
+  isElementVisibleInViewport,
+  openExternalURL,
+  scrollElementIntoView,
+} from '../src/dom'
 import { getImageNaturalSize } from '../src/dom/getImageNaturalSize'
 
+const originalDocument = globalThis.document
 const originalWindow = globalThis.window
 const originalImage = globalThis.Image
 const originalCreateObjectURL = URL.createObjectURL
@@ -35,6 +40,10 @@ class MockImage {
 }
 
 describe(isElementVisibleInViewport, () => {
+  afterEach(() => {
+    globalThis.window = originalWindow
+  })
+
   it('should detect visibility within viewport', () => {
     const element = {
       getBoundingClientRect: () => ({
@@ -66,6 +75,123 @@ describe(isElementVisibleInViewport, () => {
       innerHeight: 100,
     } as unknown as Window
     expect(isElementVisibleInViewport(element, targetWindow)).toBeFalsy()
+  })
+
+  it('should return false when no window is available', () => {
+    // @ts-expect-error testing non-browser environment
+    globalThis.window = undefined
+
+    const element = {
+      getBoundingClientRect: () => ({
+        top: 10,
+        left: 10,
+        bottom: 50,
+        right: 50,
+      }),
+    } as unknown as HTMLElement
+
+    expect(isElementVisibleInViewport(element)).toBeFalsy()
+  })
+})
+
+describe(scrollElementIntoView, () => {
+  afterEach(() => {
+    globalThis.document = originalDocument
+  })
+
+  it('should scroll target element when parent is body', () => {
+    const body = {
+      scrollIntoView: vi.fn(),
+    } as unknown as HTMLElement
+    // @ts-expect-error assign
+    globalThis.document = { body }
+
+    const element = {
+      scrollIntoView: vi.fn(),
+      getBoundingClientRect: () => ({
+        top: 0,
+        left: 0,
+        bottom: 20,
+        right: 20,
+      }),
+    } as unknown as HTMLElement
+
+    scrollElementIntoView(element, { behavior: 'smooth' })
+
+    expect(element.scrollIntoView).toHaveBeenCalledWith({
+      behavior: 'smooth',
+    })
+    expect(body.scrollIntoView).not.toHaveBeenCalled()
+  })
+
+  it('should scroll target element when it is outside custom parent view', () => {
+    const body = {
+      scrollIntoView: vi.fn(),
+    } as unknown as HTMLElement
+    // @ts-expect-error assign
+    globalThis.document = { body }
+
+    const parent = {
+      scrollIntoView: vi.fn(),
+      scrollWidth: 100,
+      scrollHeight: 200,
+      getBoundingClientRect: () => ({
+        top: 0,
+        left: 0,
+        bottom: 100,
+        right: 100,
+      }),
+    } as unknown as HTMLElement
+
+    const element = {
+      scrollIntoView: vi.fn(),
+      getBoundingClientRect: () => ({
+        top: 150,
+        left: 10,
+        bottom: 170,
+        right: 30,
+      }),
+    } as unknown as HTMLElement
+
+    scrollElementIntoView(element, { parent, block: 'nearest' })
+
+    expect(element.scrollIntoView).toHaveBeenCalledWith({ block: 'nearest' })
+    expect(parent.scrollIntoView).not.toHaveBeenCalled()
+  })
+
+  it('should not scroll when target element is already visible', () => {
+    const body = {
+      scrollIntoView: vi.fn(),
+    } as unknown as HTMLElement
+    // @ts-expect-error assign
+    globalThis.document = { body }
+
+    const parent = {
+      scrollIntoView: vi.fn(),
+      scrollWidth: 100,
+      scrollHeight: 200,
+      getBoundingClientRect: () => ({
+        top: 0,
+        left: 0,
+        bottom: 100,
+        right: 100,
+      }),
+    } as unknown as HTMLElement
+
+    const element = {
+      scrollIntoView: vi.fn(),
+      getBoundingClientRect: () => ({
+        top: 10,
+        left: 10,
+        bottom: 30,
+        right: 30,
+      }),
+    } as unknown as HTMLElement
+
+    scrollElementIntoView(element, { parent })
+
+    expect(element.scrollIntoView).not.toHaveBeenCalled()
+    expect(parent.scrollIntoView).not.toHaveBeenCalled()
   })
 })
 

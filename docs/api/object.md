@@ -7,18 +7,21 @@ outline: deep
 
 Utilities for cloning, sorting, picking, omitting, and cleaning object values.
 
-This section documents 9 exported methods from the object module.
+This section documents 12 exported methods from the object module.
 
 ## Methods
 
 - [cleanObject](#cleanobject)
 - [cloneDeep](#clonedeep)
+- [deepMerge](#deepmerge)
+- [getIn](#getin)
 - [hasOwn](#hasown)
 - [isKeyOf](#iskeyof)
 - [isPlainObject](#isplainobject)
 - [objectOmit](#objectomit)
 - [omit](#omit)
 - [pick](#pick)
+- [setIn](#setin)
 - [sortObject](#sortobject)
 
 ---
@@ -73,6 +76,59 @@ import { cloneDeep } from '@ntnyq/utils'
 const original = { user: { name: 'Alice' } }
 const cloned = cloneDeep(original)
 console.log(cloned.user === original.user) // => false
+```
+
+---
+
+## deepMerge
+
+Deeply merges objects into a new object.
+
+### Parameters
+
+- **objects**: Source objects from left to right.
+- **options**: Optional merge options. Use `arrayStrategy: 'replace' | 'concat'`.
+
+### Returns
+
+A new merged object.
+
+### Example
+
+```ts
+import { deepMerge } from '@ntnyq/utils'
+
+const result = deepMerge(
+  { theme: { color: 'blue', tags: ['base'] } },
+  { theme: { color: 'red', tags: ['brand'] } },
+)
+
+console.log(result.theme) // => { color: 'red', tags: ['brand'] }
+```
+
+---
+
+## getIn
+
+Safely gets a nested value by path.
+
+### Parameters
+
+- **target**: Source object.
+- **path**: Dot-path string or path segments.
+- **options**: Optional settings such as `defaultValue` and custom `separator`.
+
+### Returns
+
+Nested value or default value when not found.
+
+### Example
+
+```ts
+import { getIn } from '@ntnyq/utils'
+
+const result = getIn({ user: { profile: { name: 'A' } } }, 'user.profile.name')
+console.log(result) // => 'A'
 ```
 
 ---
@@ -216,6 +272,32 @@ An object composed of the picked properties.
 const object = { a: 1, b: '2', c: 3 }
 const result = pick(object, ['a', 'c'])
 console.log(result) // => { a: 1, c: 3 }
+```
+
+---
+
+## setIn
+
+Sets a nested value by path.
+
+### Parameters
+
+- **target**: Source object.
+- **path**: Dot-path string or path segments.
+- **value**: Value to set.
+- **options**: Optional settings (`separator`, `createIntermediate`, `mutate`).
+
+### Returns
+
+Updated object.
+
+### Example
+
+```ts
+import { setIn } from '@ntnyq/utils'
+
+const result = setIn({ user: {} }, 'user.profile.name', 'Alice')
+console.log(result.user.profile.name) // => 'Alice'
 ```
 
 ---

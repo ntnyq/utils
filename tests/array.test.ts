@@ -9,6 +9,7 @@ import {
   isArrayEqual,
   last,
   mergeArrayable,
+  partition,
   remove,
   shuffle,
   toArray,
@@ -475,5 +476,43 @@ describe(mergeArrayable, () => {
       'c',
       'd',
     ])
+  })
+})
+
+describe(partition, () => {
+  it('should split array by predicate in one pass', () => {
+    const [even, odd] = partition([1, 2, 3, 4, 5], value => value % 2 === 0)
+
+    expect(even).toStrictEqual([2, 4])
+    expect(odd).toStrictEqual([1, 3, 5])
+  })
+
+  it('should provide index and source array to predicate', () => {
+    const source = ['a', 'b', 'c']
+    const [matched, unmatched] = partition(
+      source,
+      (_value, index, array) => index === 0 || array.length === 3,
+    )
+
+    expect(matched).toStrictEqual(['a', 'b', 'c'])
+    expect(unmatched).toStrictEqual([])
+  })
+
+  it('should support type guard predicate', () => {
+    const values: (number | string)[] = [1, '2', 3, '4']
+    const [numbers, strings] = partition(
+      values,
+      (value): value is number => typeof value === 'number',
+    )
+
+    expect(numbers).toStrictEqual([1, 3])
+    expect(strings).toStrictEqual(['2', '4'])
+  })
+
+  it('should handle empty array', () => {
+    const [matched, unmatched] = partition([], () => true)
+
+    expect(matched).toStrictEqual([])
+    expect(unmatched).toStrictEqual([])
   })
 })

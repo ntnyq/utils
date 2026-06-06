@@ -1,5 +1,6 @@
 export * from './at'
 export * from './chunk'
+export * from './partition'
 export * from './remove'
 export * from './unique'
 export * from './shuffle'

@@ -7,7 +7,7 @@ outline: deep
 
 Helpers for chunking, grouping, normalizing, comparing, and transforming arrays.
 
-This section documents 14 exported methods from the array module.
+This section documents 15 exported methods from the array module.
 
 ## Methods
 
@@ -20,6 +20,7 @@ This section documents 14 exported methods from the array module.
 - [isArrayEqual](#isarrayequal)
 - [last](#last)
 - [mergeArrayable](#mergearrayable)
+- [partition](#partition)
 - [remove](#remove)
 - [shuffle](#shuffle)
 - [toArray](#toarray)
@@ -253,6 +254,30 @@ import { mergeArrayable } from '@ntnyq/utils'
 
 const result = mergeArrayable(1, [2, 3], null, 4)
 console.log(result) // => [1, 2, 3, 4]
+```
+
+---
+
+## partition
+
+Splits an array into two groups in one pass.
+
+### Parameters
+
+- **array**: Source array.
+- **predicate**: Partition predicate.
+
+### Returns
+
+A tuple of `[matched, unmatched]` arrays.
+
+### Example
+
+```ts
+import { partition } from '@ntnyq/utils'
+
+const [even, odd] = partition([1, 2, 3, 4], n => n % 2 === 0)
+console.log(even, odd) // => [2, 4] [1, 3]
 ```
 
 ---

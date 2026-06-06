@@ -7,7 +7,7 @@ outline: deep
 
 String formatting, normalization, padding, randomization, and similarity helpers.
 
-This section documents 11 exported methods from the string module.
+This section documents 12 exported methods from the string module.
 
 ## Methods
 
@@ -21,6 +21,7 @@ This section documents 11 exported methods from the string module.
 - [randomString](#randomstring)
 - [slash](#slash)
 - [slugify](#slugify)
+- [truncate](#truncate)
 - [unindent](#unindent)
 
 ---
@@ -257,6 +258,30 @@ import { slugify } from '@ntnyq/utils'
 
 const result = slugify('Hello, World!')
 console.log(result) // => 'hello-world'
+```
+
+---
+
+## truncate
+
+Truncates text to a maximum length and appends/prepends a suffix.
+
+### Parameters
+
+- **input**: Source string.
+- **options**: Truncation options including `maxLength`, `suffix`, `position`, and `preserveWords`.
+
+### Returns
+
+Truncated string.
+
+### Example
+
+```ts
+import { truncate } from '@ntnyq/utils'
+
+const result = truncate('The quick brown fox', { maxLength: 10 })
+console.log(result) // => 'The qui...'
 ```
 
 ---

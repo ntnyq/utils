@@ -1,5 +1,6 @@
 export * from './pad'
 export * from './join'
+export * from './truncate'
 export * from './slash'
 export * from './escape'
 export * from './random'

@@ -10,6 +10,7 @@ import {
   randomString,
   slash,
   slugify,
+  truncate,
   unindent,
 } from '../src/string'
 
@@ -303,6 +304,55 @@ describe(unindent, () => {
 
   it('should handle string input', () => {
     expect(unindent('  hello\n  world')).toBe('hello\nworld')
+  })
+})
+
+describe(truncate, () => {
+  it('should truncate from end by default', () => {
+    expect(truncate('The quick brown fox', { maxLength: 10 })).toBe(
+      'The qui...',
+    )
+  })
+
+  it('should support custom suffix', () => {
+    expect(truncate('Hello world', { maxLength: 8, suffix: '..' })).toBe(
+      'Hello ..',
+    )
+  })
+
+  it('should truncate from start', () => {
+    expect(
+      truncate('The quick brown fox', {
+        maxLength: 10,
+        position: 'start',
+      }),
+    ).toBe('...own fox')
+  })
+
+  it('should truncate from middle', () => {
+    expect(
+      truncate('The quick brown fox', {
+        maxLength: 11,
+        position: 'middle',
+      }),
+    ).toBe('The ... fox')
+  })
+
+  it('should preserve words when enabled', () => {
+    expect(
+      truncate('The quick brown fox', {
+        maxLength: 13,
+        preserveWords: true,
+      }),
+    ).toBe('The quick...')
+  })
+
+  it('should return input when shorter than maxLength', () => {
+    expect(truncate('Hello', { maxLength: 10 })).toBe('Hello')
+  })
+
+  it('should return clipped suffix when maxLength is shorter than suffix', () => {
+    expect(truncate('Hello world', { maxLength: 2 })).toBe('..')
   })
 })
 

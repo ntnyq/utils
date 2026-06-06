@@ -4,10 +4,13 @@ import { describe, expect, it } from 'vitest'
 import {
   cleanObject,
   cloneDeep,
+  deepMerge,
+  getIn,
   hasOwn,
   isKeyOf,
   isPlainObject,
   omit,
+  setIn,
   pick,
   sortObject,
   objectOmit,
@@ -532,5 +535,127 @@ describe(objectOmit, () => {
     expect(objectOmit(obj, ['a', 'b'])).toStrictEqual({})
     // original object should not be mutated
     expect(obj).toStrictEqual({ a: 1, b: 2 })
+  })
+})
+
+describe(deepMerge, () => {
+  it('should deep merge plain objects', () => {
+    const result = deepMerge(
+      { user: { name: 'Alice', tags: ['base'] }, enabled: true },
+      { user: { name: 'Bob' } },
+    )
+
+    expect(result).toStrictEqual({
+      user: { name: 'Bob', tags: ['base'] },
+      enabled: true,
+    })
+  })
+
+  it('should replace arrays by default', () => {
+    const result = deepMerge(
+      { list: [1, 2], config: { features: ['a'] } },
+      { list: [3], config: { features: ['b'] } },
+    )
+
+    expect(result).toStrictEqual({
+      list: [3],
+      config: { features: ['b'] },
+    })
+  })
+
+  it('should concat arrays with concat strategy', () => {
+    const concatResult = deepMerge(
+      { arrayStrategy: 'concat' },
+      { list: [1, 2], nested: { list: [3] } },
+      { list: [4], nested: { list: [5] } },
+    ) as { list: number[]; nested: { list: number[] } }
+
+    expect(concatResult.list).toStrictEqual([1, 2, 4])
+    expect(concatResult.nested.list).toStrictEqual([3, 5])
+  })
+
+  it('should not mutate source objects', () => {
+    const left = { nested: { count: 1 }, list: [1, 2] }
+    const right = { nested: { count: 2 }, list: [3] }
+
+    const result = deepMerge(left, right) as {
+      nested: { count: number }
+      list: number[]
+    }
+
+    expect(result).toStrictEqual({ nested: { count: 2 }, list: [3] })
+    expect(left).toStrictEqual({ nested: { count: 1 }, list: [1, 2] })
+    expect(right).toStrictEqual({ nested: { count: 2 }, list: [3] })
+    expect(result.nested).not.toBe(left.nested)
+    expect(result.list).not.toBe(right.list)
+  })
+})
+
+describe(getIn, () => {
+  const source = {
+    user: {
+      profile: {
+        name: 'Alice',
+      },
+      roles: ['admin', 'editor'],
+    },
+  }
+
+  it('should read nested value by dot path', () => {
+    expect(getIn(source, 'user.profile.name')).toBe('Alice')
+  })
+
+  it('should read nested value by path array', () => {
+    expect(getIn(source, ['user', 'roles', 1])).toBe('editor')
+  })
+
+  it('should return default value when path is missing', () => {
+    expect(getIn(source, 'user.profile.age', { defaultValue: 18 })).toBe(18)
+  })
+
+  it('should support custom separator', () => {
+    expect(getIn(source, 'user/profile/name', { separator: '/' })).toBe('Alice')
+  })
+})
+
+describe(setIn, () => {
+  it('should set nested value with createIntermediate by default', () => {
+    const source = { user: {} }
+    const result = setIn(source, 'user.profile.name', 'Alice') as {
+      user: { profile: { name: string } }
+    }
+
+    expect(result.user.profile.name).toBe('Alice')
+    expect(source).toStrictEqual({ user: {} })
+  })
+
+  it('should not create intermediate nodes when createIntermediate is false', () => {
+    const source = { user: {} }
+    const result = setIn(source, 'user.profile.name', 'Alice', {
+      createIntermediate: false,
+    })
+
+    expect(result).toBe(source)
+    expect(source).toStrictEqual({ user: {} })
+  })
+
+  it('should mutate original object when mutate is true', () => {
+    const source = { user: { profile: { name: 'Alice' } } }
+    const result = setIn(source, 'user.profile.name', 'Bob', {
+      mutate: true,
+    })
+
+    expect(result).toBe(source)
+    expect(source.user.profile.name).toBe('Bob')
+  })
+
+  it('should support array indexes in path', () => {
+    const source = { users: [{ name: 'Alice' }] }
+    const result = setIn(source, ['users', 0, 'name'], 'Bob') as {
+      users: { name: string }[]
+    }
+
+    expect(result.users[0]!.name).toBe('Bob')
+    expect(source.users[0]!.name).toBe('Alice')
   })
 })

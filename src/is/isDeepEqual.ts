@@ -31,17 +31,20 @@ export function isDeepEqual(value1: any, value2: any): boolean {
   }
 
   if (isObject(value1) && isObject(value2)) {
-    const keys = Object.keys(value1)
+    const keys1 = Reflect.ownKeys(value1)
+    const keys2 = Reflect.ownKeys(value2)
 
-    if (keys.length !== Object.keys(value2).length) {
+    if (keys1.length !== keys2.length) {
       return false
     }
 
-    return keys.every(key =>
-      isDeepEqual(
-        value1[key as keyof typeof value1],
-        value2[key as keyof typeof value1],
-      ),
+    return keys1.every(
+      key =>
+        keys2.includes(key) &&
+        isDeepEqual(
+          value1[key as keyof typeof value1],
+          value2[key as keyof typeof value2],
+        ),
     )
   }
 

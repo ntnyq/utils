@@ -409,13 +409,17 @@ describe(cloneDeep, () => {
 
   it('should handle circular references with WeakMap', () => {
     const original: any = { a: 1, b: { c: 2 } }
-    // Note: circular references are handled via WeakMap during cloning
+    original.self = original
+    original.b.parent = original
+
     const cloned = cloneDeep(original)
 
     expect(cloned.a).toBe(1)
     expect(cloned.b.c).toBe(2)
     expect(cloned).not.toBe(original)
     expect(cloned.b).not.toBe(original.b)
+    expect(cloned.self).toBe(cloned)
+    expect(cloned.b.parent).toBe(cloned)
   })
 
   it('should handle mixed nested structures', () => {

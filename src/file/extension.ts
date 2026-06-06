@@ -52,6 +52,6 @@ export function getFileExtension(filePath?: string): string | undefined {
   if (!filePath) {
     return undefined
   }
-  const match = filePath.match(/\.([^.]+)$/u)
-  return match?.[1]
+  const match = filePath.match(/\.(?<extension>[^.]+)$/u)
+  return match?.groups?.['extension']
 }

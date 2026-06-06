@@ -16,10 +16,17 @@
  */
 export function isElementVisibleInViewport(
   element: HTMLElement,
-  targetWindow: Window = window,
+  targetWindow?: Window,
 ): boolean {
+  const activeWindow =
+    targetWindow ?? (typeof window === 'undefined' ? undefined : window)
+
+  if (!activeWindow) {
+    return false
+  }
+
   const { top, left, bottom, right } = element.getBoundingClientRect()
-  const { innerWidth, innerHeight } = targetWindow
+  const { innerWidth, innerHeight } = activeWindow
   return (
     ((top >= 0 && top <= innerHeight) ||
       (bottom >= 0 && bottom <= innerHeight)) &&

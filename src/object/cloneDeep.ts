@@ -23,6 +23,12 @@ export function cloneDeep<T>(
   if (isNull(value) || !isObject(value)) {
     return value
   }
+
+  const cached = hash.get(value as WeakKey)
+  if (cached) {
+    return cached
+  }
+
   const result: any = Array.isArray(value) ? [] : {}
 
   hash.set(value as WeakKey, result)

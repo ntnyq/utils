@@ -7,5 +7,5 @@ export default defineConfig({
   },
   entry: ['src/index.ts'],
   platform: 'neutral',
-  target: ['node20', 'es2023'],
+  target: ['node22', 'es2023'],
 })

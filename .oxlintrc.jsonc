@@ -180,6 +180,7 @@
         "typescript/require-array-sort-compare": "off",
         "unicorn/no-null": "off",
         "unicorn/no-useless-undefined": "off",
+        "unicorn/numeric-separators-style": "off",
         "vitest/no-hooks": "off",
         "vitest/valid-title": "off",
         "vitest/max-expects": "off",

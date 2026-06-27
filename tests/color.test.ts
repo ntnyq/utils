@@ -47,9 +47,9 @@ describe('random color helpers', () => {
     expect(groups).toBeDefined()
 
     const channels = [
-      Number.parseInt(groups!['red']!, 10),
-      Number.parseInt(groups!['green']!, 10),
-      Number.parseInt(groups!['blue']!, 10),
+      Math.trunc(Number(groups!['red']!)),
+      Math.trunc(Number(groups!['green']!)),
+      Math.trunc(Number(groups!['blue']!)),
     ]
 
     channels.forEach(channel => {
@@ -70,7 +70,7 @@ describe('random color helpers', () => {
     const groups = match?.groups
     expect(groups).toBeDefined()
 
-    const alpha = Number.parseFloat(groups!['alpha']!)
+    const alpha = Number(groups!['alpha']!)
     expect(alpha).toBeGreaterThanOrEqual(0)
     expect(alpha).toBeLessThanOrEqual(1)
   })

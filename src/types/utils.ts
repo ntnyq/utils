@@ -8,13 +8,6 @@ export type LiteralUnion<Union extends Base, Base = string> =
   | (Base & { zz_IGNORE_ME?: never })
 
 /**
- * @see {@link TODO:}
- */
-export type Merge<T, U> = keyof T & keyof U extends never
-  ? T & U
-  : Omit<T, keyof T & keyof U> & U
-
-/**
  * Non empty object `{}`
  */
 export type NonEmptyObject<T> = T extends Record<string, never> ? never : T

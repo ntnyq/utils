@@ -276,7 +276,7 @@ export function isNaN(value: unknown): boolean {
  * console.log(result) // => true
  * ```
  */
-export function isInteger(value: unknown): value is number {
+export function isInteger(value: unknown): boolean {
   return Number.isInteger(value)
 }
 

@@ -47,17 +47,17 @@
   },
   "devDependencies": {
     "@ntnyq/tsconfig": "^3.1.0",
-    "@typescript/native-preview": "^7.0.0-dev.20260627.2",
+    "@typescript/native-preview": "^7.0.0-dev.20260707.2",
     "bumpp": "^11.1.0",
     "husky": "^9.1.7",
     "nano-staged": "^1.0.2",
-    "nanoid": "^5.1.16",
+    "nanoid": "^6.0.0",
     "npm-run-all2": "^9.0.2",
-    "oxfmt": "^0.56.0",
-    "oxlint": "^1.71.0",
-    "tsdown": "^0.22.3",
+    "oxfmt": "^0.59.0",
+    "oxlint": "^1.74.0",
+    "tsdown": "^0.22.8",
     "uuid": "^14.0.1",
-    "vitest": "^4.1.9"
+    "vitest": "^4.1.10"
   },
   "nano-staged": {
     "*.{js,ts,mjs,tsx}": "oxlint --fix",
@@ -66,5 +66,5 @@
   "engines": {
     "node": "^22.13.0 || >=24"
   },
-  "packageManager": "pnpm@11.9.0"
+  "packageManager": "pnpm@11.13.0"
 }

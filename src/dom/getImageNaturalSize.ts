@@ -1,6 +1,6 @@
 // oxlint-disable unicorn/prefer-add-event-listener
 
-import { isBlob, isString } from '../is'
+import { isString } from '../is'
 
 export interface ImageSize {
   width: number
@@ -9,55 +9,177 @@ export interface ImageSize {
 
 export interface GetImageNaturalSizeOptions {
   /**
-   * Timeout in milliseconds to wait for the image to load before rejecting the promise.
+   * Timeout in milliseconds to wait for the image to load.
    *
-   * @default 30000 (30 seconds)
+   * @default 30000
    */
   timeout?: number
   /**
-   * The decoding mode for the image. Setting this to 'async' allows the browser to decode the image asynchronously, which can improve performance and reduce blocking of the main thread.
-   *
-   * - 'sync': The image will be decoded synchronously, which may block the main thread until decoding is complete.
-   * - 'async': The image will be decoded asynchronously, allowing the main thread to remain responsive.
-   * - 'auto': The browser will choose the decoding mode based on heuristics.
+   * Browser image decoding mode.
    *
    * @default 'async'
    */
   decoding?: 'sync' | 'async' | 'auto'
   /**
-   * The cross-origin attribute for the image. This is necessary if the image is hosted on a different origin and you want to access its properties (like naturalWidth and naturalHeight) without tainting the canvas.
-   *
-   * - 'anonymous': The image will be fetched without credentials (cookies, HTTP authentication, and client-side SSL certificates).
-   * - 'use-credentials': The image will be fetched with credentials.
-   * - null: No cross-origin requests will be made, and the image will be treated as same-origin.
+   * Cross-origin mode assigned before the image source begins loading.
    *
    * @default 'anonymous'
    */
   crossOrigin?: 'anonymous' | 'use-credentials' | null
   /**
-   * Whether to cache the image or not. If set to false, a unique query parameter will be appended to the image URL to prevent caching. This can be useful for ensuring that you get the most up-to-date image, but it may increase load times and bandwidth usage.
+   * Whether to reuse successful loads. Disabled string loads receive a unique
+   * cache-busting query parameter.
    *
    * @default true
    */
   cache?: boolean
 }
 
-const getImageSizeCache = new Map<string, Promise<ImageSize>>()
+const MAX_STRING_CACHE_SIZE = 100
+const MAX_BLOB_OPTION_CACHE_SIZE = 10
+const stringCache = new Map<string, Promise<ImageSize>>()
+const blobCache = new WeakMap<Blob, Map<string, Promise<ImageSize>>>()
+let cacheBustCounter = 0
+
+function createOptionsKey(
+  timeout: number,
+  decoding: NonNullable<GetImageNaturalSizeOptions['decoding']>,
+  crossOrigin: Exclude<GetImageNaturalSizeOptions['crossOrigin'], undefined>,
+): string {
+  return `${timeout}:${decoding}:${crossOrigin ?? 'none'}`
+}
+
+function createStringCacheKey(source: string, optionsKey: string): string {
+  return `${optionsKey}:${source}`
+}
+
+function addCacheBuster(source: string): string {
+  const hashIndex = source.indexOf('#')
+  const beforeHash = hashIndex === -1 ? source : source.slice(0, hashIndex)
+  const hash = hashIndex === -1 ? '' : source.slice(hashIndex)
+  const separator = beforeHash.includes('?') ? '&' : '?'
+  cacheBustCounter++
+  return `${beforeHash}${separator}__ntnyq_cache_bust=${Date.now()}-${cacheBustCounter}${hash}`
+}
+
+function redactSource(source: string): string {
+  return source.split(/[?#]/u, 1)[0] ?? source
+}
+
+function cacheStringPromise(key: string, promise: Promise<ImageSize>): void {
+  stringCache.set(key, promise)
+  if (stringCache.size > MAX_STRING_CACHE_SIZE) {
+    const oldestKey = stringCache.keys().next().value
+    if (oldestKey !== undefined) {
+      stringCache.delete(oldestKey)
+    }
+  }
+
+  // oxlint-disable-next-line promise/prefer-await-to-then
+  promise.catch(() => {
+    if (stringCache.get(key) === promise) {
+      stringCache.delete(key)
+    }
+  })
+}
+
+function cacheBlobPromise(
+  source: Blob,
+  key: string,
+  promise: Promise<ImageSize>,
+): void {
+  const entries = blobCache.get(source) ?? new Map<string, Promise<ImageSize>>()
+  entries.set(key, promise)
+  blobCache.set(source, entries)
+
+  if (entries.size > MAX_BLOB_OPTION_CACHE_SIZE) {
+    const oldestKey = entries.keys().next().value
+    if (oldestKey !== undefined) {
+      entries.delete(oldestKey)
+    }
+  }
+
+  // oxlint-disable-next-line promise/prefer-await-to-then
+  promise.catch(() => {
+    if (entries.get(key) === promise) {
+      entries.delete(key)
+    }
+  })
+}
+
+interface LoadImageOptions {
+  timeout: number
+  decoding: NonNullable<GetImageNaturalSizeOptions['decoding']>
+  crossOrigin: Exclude<GetImageNaturalSizeOptions['crossOrigin'], undefined>
+}
+
+function loadImage(
+  source: string,
+  displaySource: string,
+  isObjectURL: boolean,
+  options: LoadImageOptions,
+): Promise<ImageSize> {
+  return new Promise<ImageSize>((resolve, reject) => {
+    const image = new Image()
+    let isSettled = false
+
+    const timer = setTimeout(onTimeout, options.timeout)
+
+    const cleanup = () => {
+      clearTimeout(timer)
+      image.onload = null
+      image.onerror = null
+      image.onabort = null
+      image.src = ''
+      if (isObjectURL) {
+        URL.revokeObjectURL(source)
+      }
+    }
+
+    const settle = (callback: () => void) => {
+      if (isSettled) {
+        return
+      }
+      isSettled = true
+      cleanup()
+      callback()
+    }
+
+    function onTimeout() {
+      settle(() => {
+        reject(
+          new Error(
+            `Failed to load image: ${displaySource} within ${options.timeout}ms`,
+          ),
+        )
+      })
+    }
+
+    image.onload = () => {
+      const size = {
+        width: image.naturalWidth,
+        height: image.naturalHeight,
+      }
+      settle(() => resolve(size))
+    }
+    image.onerror = () => {
+      settle(() => reject(new Error(`Failed to load image: ${displaySource}`)))
+    }
+    image.onabort = () => {
+      settle(() => reject(new Error(`Image loading aborted: ${displaySource}`)))
+    }
+
+    image.decoding = options.decoding
+    image.crossOrigin = options.crossOrigin
+    image.src = source
+  })
+}
 
 /**
  * Gets the natural width and height of an image source.
  * @param source - The image URL, Blob, or File to inspect.
- * @param options - Options for timeout, decoding, cross-origin mode, and caching.
+ * @param options - Loading and cache options.
  * @returns A promise that resolves with the image's natural size.
- *
- * @example
- *
- * ```typescript
- * import { getImageNaturalSize } from '@ntnyq/utils'
- *
- * const size = await getImageNaturalSize('/logo.png')
- * console.log(size.width, size.height) // => natural image size
- * ```
  */
 export async function getImageNaturalSize(
   source: string | Blob | File,
@@ -70,66 +192,46 @@ export async function getImageNaturalSize(
     decoding = 'async',
   } = options
 
-  const cacheKey = isString(source) ? source : URL.createObjectURL(source)
-
-  if (cache && getImageSizeCache.has(cacheKey)) {
-    return getImageSizeCache.get(cacheKey)!
+  if (!Number.isFinite(timeout) || timeout <= 0) {
+    throw new RangeError('Image timeout must be a positive finite number')
   }
 
-  const promise = new Promise<ImageSize>((resolve, reject) => {
-    const img = new Image()
-    let isSettled = false
+  const optionsKey = createOptionsKey(timeout, decoding, crossOrigin)
 
-    const timer = setTimeout(() => {
-      cleanup()
-      reject(new Error(`Failed to load image: ${cacheKey} within ${timeout}ms`))
-    }, timeout)
-
-    function cleanup() {
-      clearTimeout(timer)
-
-      isSettled = true
-      img.onload = null
-      img.onerror = null
-      img.onabort = null
-      img.src = ''
-
-      if (isBlob(source)) {
-        URL.revokeObjectURL(cacheKey)
-      }
+  if (isString(source)) {
+    const key = createStringCacheKey(source, optionsKey)
+    const cached = cache ? stringCache.get(key) : undefined
+    if (cached) {
+      stringCache.delete(key)
+      stringCache.set(key, cached)
+      return cached
     }
 
-    img.onload = () => {
-      if (isSettled) {
-        return
-      }
-      const size = { width: img.naturalWidth, height: img.naturalHeight }
-
-      cleanup()
-      resolve(size)
+    const loadSource = cache ? source : addCacheBuster(source)
+    const promise = loadImage(loadSource, redactSource(source), false, {
+      timeout,
+      decoding,
+      crossOrigin,
+    })
+    if (cache) {
+      cacheStringPromise(key, promise)
     }
+    return promise
+  }
 
-    img.onerror = () => {
-      cleanup()
-      reject(new Error(`Failed to load image: ${cacheKey}`))
-    }
+  const cached = cache ? blobCache.get(source)?.get(optionsKey) : undefined
+  if (cached) {
+    return cached
+  }
 
-    img.onabort = () => {
-      cleanup()
-      reject(new Error(`Image loading aborted: ${cacheKey}`))
-    }
-
-    img.decoding = decoding
-    img.src = cacheKey
-
-    if (crossOrigin) {
-      img.crossOrigin = crossOrigin
-    }
+  const objectURL = URL.createObjectURL(source)
+  const promise = loadImage(objectURL, 'blob', true, {
+    timeout,
+    decoding,
+    crossOrigin,
   })
-
   if (cache) {
-    getImageSizeCache.set(cacheKey, promise)
+    cacheBlobPromise(source, optionsKey, promise)
   }
-
   return promise
 }

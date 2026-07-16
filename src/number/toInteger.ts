@@ -61,11 +61,18 @@ export interface ToIntegerOptions {
  * console.log(result) // => 42
  * ```
  */
+export function toInteger<T>(
+  value: T,
+  options: ToIntegerOptions & { onError: 'returnOriginal' },
+): number | T
+
+export function toInteger(value: unknown, options?: ToIntegerOptions): number
+
 // oxlint-disable-next-line complexity
 export function toInteger(
   value: unknown,
   options: ToIntegerOptions = {},
-): number {
+): unknown {
   const {
     defaultValue = 0,
     allowDecimal = false,
@@ -76,8 +83,14 @@ export function toInteger(
     outOfRange = 'clamp',
   } = options
 
+  const handleError = (error: Error): unknown => {
+    if (onError === 'throwError') {
+      throw error
+    }
+    return onError === 'returnOriginal' ? value : defaultValue
+  }
+
   let numberValue: number
-  let result: number
 
   if (isNumber(value)) {
     numberValue = value
@@ -85,24 +98,20 @@ export function toInteger(
     const trimmed = value.trim()
 
     if (isEmptyString(trimmed)) {
-      if (onError === 'throwError') {
-        throw new TypeError('Cannot convert empty string to an integer')
-      }
-      return onError === 'returnOriginal'
-        ? (value as unknown as number)
-        : defaultValue
+      return handleError(
+        new TypeError('Cannot convert empty string to an integer'),
+      )
     }
 
     numberValue = Number(trimmed)
   } else if (isNullOrUndefined(value)) {
-    if (onError === 'throwError') {
-      throw new TypeError(`Cannot convert ${value} to an integer`)
-    }
-    return onError === 'useDefault'
-      ? (value as unknown as number)
-      : defaultValue
+    return handleError(new TypeError(`Cannot convert ${value} to an integer`))
   } else {
-    numberValue = Number(value)
+    try {
+      numberValue = Number(value)
+    } catch {
+      return handleError(new TypeError('Cannot convert value to an integer'))
+    }
   }
 
   if (isNaN(numberValue)) {
@@ -110,31 +119,32 @@ export function toInteger(
       return numberValue
     }
 
-    if (onError === 'throwError') {
-      throw new TypeError(`Cannot convert NaN to an integer`)
-    }
-    return onError === 'returnOriginal'
-      ? (value as unknown as number)
-      : defaultValue
+    return handleError(new TypeError('Cannot convert NaN to an integer'))
   }
 
+  if (!Number.isFinite(numberValue)) {
+    return handleError(
+      new TypeError('Cannot convert an infinite value to an integer'),
+    )
+  }
+
+  let result: number
   if (allowDecimal) {
-    result = numberValue > 0 ? Math.floor(numberValue) : Math.ceil(numberValue)
+    result = Math.trunc(numberValue)
   } else {
-    if (numberValue % 1 !== 0) {
-      if (onError === 'throwError') {
-        throw new Error('Decimal values are not allowed')
-      }
-      return onError === 'returnOriginal'
-        ? (value as unknown as number)
-        : defaultValue
+    if (!Number.isInteger(numberValue)) {
+      return handleError(new TypeError('Decimal values are not allowed'))
     }
     result = numberValue
   }
 
   if (!isUndefined(min) || !isUndefined(max)) {
-    const minVal = min ?? -Infinity
-    const maxVal = max ?? Infinity
+    const minVal = Math.ceil(min ?? -Infinity)
+    const maxVal = Math.floor(max ?? Infinity)
+
+    if (minVal > maxVal) {
+      throw new RangeError('Minimum value must not exceed maximum value')
+    }
 
     if (result < minVal || result > maxVal) {
       if (outOfRange === 'throwError') {
@@ -148,7 +158,7 @@ export function toInteger(
       }
 
       if (outOfRange === 'clamp') {
-        result = Math.max(minVal, Math.min(maxVal, numberValue))
+        result = Math.max(minVal, Math.min(maxVal, result))
       }
     }
   }

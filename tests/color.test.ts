@@ -31,6 +31,16 @@ describe('color', () => {
       Color.fromRGB(255, 255, 255).darken(50).toRGBAString(),
     ).toMatchInlineSnapshot(`"rgba(127, 127, 127, 1)"`)
   })
+
+  it('should normalize channels and alpha into valid ranges', () => {
+    const color = Color.fromRGBA(-10, 127.6, 300, 2)
+
+    expect(color.toHexString()).toBe('#0080FF')
+    expect(color.toRGBAString()).toBe('rgba(0, 128, 255, 1)')
+    expect(Color.fromRGBA(Number.NaN, 0, 0, Number.NaN).toRGBAString()).toBe(
+      'rgba(0, 0, 0, 0)',
+    )
+  })
 })
 
 describe('random color helpers', () => {

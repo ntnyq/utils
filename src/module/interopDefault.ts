@@ -18,6 +18,12 @@ export async function interopDefault<T>(
   mod: Awaitable<T>,
 ): Promise<InteropModuleDefault<T>> {
   const resolved = await mod
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-return
-  return (resolved as { default?: any }).default || resolved
+  if (
+    resolved !== null &&
+    resolved !== undefined &&
+    Object.hasOwn(resolved, 'default')
+  ) {
+    return (resolved as unknown as { default: InteropModuleDefault<T> }).default
+  }
+  return resolved as InteropModuleDefault<T>
 }

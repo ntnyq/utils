@@ -4,9 +4,6 @@ export interface DeepMergeOptions {
   /**
    * Strategy for merging arrays.
    *
-   * - `replace`: use the latest array value.
-   * - `concat`: concatenate arrays during merge.
-   *
    * @default 'replace'
    */
   arrayStrategy?: 'replace' | 'concat'
@@ -14,13 +11,13 @@ export interface DeepMergeOptions {
 
 type AnyRecord = Record<PropertyKey, unknown>
 
-type DeepMergeValue<Left, Right> = Left extends unknown[]
-  ? Right extends unknown[]
+type DeepMergeValue<Left, Right> = Left extends readonly unknown[]
+  ? Right extends readonly unknown[]
     ? Right
     : Right
   : Left extends AnyRecord
     ? Right extends AnyRecord
-      ? DeepMergeResult<[Left, Right]>
+      ? DeepMergeTwo<Left, Right>
       : Right
     : Right
 
@@ -38,129 +35,189 @@ export type DeepMergeTwo<Left, Right> = Left extends AnyRecord
     : Right
   : Right
 
-export type DeepMergeResult<Objects extends readonly unknown[]> =
-  Objects extends [infer First, ...infer Rest]
-    ? Rest extends readonly unknown[]
-      ? DeepMergeTwo<First, DeepMergeResult<Rest>>
-      : First
-    : {}
+export type DeepMergeResult<
+  Objects extends readonly unknown[],
+  Accumulator = {},
+> = Objects extends readonly [infer First, ...infer Rest]
+  ? DeepMergeResult<Rest, DeepMergeTwo<Accumulator, First>>
+  : Accumulator
+
+interface MergeContext {
+  options: Required<DeepMergeOptions>
+  seen: WeakMap<object, unknown>
+}
 
 function isMergeableRecord(value: unknown): value is AnyRecord {
   return isPlainObject(value)
 }
 
-function mergeValue(
-  leftValue: unknown,
-  rightValue: unknown,
-  options: Required<DeepMergeOptions>,
-): unknown {
-  if (Array.isArray(leftValue) && Array.isArray(rightValue)) {
-    if (options.arrayStrategy === 'concat') {
-      return [...leftValue, ...rightValue]
-    }
-    return [...rightValue]
+function cloneArray(value: unknown[], context: MergeContext): unknown[] {
+  const cached = context.seen.get(value)
+  if (cached) {
+    return cached as unknown[]
   }
 
-  if (isMergeableRecord(leftValue) && isMergeableRecord(rightValue)) {
-    return mergeObjects(leftValue, rightValue, options)
-  }
+  const output: unknown[] = []
+  output.length = value.length
+  context.seen.set(value, output)
 
-  if (Array.isArray(rightValue)) {
-    return [...rightValue]
-  }
-
-  if (isMergeableRecord(rightValue)) {
-    return mergeObjects({}, rightValue, options)
-  }
-
-  return rightValue
-}
-
-function mergeObjects(
-  left: AnyRecord,
-  right: AnyRecord,
-  options: Required<DeepMergeOptions>,
-): AnyRecord {
-  const output: AnyRecord = { ...left }
-
-  for (const key of Reflect.ownKeys(right)) {
-    const rightValue = right[key]
-
-    if (key in left) {
-      output[key] = mergeValue(left[key], rightValue, options)
-    } else {
-      output[key] = mergeValue(undefined, rightValue, options)
+  for (const key of Reflect.ownKeys(value)) {
+    const descriptor = Object.getOwnPropertyDescriptor(value, key)
+    if (descriptor) {
+      Object.defineProperty(
+        output,
+        key,
+        'value' in descriptor
+          ? { ...descriptor, value: cloneValue(descriptor.value, context) }
+          : descriptor,
+      )
     }
   }
 
   return output
 }
 
-/**
- * Deeply merges objects into a new object.
- * @param objects - Source objects from left to right.
- * @returns A new merged object.
- *
- * @example
- *
- * ```typescript
- * import { deepMerge } from '@ntnyq/utils'
- *
- * const result = deepMerge(
- *   { theme: { color: 'blue', tags: ['base'] } },
- *   { theme: { color: 'red', tags: ['brand'] } },
- * )
- *
- * console.log(result.theme) // => { color: 'red', tags: ['brand'] }
- * ```
- */
-export function deepMerge<const Objects extends readonly AnyRecord[]>(
-  ...objects: Objects
-): DeepMergeResult<Objects>
+function cloneRecord(value: AnyRecord, context: MergeContext): AnyRecord {
+  const cached = context.seen.get(value)
+  if (cached) {
+    return cached as AnyRecord
+  }
 
-/**
- * Deeply merges objects into a new object with custom options.
- * @param options - Merge options.
- * @param objects - Source objects from left to right.
- * @returns A new merged object.
- */
-export function deepMerge<const Objects extends readonly AnyRecord[]>(
-  options: DeepMergeOptions,
-  ...objects: Objects
-): DeepMergeResult<Objects>
+  const output = Object.create(Object.getPrototypeOf(value)) as AnyRecord
+  context.seen.set(value, output)
 
-export function deepMerge<const Objects extends readonly AnyRecord[]>(
-  ...args: [DeepMergeOptions, ...Objects] | Objects
+  for (const key of Reflect.ownKeys(value)) {
+    const descriptor = Object.getOwnPropertyDescriptor(value, key)
+    if (descriptor) {
+      Object.defineProperty(
+        output,
+        key,
+        'value' in descriptor
+          ? {
+              ...descriptor,
+              configurable: true,
+              value: cloneValue(descriptor.value, context),
+            }
+          : { ...descriptor, configurable: true },
+      )
+    }
+  }
+
+  return output
+}
+
+function cloneValue(value: unknown, context: MergeContext): unknown {
+  if (Array.isArray(value)) {
+    return cloneArray(value, context)
+  }
+  if (isMergeableRecord(value)) {
+    return cloneRecord(value, context)
+  }
+  return value
+}
+
+function mergeValue(
+  leftValue: unknown,
+  rightValue: unknown,
+  context: MergeContext,
+): unknown {
+  if (Array.isArray(leftValue) && Array.isArray(rightValue)) {
+    const right = cloneArray(rightValue, context)
+    return context.options.arrayStrategy === 'concat'
+      ? [...leftValue, ...right]
+      : right
+  }
+
+  if (isMergeableRecord(leftValue) && isMergeableRecord(rightValue)) {
+    return mergeRecords(leftValue, rightValue, context)
+  }
+
+  return cloneValue(rightValue, context)
+}
+
+function mergeRecords(
+  left: AnyRecord,
+  right: AnyRecord,
+  context: MergeContext,
+): AnyRecord {
+  const knownRight = context.seen.get(right)
+  if (knownRight) {
+    return knownRight as AnyRecord
+  }
+
+  const output = cloneRecord(left, context)
+  context.seen.set(right, output)
+
+  for (const key of Reflect.ownKeys(right)) {
+    const rightDescriptor = Object.getOwnPropertyDescriptor(right, key)
+    if (rightDescriptor) {
+      if ('value' in rightDescriptor) {
+        const leftDescriptor = Object.getOwnPropertyDescriptor(output, key)
+        const nextValue =
+          leftDescriptor && 'value' in leftDescriptor
+            ? mergeValue(leftDescriptor.value, rightDescriptor.value, context)
+            : cloneValue(rightDescriptor.value, context)
+
+        Object.defineProperty(output, key, {
+          ...rightDescriptor,
+          configurable: true,
+          value: nextValue,
+        })
+      } else {
+        Object.defineProperty(output, key, {
+          ...rightDescriptor,
+          configurable: true,
+        })
+      }
+    }
+  }
+
+  return output
+}
+
+function mergeAll<const Objects extends readonly AnyRecord[]>(
+  objects: Objects,
+  options: Required<DeepMergeOptions>,
 ): DeepMergeResult<Objects> {
-  const isFirstArgOptions = args.length > 0 && isMergeOptions(args[0])
-
-  const [options, objects] = isFirstArgOptions
-    ? [
-        {
-          arrayStrategy: args[0].arrayStrategy ?? 'replace',
-        } satisfies Required<DeepMergeOptions>,
-        args.slice(1) as unknown as Objects,
-      ]
-    : [
-        {
-          arrayStrategy: 'replace',
-        } satisfies Required<DeepMergeOptions>,
-        args as unknown as Objects,
-      ]
-
   if (objects.length === 0) {
     return {} as DeepMergeResult<Objects>
   }
 
+  const context: MergeContext = {
+    options,
+    seen: new WeakMap(),
+  }
   const [first, ...rest] = objects
-  const base = mergeValue(undefined, first, options) as AnyRecord
+  let output = cloneRecord(first!, context)
 
-  return rest.reduce(
-    (acc, current) => mergeObjects(acc, current, options),
-    base,
-  ) as DeepMergeResult<Objects>
+  for (const object of rest) {
+    output = mergeRecords(output, object, context)
+  }
+
+  return output as DeepMergeResult<Objects>
 }
 
-function isMergeOptions(value: unknown): value is DeepMergeOptions {
-  return isPlainObject(value) && 'arrayStrategy' in value
+/**
+ * Deeply merges data objects from left to right into a new object.
+ * @param objects - Source objects from left to right.
+ * @returns A new merged object.
+ */
+export function deepMerge<const Objects extends readonly AnyRecord[]>(
+  ...objects: Objects
+): DeepMergeResult<Objects> {
+  return mergeAll(objects, { arrayStrategy: 'replace' })
+}
+
+/**
+ * Deeply merges data objects with explicit options.
+ * @param options - Merge options.
+ * @param objects - Source objects from left to right.
+ * @returns A new merged object.
+ */
+export function deepMergeWithOptions<
+  const Objects extends readonly AnyRecord[],
+>(options: DeepMergeOptions, ...objects: Objects): DeepMergeResult<Objects> {
+  return mergeAll(objects, {
+    arrayStrategy: options.arrayStrategy ?? 'replace',
+  })
 }

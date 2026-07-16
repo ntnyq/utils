@@ -17,7 +17,7 @@ export interface ThrottleDebounceOptions {
  * ```typescript
  * import { throttle } from '@ntnyq/utils'
  *
- * const onResize = throttle(() => console.log('resized'), 200)
+ * const onResize = throttle(200, () => console.log('resized'))
  * onResize()
  * ```
  *
@@ -105,7 +105,7 @@ export function throttle<
  * ```typescript
  * import { debounce } from '@ntnyq/utils'
  *
- * const onSearch = debounce(() => console.log('search'), 300)
+ * const onSearch = debounce(300, () => console.log('search'))
  * onSearch()
  * ```
  */

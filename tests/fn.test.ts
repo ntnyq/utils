@@ -92,6 +92,42 @@ describe(memoize, () => {
     memoized.clear()
     expect(memoized.cache.size).toBe(0)
   })
+
+  it('should not collide for different argument tuples or object identities', () => {
+    const spy = vi.fn((left: unknown, right: number) => ({ left, right }))
+    const memoized = memoize(spy)
+    const first = memoized(undefined, 1)
+    const second = memoized(null, 1)
+    const objectA = memoized({}, 1)
+    const objectB = memoized({}, 1)
+
+    expect(first).not.toBe(second)
+    expect(objectA).not.toBe(objectB)
+    expect(spy).toHaveBeenCalledTimes(4)
+  })
+
+  it('should include the receiver in default cache identity', () => {
+    const spy = vi.fn(function multiply(
+      this: { factor: number },
+      value: number,
+    ) {
+      return this.factor * value
+    })
+    const memoized = memoize(spy)
+
+    expect(memoized.call({ factor: 2 }, 3)).toBe(6)
+    expect(memoized.call({ factor: 4 }, 3)).toBe(12)
+    expect(spy).toHaveBeenCalledTimes(2)
+  })
+
+  it('should reject invalid cache size limits', () => {
+    expect(() => memoize((value: number) => value, { maxSize: 0 })).toThrow(
+      RangeError,
+    )
+    expect(() => memoize((value: number) => value, { maxSize: 1.5 })).toThrow(
+      RangeError,
+    )
+  })
 })
 
 describe(compose, () => {

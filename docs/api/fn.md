@@ -7,12 +7,13 @@ outline: deep
 
 Function flow helpers such as one-time invocation and no-op utilities.
 
-This section documents 5 exported methods from the fn module.
+This section documents 6 exports from the fn module.
 
 ## Methods
 
 - [compose](#compose)
 - [memoize](#memoize)
+- [NOOP](#noop-constant)
 - [noop](#noop)
 - [once](#once)
 - [pipe](#pipe)
@@ -67,6 +68,19 @@ import { memoize } from '@ntnyq/utils'
 
 const heavy = memoize((n: number) => n * n)
 console.log(heavy(4)) // => 16
+```
+
+---
+
+## NOOP constant
+
+An uppercase alias of [`noop`](#noop), useful when a stable no-op callback value
+is needed.
+
+```ts
+import { NOOP } from '@ntnyq/utils'
+
+button.addEventListener('click', NOOP)
 ```
 
 ---

@@ -1,4 +1,4 @@
-interface Options extends ScrollIntoViewOptions {
+export interface ScrollElementIntoViewOptions extends ScrollIntoViewOptions {
   /**
    * @default `document.body`
    */
@@ -22,7 +22,7 @@ interface Options extends ScrollIntoViewOptions {
  */
 export function scrollElementIntoView(
   element: HTMLElement,
-  options: Options = {},
+  options: ScrollElementIntoViewOptions = {},
 ): void {
   const body = document.body
   const { parent = body, ...scrollIntoViewOptions } = options

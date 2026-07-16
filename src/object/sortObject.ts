@@ -35,26 +35,28 @@ export function sortObject<T extends Record<string, any>>(
   const { compareFn = (a, b) => a.localeCompare(b) } = options
 
   function sortKeys<R extends Record<string, any>>(obj: R) {
-    // oxlint-disable-next-line unicorn/no-array-sort
-    const sortedKeys = Object.keys(obj).sort(compareFn)
-    const result = {}
+    const ownKeys = Reflect.ownKeys(obj)
+    const sortedKeys = ownKeys
+      .filter((key): key is string => typeof key === 'string')
+      .toSorted(compareFn)
+    const symbolKeys = ownKeys.filter(
+      (key): key is symbol => typeof key === 'symbol',
+    )
+    const result = Object.create(Object.getPrototypeOf(obj)) as R
 
-    for (const key of sortedKeys) {
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-      const value = obj[key]
-      let newValue: any
+    for (const key of [...sortedKeys, ...symbolKeys]) {
+      const descriptor = Object.getOwnPropertyDescriptor(obj, key)
+      if (descriptor) {
+        if (
+          options.deep &&
+          'value' in descriptor &&
+          isPlainObject(descriptor.value)
+        ) {
+          descriptor.value = sortKeys(descriptor.value)
+        }
 
-      if (options.deep && isPlainObject(value)) {
-        newValue = sortKeys(value)
-      } else {
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-        newValue = value
+        Object.defineProperty(result, key, descriptor)
       }
-
-      Object.defineProperty(result, key, {
-        ...Object.getOwnPropertyDescriptor(obj, key),
-        value: newValue,
-      })
     }
 
     return result

@@ -14,9 +14,9 @@
  */
 export function filterFalsy<T>(
   array: T[],
-): Exclude<T, false | 0 | '' | null | undefined | symbol>[] {
+): Exclude<T, false | 0 | 0n | '' | null | undefined>[] {
   return array.filter(Boolean) as Exclude<
     T,
-    false | 0 | '' | null | undefined | symbol
+    false | 0 | 0n | '' | null | undefined
   >[]
 }

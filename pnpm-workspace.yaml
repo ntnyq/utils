@@ -1,6 +1,9 @@
 packages:
   - docs
 
+ignoreWorkspaceRootCheck: true
+packageManagerStrict: false
+
 allowBuilds:
   esbuild: true
 

@@ -7,13 +7,14 @@ outline: deep
 
 Utilities for cloning, sorting, picking, omitting, and cleaning object values.
 
-This section documents 12 exported methods from the object module.
+This section documents 13 exported methods from the object module.
 
 ## Methods
 
 - [cleanObject](#cleanobject)
 - [cloneDeep](#clonedeep)
 - [deepMerge](#deepmerge)
+- [deepMergeWithOptions](#deepmergewithoptions)
 - [getIn](#getin)
 - [hasOwn](#hasown)
 - [isKeyOf](#iskeyof)
@@ -87,7 +88,6 @@ Deeply merges objects into a new object.
 ### Parameters
 
 - **objects**: Source objects from left to right.
-- **options**: Optional merge options. Use `arrayStrategy: 'replace' | 'concat'`.
 
 ### Returns
 
@@ -104,6 +104,32 @@ const result = deepMerge(
 )
 
 console.log(result.theme) // => { color: 'red', tags: ['brand'] }
+```
+
+---
+
+## deepMergeWithOptions
+
+Deeply merges objects with explicit merge options. Keeping options in a separate
+function means an ordinary data object containing `arrayStrategy` is never
+misinterpreted as configuration.
+
+### Parameters
+
+- **options**: Merge options such as `arrayStrategy: 'replace' | 'concat'`.
+- **objects**: Source objects from left to right.
+
+### Example
+
+```ts
+import { deepMergeWithOptions } from '@ntnyq/utils'
+
+const result = deepMergeWithOptions(
+  { arrayStrategy: 'concat' },
+  { tags: ['base'] },
+  { tags: ['feature'] },
+)
+console.log(result.tags) // => ['base', 'feature']
 ```
 
 ---

@@ -1,4 +1,4 @@
-export interface RamdomNumberOptions {
+export interface RandomNumberOptions {
   /**
    * include max value
    *
@@ -25,18 +25,32 @@ export interface RamdomNumberOptions {
  */
 export function randomNumber(
   min: number,
-  max = 0,
-  options: RamdomNumberOptions = {},
+  max?: number,
+  options: RandomNumberOptions = {},
 ): number {
-  if (max === 0) {
+  if (max === undefined) {
     max = min
     min = 0
   }
+
+  if (!Number.isFinite(min) || !Number.isFinite(max)) {
+    throw new RangeError('Random number bounds must be finite')
+  }
+
   if (min > max) {
     ;[min, max] = [max, min]
   }
 
-  return Math.trunc(
-    Math.random() * (max - min + (options.includeMax ? 1 : 0)) + min,
-  )
+  if (min === max && Number.isInteger(min)) {
+    return min
+  }
+
+  const lower = Math.ceil(min)
+  const upper = options.includeMax ? Math.floor(max) : Math.ceil(max) - 1
+
+  if (lower > upper) {
+    throw new RangeError('Random number range contains no integers')
+  }
+
+  return Math.floor(Math.random() * (upper - lower + 1)) + lower
 }

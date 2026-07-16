@@ -7,7 +7,7 @@ outline: deep
 
 A broad collection of runtime type guards and predicate helpers.
 
-This section documents 42 exported methods from the is module.
+This section documents 43 exported methods from the is module.
 
 ## Methods
 
@@ -39,6 +39,7 @@ This section documents 42 exported methods from the is module.
 - [isNonEmptyArray](#isnonemptyarray)
 - [isNonEmptyString](#isnonemptystring)
 - [isNull](#isnull)
+- [isNullOrUndefined](#isnullorundefined)
 - [isNumber](#isnumber)
 - [isNumbericString](#isnumbericstring)
 - [isObject](#isobject)
@@ -699,6 +700,21 @@ import { isNull } from '@ntnyq/utils'
 
 const result = isNull(null)
 console.log(result) // => true
+```
+
+---
+
+## isNullOrUndefined
+
+Checks whether a value is either `null` or `undefined` and narrows its type.
+
+### Example
+
+```ts
+import { isNullOrUndefined } from '@ntnyq/utils'
+
+console.log(isNullOrUndefined(undefined)) // => true
+console.log(isNullOrUndefined(0)) // => false
 ```
 
 ---

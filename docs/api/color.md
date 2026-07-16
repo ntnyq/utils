@@ -5,15 +5,32 @@ outline: deep
 
 # Color Utilities
 
-Random color helpers for RGB, RGBA, and HEX color generation.
+Color value manipulation and random RGB, RGBA, and HEX generation.
 
-This section documents 3 exported methods from the color module.
+This section documents 4 exports from the color module.
 
 ## Methods
 
+- [Color](#color)
 - [randomHexColor](#randomhexcolor)
 - [randomRGBAColor](#randomrgbacolor)
 - [randomRGBColor](#randomrgbcolor)
+
+---
+
+## Color
+
+Represents an RGBA color with normalized channels and helpers for conversion,
+brightness checks, alpha changes, lightening, and darkening.
+
+### Example
+
+```ts
+import { Color } from '@ntnyq/utils'
+
+const color = Color.fromHex('#336699').withAlpha(0.5)
+console.log(color.toRGBAString()) // => rgba(51, 102, 153, 0.5)
+```
 
 ---
 

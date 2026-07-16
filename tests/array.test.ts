@@ -157,6 +157,12 @@ describe(chunk, () => {
       ['c', 'd'],
     ])
   })
+
+  it('should reject non-positive and fractional chunk sizes', () => {
+    expect(() => chunk([1, 2], 0)).toThrow(RangeError)
+    expect(() => chunk([1, 2], -1)).toThrow(RangeError)
+    expect(() => chunk([1, 2], 1.5)).toThrow(RangeError)
+  })
 })
 
 describe(unique, () => {
@@ -211,6 +217,11 @@ describe(uniqueBy, () => {
 })
 
 describe(filterFalsy, () => {
+  it('should retain truthy symbols and remove bigint zero', () => {
+    const token = Symbol('token')
+    expect(filterFalsy([token, 0n, 1n])).toStrictEqual([token, 1n])
+  })
+
   it('should filter out falsy values', () => {
     const mixedArray = [0, 1, false, 2, '', 3, null, 4, undefined, 5]
     expect(filterFalsy(mixedArray)).toStrictEqual([1, 2, 3, 4, 5])
@@ -248,6 +259,29 @@ describe(filterFalsy, () => {
 })
 
 describe(groupBy, () => {
+  it('should group by the value of a property key', () => {
+    const data = [
+      { kind: 'fruit', name: 'apple' },
+      { kind: 'vegetable', name: 'carrot' },
+      { kind: 'fruit', name: 'pear' },
+    ] as const
+
+    expect(groupBy(data, 'kind')).toStrictEqual({
+      fruit: [data[0], data[2]],
+      vegetable: [data[1]],
+    })
+  })
+
+  it('should safely group special and symbol keys', () => {
+    const symbol = Symbol('group')
+    const values = ['__proto__', symbol] as const
+    const result = groupBy(values, value => value)
+
+    expect(Object.hasOwn(result, '__proto__')).toBeTruthy()
+    expect(Reflect.get(result, '__proto__')).toStrictEqual(['__proto__'])
+    expect(result[symbol]).toStrictEqual([symbol])
+  })
+
   it('should group by function that returns age value', () => {
     const data = [
       { name: 'Alice', age: 30 },

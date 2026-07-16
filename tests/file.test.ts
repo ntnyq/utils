@@ -126,6 +126,13 @@ describe(getFileExtension, () => {
     expect(getFileExtension('../config.json')).toBe('json')
     expect(getFileExtension('./src/index.js')).toBe('js')
     expect(getFileExtension('/home/user/.config/app.conf')).toBe('conf')
+    expect(getFileExtension('/directory.with.dot/file')).toBeUndefined()
+  })
+
+  it('should ignore URL query strings and fragments', () => {
+    expect(getFileExtension('/image.png?width=200')).toBe('png')
+    expect(getFileExtension('/image.png#preview')).toBe('png')
+    expect(getFileExtension('/file?name=image.png')).toBeUndefined()
   })
 
   it('should handle edge cases with dots', () => {

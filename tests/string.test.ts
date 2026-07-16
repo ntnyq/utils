@@ -305,6 +305,15 @@ describe(unindent, () => {
   it('should handle string input', () => {
     expect(unindent('  hello\n  world')).toBe('hello\nworld')
   })
+
+  it('should include every tagged-template substitution', () => {
+    const subject = 'world'
+    const punctuation = '!'
+    expect(unindent`
+      hello ${subject}${punctuation}
+      from ${'utils'}
+    `).toBe('hello world!\nfrom utils')
+  })
 })
 
 describe(truncate, () => {

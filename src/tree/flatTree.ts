@@ -1,3 +1,14 @@
+export interface FlatTreeContext<T> {
+  node: T
+  parent: T | null
+  depth: number
+  /**
+   * index of the current node in the current level, starting from 0
+   */
+  index: number
+  path: T[]
+}
+
 export interface FlatTreeOptions<
   T extends Record<PropertyKey, any>,
   K extends keyof T,
@@ -18,16 +29,7 @@ export interface FlatTreeOptions<
   /**
    * map function, return value will be used as the result of the current node, if not provided, the current node will be used as the result
    */
-  map?: (ctx: {
-    node: T
-    parent: T | null
-    depth: number
-    /**
-     * index of the current node in the current level, starting from 0
-     */
-    index: number
-    path: T[]
-  }) => any
+  map?: (ctx: FlatTreeContext<T>) => unknown
 }
 
 /**
@@ -49,25 +51,23 @@ export interface FlatTreeOptions<
  * ```
  *
  */
-export function flatTree<T extends Record<PropertyKey, any>, K extends keyof T>(
+export function flatTree<T extends Record<PropertyKey, any>, R>(
   roots: readonly T[],
-  options?: FlatTreeOptions<T, K>,
-): T[]
+  options: Omit<FlatTreeOptions<T, keyof T>, 'map'> & {
+    map: (ctx: FlatTreeContext<T>) => R
+  },
+): R[]
 
 /**
- * Flattens tree nodes and maps each visited node to a custom result.
+ * Flattens tree nodes without mapping them.
  * @param roots - Root nodes of the tree.
- * @param options - Flatten options with a map callback.
- * @returns Flattened mapped results.
+ * @param options - Flatten options without a map callback.
+ * @returns Flattened nodes.
  */
-export function flatTree<
-  T extends Record<PropertyKey, any>,
-  K extends keyof T,
-  R,
->(
+export function flatTree<T extends Record<PropertyKey, any>>(
   roots: readonly T[],
-  options: FlatTreeOptions<T, K> & { map: (ctx: any) => R },
-): R[]
+  options?: Omit<FlatTreeOptions<T, keyof T>, 'map'>,
+): T[]
 
 /**
  * Internal implementation for the flatTree overloads.
@@ -75,14 +75,13 @@ export function flatTree<
  * @param options - Flattening options.
  * @returns A flattened array of original nodes or mapped values.
  */
-export function flatTree<
-  T extends Record<PropertyKey, any>,
-  K extends keyof T,
-  R,
->(roots: readonly T[], options: FlatTreeOptions<T, K> = {}): (T | R)[] {
+export function flatTree<T extends Record<PropertyKey, any>>(
+  roots: readonly T[],
+  options: FlatTreeOptions<T, keyof T> = {},
+): any[] {
   const { childrenKey = 'children', includeSelf = true, map } = options
 
-  const out: (T | R)[] = []
+  const out: any[] = []
 
   function walk(
     nodes: readonly T[],

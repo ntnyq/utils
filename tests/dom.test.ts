@@ -22,9 +22,10 @@ class MockImage {
   naturalWidth = 0
   naturalHeight = 0
   decoding: 'sync' | 'async' | 'auto' = 'auto'
-  crossOrigin: null | string = null
+  assignments: string[] = []
 
   private _src = ''
+  private _crossOrigin: null | string = null
 
   constructor() {
     MockImage.instances.push(this)
@@ -35,7 +36,17 @@ class MockImage {
   }
 
   set src(value: string) {
+    this.assignments.push('src')
     this._src = value
+  }
+
+  get crossOrigin() {
+    return this._crossOrigin
+  }
+
+  set crossOrigin(value: null | string) {
+    this.assignments.push('crossOrigin')
+    this._crossOrigin = value
   }
 }
 
@@ -75,6 +86,23 @@ describe(isElementVisibleInViewport, () => {
       innerHeight: 100,
     } as unknown as Window
     expect(isElementVisibleInViewport(element, targetWindow)).toBeFalsy()
+  })
+
+  it('should detect an element that contains the viewport', () => {
+    const element = {
+      getBoundingClientRect: () => ({
+        top: -10,
+        left: -10,
+        bottom: 110,
+        right: 110,
+      }),
+    } as unknown as HTMLElement
+    const targetWindow = {
+      innerWidth: 100,
+      innerHeight: 100,
+    } as unknown as Window
+
+    expect(isElementVisibleInViewport(element, targetWindow)).toBeTruthy()
   })
 
   it('should return false when no window is available', () => {
@@ -208,14 +236,37 @@ describe(openExternalURL, () => {
   it('should open URL with default target', () => {
     const proxy = openExternalURL('https://example.com')
     const spy = window.open as ReturnType<typeof vi.fn>
-    expect(spy).toHaveBeenCalledWith('https://example.com', '_blank')
+    expect(spy).toHaveBeenCalledWith(
+      new URL('https://example.com'),
+      '_blank',
+      'noopener,noreferrer',
+    )
     expect(proxy).toStrictEqual({ closed: false })
   })
 
   it('should open URL with custom target', () => {
     openExternalURL('https://example.com', { target: '_self' })
     const spy = window.open as ReturnType<typeof vi.fn>
-    expect(spy).toHaveBeenCalledWith('https://example.com', '_self')
+    expect(spy).toHaveBeenCalledWith(
+      new URL('https://example.com'),
+      '_self',
+      undefined,
+    )
+  })
+
+  it('should reject unsafe protocols unless explicitly allowed', () => {
+    const unsafeURL = ['javascript', 'alert(1)'].join(':')
+    expect(() => openExternalURL(unsafeURL)).toThrow(TypeError)
+    expect(window.open).not.toHaveBeenCalled()
+
+    openExternalURL('mailto:test@example.com', {
+      allowedProtocols: ['mailto:'],
+    })
+    expect(window.open).toHaveBeenCalledWith(
+      new URL('mailto:test@example.com'),
+      '_blank',
+      'noopener,noreferrer',
+    )
   })
 })
 
@@ -269,6 +320,10 @@ describe(getImageNaturalSize, () => {
     await expect(promise).resolves.toStrictEqual({ width: 640, height: 360 })
     expect(instance.decoding).toBe('async')
     expect(instance.crossOrigin).toBe('anonymous')
+    expect(instance.assignments.slice(0, 2)).toStrictEqual([
+      'crossOrigin',
+      'src',
+    ])
   })
 
   it('should reject when image load fails', async () => {
@@ -330,6 +385,9 @@ describe(getImageNaturalSize, () => {
 
     expect(first).not.toBe(second)
     expect(MockImage.instances).toHaveLength(2)
+    expect(MockImage.instances[0]!.src).toContain('__ntnyq_cache_bust=')
+    expect(MockImage.instances[1]!.src).toContain('__ntnyq_cache_bust=')
+    expect(MockImage.instances[0]!.src).not.toBe(MockImage.instances[1]!.src)
 
     MockImage.instances[0]!.naturalWidth = 10
     MockImage.instances[0]!.naturalHeight = 20
@@ -357,6 +415,54 @@ describe(getImageNaturalSize, () => {
 
     await expect(promise).resolves.toStrictEqual({ width: 120, height: 80 })
     expect(URL.revokeObjectURL).toHaveBeenCalledWith('blob:mock-url')
+  })
+
+  it('should cache a blob by identity and loading options', async () => {
+    const blob = new Blob(['image-binary'], { type: 'image/png' })
+    const first = getImageNaturalSize(blob)
+    const second = getImageNaturalSize(blob)
+
+    expect(URL.createObjectURL).toHaveBeenCalledOnce()
+    expect(MockImage.instances).toHaveLength(1)
+
+    MockImage.instances[0]!.naturalWidth = 10
+    MockImage.instances[0]!.naturalHeight = 20
+    MockImage.instances[0]!.onload?.()
+
+    await expect(first).resolves.toStrictEqual({ width: 10, height: 20 })
+    await expect(second).resolves.toStrictEqual({ width: 10, height: 20 })
+  })
+
+  it('should separate cache entries by loading options', async () => {
+    const source = 'https://example.com/options-cache.png'
+    const first = getImageNaturalSize(source, { decoding: 'sync' })
+    const second = getImageNaturalSize(source, { decoding: 'async' })
+
+    expect(MockImage.instances).toHaveLength(2)
+    MockImage.instances.forEach(instance => {
+      instance.naturalWidth = 10
+      instance.naturalHeight = 20
+      instance.onload?.()
+    })
+    await Promise.all([first, second])
+  })
+
+  it('should evict rejected promises so the source can be retried', async () => {
+    const source = 'https://example.com/retry.png?token=secret'
+    const first = getImageNaturalSize(source)
+    MockImage.instances[0]!.onerror?.()
+
+    await expect(first).rejects.toThrow(
+      'Failed to load image: https://example.com/retry.png',
+    )
+    expect(MockImage.instances).toHaveLength(1)
+
+    const second = getImageNaturalSize(source)
+    expect(MockImage.instances).toHaveLength(2)
+    MockImage.instances[1]!.naturalWidth = 30
+    MockImage.instances[1]!.naturalHeight = 40
+    MockImage.instances[1]!.onload?.()
+    await expect(second).resolves.toStrictEqual({ width: 30, height: 40 })
   })
 
   it('should not set crossOrigin when crossOrigin is null', async () => {

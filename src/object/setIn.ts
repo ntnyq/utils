@@ -38,6 +38,18 @@ function normalizePath(path: PathInput, separator: string): PathSegment[] {
     .map(segment => (/^\d+$/u.test(segment) ? Number(segment) : segment))
 }
 
+const UNSAFE_PATH_SEGMENTS = new Set(['__proto__', 'constructor', 'prototype'])
+
+function assertSafePath(segments: readonly PathSegment[]): void {
+  const unsafeSegment = segments.find(
+    segment => typeof segment === 'string' && UNSAFE_PATH_SEGMENTS.has(segment),
+  )
+
+  if (unsafeSegment !== undefined) {
+    throw new TypeError(`Unsafe path segment: ${String(unsafeSegment)}`)
+  }
+}
+
 function createContainer(nextKey: PathSegment | undefined): unknown {
   return typeof nextKey === 'number' ? [] : {}
 }
@@ -90,6 +102,7 @@ export function setIn<T extends object, V>(
   if (segments.length === 0) {
     return target
   }
+  assertSafePath(segments)
 
   if (mutate) {
     let current: Record<PathSegment, unknown> = target as Record<
@@ -144,10 +157,7 @@ export function setIn<T extends object, V>(
         ? (sourceCurrent as Record<PathSegment, unknown>)[key]
         : undefined
 
-    if (
-      !createIntermediate &&
-      (sourceNext === undefined || sourceNext === null)
-    ) {
+    if (!createIntermediate && !isObjectLike(sourceNext)) {
       return target
     }
 

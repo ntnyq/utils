@@ -19,7 +19,7 @@
 export function enhance<
   T extends Record<PropertyKey, any>,
   E extends Record<PropertyKey, any>,
->(module: T, extra: E): T {
+>(module: T, extra: E): Omit<T, keyof E> & E {
   return new Proxy(module, {
     get(target, key, receiver) {
       if (Reflect.has(extra, key)) {
@@ -30,5 +30,5 @@ export function enhance<
     has(target, key) {
       return Reflect.has(extra, key) || Reflect.has(target, key)
     },
-  })
+  }) as Omit<T, keyof E> & E
 }

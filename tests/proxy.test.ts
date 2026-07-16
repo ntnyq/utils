@@ -10,8 +10,7 @@ describe(enhance, () => {
 
     expect(proxied.a).toBe(1)
     expect(proxied.b).toBe(3)
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-    expect((proxied as any).c).toBe(4)
+    expect(proxied.c).toBe(4)
     expect('a' in proxied).toBeTruthy()
     expect('b' in proxied).toBeTruthy()
     expect('c' in proxied).toBeTruthy()

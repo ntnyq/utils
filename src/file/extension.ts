@@ -52,6 +52,34 @@ export function getFileExtension(filePath?: string): string | undefined {
   if (!filePath) {
     return undefined
   }
-  const match = filePath.match(/\.(?<extension>[^.]+)$/u)
+
+  const queryIndex = filePath.indexOf('?')
+  const pathWithoutQuery =
+    queryIndex === -1 ? filePath : filePath.slice(0, queryIndex)
+  const hashIndex = pathWithoutQuery.indexOf('#')
+  const pathBeforeHash =
+    hashIndex === -1 ? pathWithoutQuery : pathWithoutQuery.slice(0, hashIndex)
+  const basenameBeforeHash = pathBeforeHash.slice(
+    Math.max(
+      pathBeforeHash.lastIndexOf('/'),
+      pathBeforeHash.lastIndexOf('\\'),
+    ) + 1,
+  )
+  const normalizedPath =
+    hashIndex !== -1 && /\.[^.]+$/u.test(basenameBeforeHash)
+      ? pathBeforeHash
+      : pathWithoutQuery
+  const basename = normalizedPath.slice(
+    Math.max(
+      normalizedPath.lastIndexOf('/'),
+      normalizedPath.lastIndexOf('\\'),
+    ) + 1,
+  )
+
+  if (!basename || /^\.+$/u.test(basename)) {
+    return undefined
+  }
+
+  const match = basename.match(/\.(?<extension>[^.]+)$/u)
   return match?.groups?.['extension']
 }

@@ -1,5 +1,5 @@
 // oxlint-disable oxc/approx-constant
-import { describe, expect, it } from 'vitest'
+import { describe, expect, it, vi } from 'vitest'
 import {
   randomNumber,
   round,
@@ -129,6 +129,20 @@ describe(randomNumber, () => {
     expect(result).toBeGreaterThanOrEqual(1)
     expect(result).toBeLessThanOrEqual(3)
   })
+
+  it('should honor exclusive bounds for negative ranges', () => {
+    vi.spyOn(Math, 'random').mockReturnValueOnce(0.999_999)
+    expect(randomNumber(-5, -1)).toBe(-2)
+
+    vi.spyOn(Math, 'random').mockReturnValueOnce(0.999_999)
+    expect(randomNumber(-5, -1, { includeMax: true })).toBe(-1)
+    vi.restoreAllMocks()
+  })
+
+  it('should reject invalid or empty integer ranges', () => {
+    expect(() => randomNumber(Number.POSITIVE_INFINITY, 2)).toThrow(RangeError)
+    expect(() => randomNumber(1.1, 1.2)).toThrow(RangeError)
+  })
 })
 
 describe(toInteger, () => {
@@ -153,14 +167,14 @@ describe(toInteger, () => {
   })
 
   it('should handle null and undefined', () => {
-    expect(toInteger(null)).toBeNull() // 'useDefault' returns original value
-    expect(toInteger(undefined)).toBeUndefined()
-    expect(
-      toInteger(null, { onError: 'useDefault', defaultValue: 42 }),
-    ).toBeNull()
+    expect(toInteger(null)).toBe(0)
+    expect(toInteger(undefined)).toBe(0)
+    expect(toInteger(null, { onError: 'useDefault', defaultValue: 42 })).toBe(
+      42,
+    )
     expect(
       toInteger(undefined, { onError: 'useDefault', defaultValue: 42 }),
-    ).toBeUndefined()
+    ).toBe(42)
   })
 
   it('should handle NaN', () => {
@@ -184,8 +198,17 @@ describe(toInteger, () => {
     expect(() => toInteger('abc', { onError: 'throwError' })).toThrow(/nan/iu)
 
     expect(toInteger('', { onError: 'returnOriginal' })).toBe('')
-    expect(toInteger(null, { onError: 'returnOriginal' })).toBe(0) // returns defaultValue when onError is 'returnOriginal'
+    expect(toInteger(null, { onError: 'returnOriginal' })).toBeNull()
     expect(toInteger('abc', { onError: 'returnOriginal' })).toBe('abc')
+  })
+
+  it('should apply error handling when numeric conversion throws', () => {
+    const symbol = Symbol('value')
+    expect(toInteger(symbol)).toBe(0)
+    expect(toInteger(symbol, { onError: 'returnOriginal' })).toBe(symbol)
+    expect(() => toInteger(symbol, { onError: 'throwError' })).toThrow(
+      TypeError,
+    )
   })
 
   it('should handle min and max constraints', () => {
@@ -240,6 +263,9 @@ describe(toInteger, () => {
     // Test with decimal inputs and ranges
     expect(toInteger(2.7, { min: 3, max: 10, allowDecimal: true })).toBe(3)
     expect(toInteger(12.3, { min: 3, max: 10, allowDecimal: true })).toBe(10)
+    expect(toInteger(1, { min: 1.2 })).toBe(2)
+    expect(toInteger(5, { max: 3.8 })).toBe(3)
+    expect(() => toInteger(2, { min: 2.8, max: 2.2 })).toThrow(RangeError)
   })
 })
 

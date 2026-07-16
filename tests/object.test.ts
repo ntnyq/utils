@@ -5,6 +5,7 @@ import {
   cleanObject,
   cloneDeep,
   deepMerge,
+  deepMergeWithOptions,
   getIn,
   hasOwn,
   isKeyOf,
@@ -360,6 +361,24 @@ describe(sortObject, () => {
     const descriptor = Object.getOwnPropertyDescriptor(result, 'c')
     expect(descriptor?.writable).toBeFalsy()
   })
+
+  it('should preserve accessors, non-enumerable keys, and symbols', () => {
+    const symbol = Symbol('token')
+    const expectedValue = 1
+    const getter = () => expectedValue
+    const obj = { z: 2, [symbol]: 3 }
+    Object.defineProperty(obj, 'a', {
+      configurable: true,
+      enumerable: false,
+      get: getter,
+    })
+
+    const result = sortObject(obj)
+
+    expect(Reflect.ownKeys(result)).toStrictEqual(['a', 'z', symbol])
+    expect(Object.getOwnPropertyDescriptor(result, 'a')?.get).toBe(getter)
+    expect(result[symbol]).toBe(3)
+  })
 })
 
 describe(cloneDeep, () => {
@@ -473,6 +492,46 @@ describe(cloneDeep, () => {
     expect(cloned).toStrictEqual(original)
   })
 
+  it('should clone dates, regular expressions, maps, and sets', () => {
+    const key = { id: 1 }
+    const original = {
+      date: new Date('2024-01-01T00:00:00.000Z'),
+      regexp: /value/giu,
+      map: new Map([[key, { nested: true }]]),
+      set: new Set([{ value: 1 }]),
+    }
+    original.regexp.lastIndex = 2
+
+    const cloned = cloneDeep(original)
+
+    expect(cloned).toStrictEqual(original)
+    expect(cloned.date).not.toBe(original.date)
+    expect(cloned.regexp).not.toBe(original.regexp)
+    expect(cloned.map).not.toBe(original.map)
+    expect([...cloned.map.keys()][0]).not.toBe(key)
+    expect(cloned.set).not.toBe(original.set)
+  })
+
+  it('should preserve prototypes and property descriptors without invoking getters', () => {
+    class Model {
+      value = 1
+    }
+    const nested = true
+    const getter = () => ({ nested })
+    const original = new Model()
+    Object.defineProperty(original, 'computed', {
+      enumerable: false,
+      get: getter,
+    })
+
+    const cloned = cloneDeep(original)
+
+    expect(cloned).toBeInstanceOf(Model)
+    expect(Object.getOwnPropertyDescriptor(cloned, 'computed')?.get).toBe(
+      getter,
+    )
+  })
+
   it('should handle deeply nested structures without circular references', () => {
     const original = {
       level1: {
@@ -564,14 +623,37 @@ describe(deepMerge, () => {
   })
 
   it('should concat arrays with concat strategy', () => {
-    const concatResult = deepMerge(
+    const concatResult = deepMergeWithOptions(
       { arrayStrategy: 'concat' },
       { list: [1, 2], nested: { list: [3] } },
       { list: [4], nested: { list: [5] } },
-    ) as { list: number[]; nested: { list: number[] } }
+    )
 
     expect(concatResult.list).toStrictEqual([1, 2, 4])
     expect(concatResult.nested.list).toStrictEqual([3, 5])
+  })
+
+  it('should treat an arrayStrategy field as data in deepMerge', () => {
+    expect(deepMerge({ arrayStrategy: 'concat', list: [1] })).toStrictEqual({
+      arrayStrategy: 'concat',
+      list: [1],
+    })
+  })
+
+  it('should safely merge special keys and cyclic records', () => {
+    const source: Record<string, unknown> = { value: 1 }
+    source['self'] = source
+    const special = JSON.parse('{"__proto__":{"polluted":true}}') as Record<
+      string,
+      unknown
+    >
+
+    const cyclic = deepMerge(source)
+    const merged = deepMerge({}, special)
+
+    expect(cyclic['self']).toBe(cyclic)
+    expect(Object.hasOwn(merged, '__proto__')).toBeTruthy()
+    expect(({} as { polluted?: boolean }).polluted).toBeUndefined()
   })
 
   it('should not mutate source objects', () => {
@@ -657,5 +739,25 @@ describe(setIn, () => {
 
     expect(result.users[0]!.name).toBe('Bob')
     expect(source.users[0]!.name).toBe('Alice')
+  })
+
+  it('should leave primitive intermediates unchanged when creation is disabled', () => {
+    const source = { user: 1 }
+    const result = setIn(source, 'user.name', 'Alice', {
+      createIntermediate: false,
+    })
+
+    expect(result).toBe(source)
+    expect(source).toStrictEqual({ user: 1 })
+  })
+
+  it('should reject prototype-polluting paths in immutable and mutable modes', () => {
+    expect(() => setIn({}, '__proto__.polluted', true)).toThrow(TypeError)
+    expect(() =>
+      setIn({}, ['constructor', 'prototype', 'polluted'], true, {
+        mutate: true,
+      }),
+    ).toThrow(TypeError)
+    expect(({} as { polluted?: boolean }).polluted).toBeUndefined()
   })
 })

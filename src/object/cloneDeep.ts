@@ -1,41 +1,132 @@
-import { isNull, isObject } from '../is'
+function cloneDescriptor(
+  descriptor: PropertyDescriptor,
+  hash: WeakMap<object, unknown>,
+): PropertyDescriptor {
+  if ('value' in descriptor) {
+    return {
+      ...descriptor,
+      value: cloneDeep(descriptor.value, hash),
+    }
+  }
+  return descriptor
+}
+
+function cloneArrayBufferView<T extends ArrayBufferView>(
+  value: T,
+  hash: WeakMap<object, unknown>,
+): T {
+  const buffer = cloneDeep(value.buffer, hash)
+
+  if (value instanceof DataView) {
+    return new DataView(
+      buffer,
+      value.byteOffset,
+      value.byteLength,
+    ) as unknown as T
+  }
+
+  const TypedArray = value.constructor as new (
+    buffer: ArrayBufferLike,
+    byteOffset: number,
+    length?: number,
+  ) => T
+  const length = 'length' in value ? (value.length as number) : undefined
+  return new TypedArray(buffer, value.byteOffset, length)
+}
 
 /**
- * Deeply clones a value, handling circular references using a WeakMap.
- * @param value The value to be cloned.
- * @param hash - A WeakMap to track already cloned objects and handle circular references.
+ * Deeply clones a value, preserving built-in collection types, property
+ * descriptors, prototypes, symbol keys, and circular references.
+ * @param value - The value to clone.
+ * @param hash - Objects already cloned during this operation.
  * @returns A deep clone of the input value.
- * @example
- *
- * ```typescript
- * import { cloneDeep } from '@ntnyq/utils'
- *
- * const original = { user: { name: 'Alice' } }
- * const cloned = cloneDeep(original)
- * console.log(cloned.user === original.user) // => false
- * ```
- *
  */
+// oxlint-disable-next-line complexity
 export function cloneDeep<T>(
   value: T,
-  hash: WeakMap<WeakKey, any> = new WeakMap<WeakKey, any>(),
+  hash: WeakMap<object, unknown> = new WeakMap<object, unknown>(),
 ): T {
-  if (isNull(value) || !isObject(value)) {
+  if (
+    (typeof value !== 'object' && typeof value !== 'function') ||
+    value === null
+  ) {
     return value
   }
 
-  const cached = hash.get(value as WeakKey)
-  if (cached) {
-    return cached
+  if (typeof value === 'function') {
+    return value
   }
 
-  const result: any = Array.isArray(value) ? [] : {}
+  if (hash.has(value)) {
+    return hash.get(value) as T
+  }
 
-  hash.set(value as WeakKey, result)
+  if (value instanceof Date) {
+    const result = new Date(value)
+    hash.set(value, result)
+    return result as T
+  }
 
-  Reflect.ownKeys(value).forEach(key => {
-    result[key] = cloneDeep((value as any)[key], hash)
-  })
+  if (value instanceof RegExp) {
+    const result = new RegExp(value.source, value.flags)
+    result.lastIndex = value.lastIndex
+    hash.set(value, result)
+    return result as T
+  }
 
-  return result
+  if (value instanceof Map) {
+    const result = new Map()
+    hash.set(value, result)
+    for (const [key, item] of value) {
+      result.set(cloneDeep(key, hash), cloneDeep(item, hash))
+    }
+    return result as T
+  }
+
+  if (value instanceof Set) {
+    const result = new Set()
+    hash.set(value, result)
+    for (const item of value) {
+      result.add(cloneDeep(item, hash))
+    }
+    return result as T
+  }
+
+  if (value instanceof ArrayBuffer) {
+    // oxlint-disable-next-line unicorn/prefer-spread
+    const result = value.slice(0)
+    hash.set(value, result)
+    return result as T
+  }
+
+  if (ArrayBuffer.isView(value)) {
+    const result = cloneArrayBufferView(value, hash)
+    hash.set(value, result)
+    return result as T
+  }
+
+  if (
+    value instanceof Promise ||
+    value instanceof WeakMap ||
+    value instanceof WeakSet
+  ) {
+    return value
+  }
+
+  const result: object = Array.isArray(value)
+    ? []
+    : Object.create(Object.getPrototypeOf(value))
+  if (Array.isArray(result)) {
+    result.length = (value as unknown[]).length
+  }
+  hash.set(value, result)
+
+  for (const key of Reflect.ownKeys(value)) {
+    const descriptor = Object.getOwnPropertyDescriptor(value, key)
+    if (descriptor) {
+      Object.defineProperty(result, key, cloneDescriptor(descriptor, hash))
+    }
+  }
+
+  return result as T
 }

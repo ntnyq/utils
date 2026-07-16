@@ -1,4 +1,6 @@
-import { isFunction } from '../is'
+type PropertyKeyOf<T> = {
+  [K in keyof T]-?: T[K] extends PropertyKey ? K : never
+}[keyof T]
 
 /**
  * Groups the elements of an array based on a specified key or a function that returns a key.
@@ -33,19 +35,48 @@ import { isFunction } from '../is'
  * // }
  * ```
  */
+export function groupBy<T, Key extends PropertyKey>(
+  array: readonly T[],
+  key: (item: T) => Key,
+): Partial<Record<Key, T[]>>
+
+export function groupBy<Key extends PropertyKey>(
+  array: readonly never[],
+  key: Key,
+): Partial<Record<Key, never[]>>
+
+export function groupBy<T, Key extends PropertyKeyOf<T>>(
+  array: readonly T[],
+  key: Key,
+): Partial<Record<Extract<T[Key], PropertyKey>, T[]>>
+
 export function groupBy<T>(
-  array: T[],
-  key: string | number | ((item: T) => string | number),
-): Record<string, T[]> {
-  return array.reduce(
-    (result, item) => {
-      const groupKey = isFunction(key) ? key(item) : key
-      if (!result[groupKey]) {
-        result[groupKey] = []
-      }
-      result[groupKey].push(item)
-      return result
-    },
-    {} as Record<string, T[]>,
-  )
+  array: readonly T[],
+  key: PropertyKey | ((item: T) => PropertyKey),
+): Partial<Record<PropertyKey, T[]>> {
+  const groups = new Map<PropertyKey, T[]>()
+
+  for (const item of array) {
+    const groupKey =
+      typeof key === 'function'
+        ? key(item)
+        : (item as Record<PropertyKey, unknown>)[key]
+
+    if (
+      typeof groupKey !== 'string' &&
+      typeof groupKey !== 'number' &&
+      typeof groupKey !== 'symbol'
+    ) {
+      throw new TypeError('Group key must be a property key')
+    }
+
+    const group = groups.get(groupKey)
+    if (group) {
+      group.push(item)
+    } else {
+      groups.set(groupKey, [item])
+    }
+  }
+
+  return Object.fromEntries(groups)
 }

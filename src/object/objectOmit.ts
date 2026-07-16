@@ -1,6 +1,6 @@
 import { isUndefined } from '../is'
 
-interface ObjectOmitOptions {
+export interface ObjectOmitOptions {
   /**
    * If true, properties with undefined values will be omitted from the resulting object.
    * @default false

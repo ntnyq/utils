@@ -776,6 +776,48 @@ describe(isDeepEqual, () => {
     expect(isDeepEqual({ [sym]: 1 }, { [sym]: 2 })).toBeFalsy()
     expect(isDeepEqual({ [sym]: 1 }, {})).toBeFalsy()
   })
+
+  it('should compare dates, regular expressions, maps, and sets by value', () => {
+    expect(
+      isDeepEqual(
+        new Date('2024-01-01T00:00:00.000Z'),
+        new Date('2024-01-02T00:00:00.000Z'),
+      ),
+    ).toBeFalsy()
+    expect(isDeepEqual(/a/giu, /b/giu)).toBeFalsy()
+    expect(
+      isDeepEqual(
+        new Map([[{ id: 1 }, { value: 2 }]]),
+        new Map([[{ id: 1 }, { value: 2 }]]),
+      ),
+    ).toBeTruthy()
+    expect(isDeepEqual(new Set([{ id: 1 }]), new Set([{ id: 2 }]))).toBeFalsy()
+  })
+
+  it('should compare cyclic graphs without overflowing the stack', () => {
+    const left: Record<string, unknown> = { value: 1 }
+    const right: Record<string, unknown> = { value: 1 }
+    left['self'] = left
+    right['self'] = right
+
+    expect(isDeepEqual(left, right)).toBeTruthy()
+
+    const different: Record<string, unknown> = { value: 1 }
+    different['self'] = { value: 1, self: different }
+    expect(isDeepEqual(left, different)).toBeFalsy()
+  })
+
+  it('should only consider the same function reference equal', () => {
+    const value = 1
+    const fn = () => value
+    expect(isDeepEqual(fn, fn)).toBeTruthy()
+    expect(
+      isDeepEqual(
+        () => 1,
+        () => 1,
+      ),
+    ).toBeFalsy()
+  })
 })
 
 describe(isRecord, () => {

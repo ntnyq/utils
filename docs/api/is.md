@@ -45,7 +45,7 @@ This section documents 51 exported methods from the is module.
 - [isNull](#isnull)
 - [isNullOrUndefined](#isnullorundefined)
 - [isNumber](#isnumber)
-- [isNumbericString](#isnumbericstring)
+- [isNumericString](#isnumericstring)
 - [isObject](#isobject)
 - [isPrimitive](#isprimitive)
 - [isPromise](#ispromise)
@@ -842,7 +842,7 @@ console.log(result) // => true
 
 ---
 
-## isNumbericString
+## isNumericString
 
 Checks whether a value is a numeric string.
 
@@ -857,9 +857,9 @@ True if the value can be parsed as a number.
 ### Example
 
 ```ts
-import { isNumbericString } from '@ntnyq/utils'
+import { isNumericString } from '@ntnyq/utils'
 
-const result = isNumbericString('123.45')
+const result = isNumericString('123.45')
 console.log(result) // => true
 ```
 

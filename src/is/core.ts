@@ -194,13 +194,13 @@ export function isEmptyStringOrWhitespace(
  * @example
  *
  * ```typescript
- * import { isNumbericString } from '@ntnyq/utils'
+ * import { isNumericString } from '@ntnyq/utils'
  *
- * const result = isNumbericString('123.45')
+ * const result = isNumericString('123.45')
  * console.log(result) // => true
  * ```
  */
-export function isNumbericString(value: unknown): value is `${number}` {
+export function isNumericString(value: unknown): value is `${number}` {
   return (
     isString(value) &&
     !isEmptyStringOrWhitespace(value) &&

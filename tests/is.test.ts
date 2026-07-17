@@ -37,7 +37,7 @@ import {
   isNull,
   isNullOrUndefined,
   isNumber,
-  isNumbericString,
+  isNumericString,
   isObject,
   isPrimitive,
   isPromise,
@@ -220,27 +220,27 @@ describe(isEmptyStringOrWhitespace, () => {
   })
 })
 
-describe(isNumbericString, () => {
+describe(isNumericString, () => {
   it('should return true for numeric strings', () => {
-    expect(isNumbericString('123')).toBeTruthy()
-    expect(isNumbericString('0')).toBeTruthy()
-    expect(isNumbericString('-123')).toBeTruthy()
-    expect(isNumbericString('123.456')).toBeTruthy()
-    expect(isNumbericString('1e10')).toBeTruthy()
+    expect(isNumericString('123')).toBeTruthy()
+    expect(isNumericString('0')).toBeTruthy()
+    expect(isNumericString('-123')).toBeTruthy()
+    expect(isNumericString('123.456')).toBeTruthy()
+    expect(isNumericString('1e10')).toBeTruthy()
   })
 
   it('should return false for non-numeric strings', () => {
-    expect(isNumbericString('hello')).toBeFalsy()
-    expect(isNumbericString('123abc')).toBeFalsy()
-    expect(isNumbericString('')).toBeFalsy()
-    expect(isNumbericString(' ')).toBeFalsy()
+    expect(isNumericString('hello')).toBeFalsy()
+    expect(isNumericString('123abc')).toBeFalsy()
+    expect(isNumericString('')).toBeFalsy()
+    expect(isNumericString(' ')).toBeFalsy()
   })
 
   it('should return false for non-strings', () => {
-    expect(isNumbericString(123)).toBeFalsy()
-    expect(isNumbericString(null)).toBeFalsy()
+    expect(isNumericString(123)).toBeFalsy()
+    expect(isNumericString(null)).toBeFalsy()
     // @ts-expect-error testing undefined
-    expect(isNumbericString()).toBeFalsy()
+    expect(isNumericString()).toBeFalsy()
   })
 })
 

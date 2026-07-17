@@ -5,30 +5,30 @@ outline: deep
 
 # API Reference
 
-Browse the utilities by category. Each page is generated from the current source exports and their JSDoc comments.
+The public entry remains flat, while implementation ownership is organized by
+domain so consumers can find browser-only and framework-agnostic utilities at a
+glance.
 
-| Category                             | Methods | Description                                                                                                |
-| ------------------------------------ | ------: | ---------------------------------------------------------------------------------------------------------- |
-| [Array Utilities](/api/array)        |      15 | Helpers for chunking, grouping, normalizing, comparing, and transforming arrays.                           |
-| [Color Utilities](/api/color)        |       4 | Color value manipulation and random RGB, RGBA, and HEX generation.                                         |
-| [Constants](/api/constants)          |       4 | Reusable character and regular-expression constants.                                                       |
-| [DOM Utilities](/api/dom)            |       4 | Browser-side helpers for viewport checks, scrolling, image inspection, and opening links.                  |
-| [Environment Utilities](/api/env)    |       1 | Environment detection helpers for browser-aware logic.                                                     |
-| [File Utilities](/api/file)          |       2 | Small helpers for file path and extension handling.                                                        |
-| [Function Utilities](/api/fn)        |       6 | Function flow helpers for composition, memoization, one-time invocation, and no-op usage.                  |
-| [HTML Utilities](/api/html)          |       2 | Helpers for escaping and unescaping HTML-safe text.                                                        |
-| [Type Guards and Checks](/api/is)    |      43 | A broad collection of runtime type guards and predicate helpers.                                           |
-| [Miscellaneous Utilities](/api/misc) |      14 | General-purpose helpers for math, time, storage, async timing, and warnings.                               |
-| [Module Utilities](/api/module)      |       2 | Helpers for working with modules and nested option resolution.                                             |
-| [Number Utilities](/api/number)      |       5 | Helpers for random numbers, rounding, and number coercion.                                                 |
-| [Object Utilities](/api/object)      |      13 | Utilities for deep merge/path operations, cloning, sorting, picking, omitting, and cleaning object values. |
-| [Proxy Utilities](/api/proxy)        |       1 | Helpers for enhancing objects through proxy-based composition.                                             |
-| [String Utilities](/api/string)      |      12 | String formatting, truncation, normalization, padding, randomization, and similarity helpers.              |
-| [Tree Utilities](/api/tree)          |       1 | Helpers for flattening nested tree-like data structures.                                                   |
-| [Type Utilities](/api/types)         |      23 | Reusable TypeScript types for common data, module, JSON, and transformation patterns.                      |
+| Category                    | Exports | Description                                                    |
+| --------------------------- | ------: | -------------------------------------------------------------- |
+| [Array](/api/array)         |      15 | Array normalization, grouping, comparison, and transformation. |
+| [Async](/api/async)         |       1 | Promise-based timing helpers.                                  |
+| [Color](/api/color)         |       4 | Color manipulation and random color generation.                |
+| [Function](/api/function)   |       8 | Composition, memoization, throttling, and invocation control.  |
+| [HTML](/api/html)           |       2 | HTML text escaping and unescaping.                             |
+| [Logging](/api/logging)     |       1 | Controlled warning output.                                     |
+| [Module](/api/module)       |       1 | Module interop.                                                |
+| [Number](/api/number)       |       6 | Range, random, rounding, and coercion helpers.                 |
+| [Object](/api/object)       |      13 | Object selection, paths, cloning, merging, and cleanup.        |
+| [Path](/api/path)           |       3 | Pure path-string and extension helpers.                        |
+| [Predicate](/api/predicate) |      50 | Runtime checks grouped by semantic concern.                    |
+| [Proxy](/api/proxy)         |       1 | Proxy-based object enhancement.                                |
+| [String](/api/string)       |      12 | String formatting, matching, and owned character constants.    |
+| [Tree](/api/tree)           |       1 | Tree flattening.                                               |
+| [Types](/api/types)         |      22 | Reusable TypeScript types.                                     |
+| [Units](/api/units)         |       6 | Duration and byte-size conversions.                            |
+| [Web](/api/web)             |       9 | Environment, DOM, image, and animation-frame helpers.          |
 
-## Notes
-
-- All utilities are ESM-first and tree-shakable.
-- Import helpers directly from the package entry.
-- Browser-only helpers are grouped under the DOM and environment sections.
+All utilities are ESM-first and tree-shakable. Import public APIs from
+`@ntnyq/utils`; the source folders describe ownership rather than package
+subpath exports.

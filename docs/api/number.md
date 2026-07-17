@@ -5,11 +5,13 @@ outline: deep
 
 # Number Utilities
 
-Helpers for random numbers, rounding, and number coercion.
+Helpers for ranges, random numbers, rounding, and number coercion.
 
-This section documents 5 exported methods from the number module.
+This section documents 6 exported methods from the number module.
 
 ## Methods
+
+- [clamp](#clamp)
 
 - [randomNumber](#randomnumber)
 - [round](#round)
@@ -140,4 +142,16 @@ import { toNumber } from '@ntnyq/utils'
 
 const result = toNumber('3.14')
 console.log(result) // => 3.14
+```
+
+---
+
+## clamp
+
+Clamps a number to an inclusive range.
+
+```ts
+import { clamp } from '@ntnyq/utils'
+
+clamp(15, 0, 10) // => 10
 ```

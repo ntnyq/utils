@@ -1,11 +1,8 @@
 import { describe, expectTypeOf, it } from 'vitest'
 import { filterFalsy, groupBy } from '../src/array'
-import { openExternalURL, scrollElementIntoView } from '../src/dom'
-import type {
-  GetImageNaturalSizeOptions,
-  OpenExternalURLOptions,
-  ScrollElementIntoViewOptions,
-} from '../src/dom'
+import { randomNumber, toInteger } from '../src/number'
+import { deepMerge, objectOmit } from '../src/object'
+import type { ObjectOmitOptions } from '../src/object'
 import {
   isDate,
   isNonEmptyMap,
@@ -14,13 +11,16 @@ import {
   isPrimitive,
   isWeakMap,
   isWeakSet,
-} from '../src/is'
-import { randomNumber, toInteger } from '../src/number'
-import { deepMerge, objectOmit } from '../src/object'
-import type { ObjectOmitOptions } from '../src/object'
+} from '../src/predicate'
 import { enhance } from '../src/proxy'
 import { flatTree } from '../src/tree'
-import type { DeepRequired, ResolvedOptions } from '../src/types'
+import type { DeepRequired } from '../src/types'
+import { openExternalURL, scrollElementIntoView } from '../src/web'
+import type {
+  GetImageNaturalSizeOptions,
+  OpenExternalURLOptions,
+  ScrollElementIntoViewOptions,
+} from '../src/web'
 
 describe('public API types', () => {
   it('should preserve readonly arrays and tuples in DeepRequired', () => {
@@ -34,18 +34,6 @@ describe('public API types', () => {
     }
 
     expectTypeOf<DeepRequired<Input>>().toEqualTypeOf<Expected>()
-  })
-
-  it('should type boolean resolved options as an empty record', () => {
-    expectTypeOf<ResolvedOptions<boolean>>().toEqualTypeOf<
-      Record<PropertyKey, never>
-    >()
-    expectTypeOf<ResolvedOptions<{ enabled?: boolean }>>().toEqualTypeOf<{
-      enabled?: boolean
-    }>()
-    expectTypeOf<ResolvedOptions<null>>().toEqualTypeOf<
-      Record<PropertyKey, never>
-    >()
   })
 
   it('should expose corrected utility result types', () => {

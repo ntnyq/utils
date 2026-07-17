@@ -1,6 +1,7 @@
 // oxlint-disable oxc/approx-constant
 import { describe, expect, it, vi } from 'vitest'
 import {
+  clamp,
   randomNumber,
   round,
   toFixed,
@@ -397,5 +398,23 @@ describe(round, () => {
     // Rounding to tens, hundreds, etc
     expect(round(1234.56, -1)).toBe(1230)
     expect(round(1234.56, -2)).toBe(1200)
+  })
+})
+
+describe(clamp, () => {
+  it('should clamp within range', () => {
+    expect(clamp(5, 0, 10)).toBe(5)
+    expect(clamp(-5, 0, 10)).toBe(0)
+    expect(clamp(15, 0, 10)).toBe(10)
+  })
+
+  it('should handle default min/max', () => {
+    expect(clamp(5)).toBe(5)
+  })
+
+  it('should handle min greater than max', () => {
+    expect(clamp(5, 10, 0)).toBe(5)
+    expect(clamp(-5, 10, 0)).toBe(0)
+    expect(clamp(15, 10, 0)).toBe(10)
   })
 })

@@ -1,4 +1,4 @@
-import { isString } from '../is'
+import { isString } from '../predicate'
 
 const RE_FULL_WS = /^\s*$/u
 

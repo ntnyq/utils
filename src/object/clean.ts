@@ -7,7 +7,7 @@ import {
   isRecord,
   isUndefined,
   isZero,
-} from '../is'
+} from '../predicate'
 
 export interface CleanObjectOptions {
   /**

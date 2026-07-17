@@ -9,7 +9,9 @@ String formatting, normalization, padding, randomization, and similarity helpers
 
 This section documents 12 exported methods from the string module.
 
-## Methods
+## Exports
+
+- [SPECIAL_CHAR](#special_char)
 
 - [createPadString](#createpadstring)
 - [ensurePrefix](#ensureprefix)
@@ -19,7 +21,6 @@ This section documents 12 exported methods from the string module.
 - [getStringSimilarity](#getstringsimilarity)
 - [join](#join)
 - [randomString](#randomstring)
-- [slash](#slash)
 - [slugify](#slugify)
 - [truncate](#truncate)
 - [unindent](#unindent)
@@ -216,29 +217,6 @@ console.log(result.length) // => 8
 
 ---
 
-## slash
-
-Replaces all backslashes in a string with forward slashes.
-
-### Parameters
-
-- **input**: The string to normalize.
-
-### Returns
-
-The normalized string using forward slashes.
-
-### Example
-
-```ts
-import { slash } from '@ntnyq/utils'
-
-const result = slash('foo\\bar\\baz')
-console.log(result) // => 'foo/bar/baz'
-```
-
----
-
 ## slugify
 
 Converts a string into a URL-friendly slug.
@@ -310,4 +288,17 @@ const str = unindent`
 `
 
 console.log(str)
+```
+
+---
+
+## SPECIAL_CHAR
+
+A stable collection of commonly reused string characters. It lives with the
+string module instead of a global constants bucket.
+
+```ts
+import { SPECIAL_CHAR } from '@ntnyq/utils'
+
+SPECIAL_CHAR.hyphen // => '-'
 ```

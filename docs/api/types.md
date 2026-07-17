@@ -23,8 +23,7 @@ and `Primitive` describe frequently used value shapes.
 ## JSON and module types
 
 `JsonArray`, `JsonObject`, `JsonPrimitive`, and `JsonValue` model JSON data.
-`InteropModuleDefault<T>` and `ResolvedOptions<T>` model module and option
-normalization.
+`InteropModuleDefault<T>` models the default export returned from an imported module.
 
 ## General helpers
 

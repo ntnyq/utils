@@ -1,4 +1,4 @@
-import { isUndefined } from '../is'
+import { isUndefined } from '../predicate'
 import { hasOwn } from './hasOwn'
 
 export interface ObjectPickOptions {

@@ -8,7 +8,6 @@ import {
   getStringSimilarity,
   join,
   randomString,
-  slash,
   slugify,
   truncate,
   unindent,
@@ -192,25 +191,6 @@ describe(randomString, () => {
   it('should use default charset containing alphanumeric', () => {
     const result = randomString(100)
     expect(/[0-9a-z]/iu.test(result)).toBeTruthy()
-  })
-})
-
-describe(slash, () => {
-  it('should replace backslashes with slashes', () => {
-    expect(slash(String.raw`a\b\c`)).toBe('a/b/c')
-    expect(slash(String.raw`path\to\file`)).toBe('path/to/file')
-  })
-
-  it('should leave forward slashes unchanged', () => {
-    expect(slash('a/b/c')).toBe('a/b/c')
-  })
-
-  it('should handle mixed slashes', () => {
-    expect(slash(String.raw`a\b/c\d`)).toBe('a/b/c/d')
-  })
-
-  it('should handle empty string', () => {
-    expect(slash('')).toBe('')
   })
 })
 

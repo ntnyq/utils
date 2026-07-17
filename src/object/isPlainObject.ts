@@ -1,4 +1,4 @@
-import { isObject } from '../is'
+import { isObject } from '../predicate'
 
 /**
  * Checks whether a value is a plain object rather than a built-in or custom class instance.

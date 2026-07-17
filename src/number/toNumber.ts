@@ -1,4 +1,4 @@
-import { isNaN, isNumber, isString } from '../is'
+import { isNaN, isNumber, isString } from '../predicate'
 
 /**
  * Converts `value` to a number.

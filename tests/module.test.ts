@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { interopDefault, resolveSubOptions } from '../src/module'
+import { interopDefault } from '../src/module'
 
 describe(interopDefault, () => {
   it('should return default export when present', async () => {
@@ -24,25 +24,5 @@ describe(interopDefault, () => {
   it('should handle nullish modules', async () => {
     await expect(interopDefault(null)).resolves.toBeNull()
     await expect(interopDefault(undefined)).resolves.toBeUndefined()
-  })
-})
-
-describe(resolveSubOptions, () => {
-  it('should resolve boolean to empty object', () => {
-    const options = { compile: true }
-    expect(resolveSubOptions(options, 'compile')).toStrictEqual({})
-  })
-
-  it('should pass through object value', () => {
-    const options = { compile: { include: ['a'], exclude: ['b'] } }
-    expect(resolveSubOptions(options, 'compile')).toStrictEqual({
-      include: ['a'],
-      exclude: ['b'],
-    })
-  })
-
-  it('should return empty object for undefined', () => {
-    const options: { compile?: boolean | { include?: string[] } } = {}
-    expect(resolveSubOptions(options, 'compile')).toStrictEqual({})
   })
 })

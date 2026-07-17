@@ -1,4 +1,4 @@
-import { isFunction, isNumber, isSymbol, isString } from '../is'
+import { isFunction, isNumber, isSymbol, isString } from '../predicate'
 import type { PropertyKeyOf } from '../types'
 
 /**

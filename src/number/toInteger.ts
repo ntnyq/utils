@@ -5,7 +5,7 @@ import {
   isNumber,
   isString,
   isUndefined,
-} from '../is'
+} from '../predicate'
 
 export interface ToIntegerOptions {
   /**

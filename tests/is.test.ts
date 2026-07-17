@@ -40,6 +40,7 @@ import {
   isRegExp,
   isSet,
   isString,
+  isSymbol,
   isTruthy,
   isUndefined,
   isUrlString,
@@ -313,6 +314,23 @@ describe(isBigInt, () => {
     expect(isBigInt(123)).toBeFalsy()
     expect(isBigInt('123')).toBeFalsy()
     expect(isBigInt(null)).toBeFalsy()
+  })
+})
+
+describe(isSymbol, () => {
+  it('should return true for symbols', () => {
+    expect(isSymbol(Symbol('example'))).toBeTruthy()
+    expect(isSymbol(Symbol.for('example'))).toBeTruthy()
+    expect(isSymbol(Symbol.iterator)).toBeTruthy()
+  })
+
+  it('should return false for non-symbols', () => {
+    const symbolObject = new Object(Symbol('example'))
+
+    expect(isSymbol('symbol')).toBeFalsy()
+    expect(isSymbol(symbolObject)).toBeFalsy()
+    expect(isSymbol(null)).toBeFalsy()
+    expect(isSymbol(undefined)).toBeFalsy()
   })
 })
 

@@ -27,3 +27,25 @@ export type Primitive =
   | AnyFn
   | null
   | undefined
+
+/**
+ * Extracts the keys whose values can be used as property keys.
+ *
+ * @example
+ *
+ * ```typescript
+ * interface Item {
+ *   id: number
+ *   name: string
+ *   active: boolean
+ *   metadata: object
+ * }
+ *
+ * type ItemPropertyKey = PropertyKeyOf<Item>
+ *
+ * // ItemPropertyKey is 'id' | 'name'
+ * ```
+ */
+export type PropertyKeyOf<T> = {
+  [K in keyof T]-?: T[K] extends PropertyKey ? K : never
+}[keyof T]

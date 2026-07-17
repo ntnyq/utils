@@ -1,6 +1,5 @@
-type PropertyKeyOf<T> = {
-  [K in keyof T]-?: T[K] extends PropertyKey ? K : never
-}[keyof T]
+import { isFunction, isNumber, isSymbol, isString } from '../is'
+import type { PropertyKeyOf } from '../types'
 
 /**
  * Groups the elements of an array based on a specified key or a function that returns a key.
@@ -57,16 +56,11 @@ export function groupBy<T>(
   const groups = new Map<PropertyKey, T[]>()
 
   for (const item of array) {
-    const groupKey =
-      typeof key === 'function'
-        ? key(item)
-        : (item as Record<PropertyKey, unknown>)[key]
+    const groupKey = isFunction(key)
+      ? key(item)
+      : (item as Record<PropertyKey, unknown>)[key]
 
-    if (
-      typeof groupKey !== 'string' &&
-      typeof groupKey !== 'number' &&
-      typeof groupKey !== 'symbol'
-    ) {
+    if (!isString(groupKey) && !isNumber(groupKey) && !isSymbol(groupKey)) {
       throw new TypeError('Group key must be a property key')
     }
 

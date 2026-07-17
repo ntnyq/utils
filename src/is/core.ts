@@ -299,6 +299,24 @@ export function isBigInt(value: unknown): value is bigint {
 }
 
 /**
+ * Checks whether a value is a symbol.
+ * @param value - The value to test.
+ * @returns True if the value is a symbol.
+ *
+ * @example
+ *
+ * ```typescript
+ * import { isSymbol } from '@ntnyq/utils'
+ *
+ * const result = isSymbol(Symbol('example'))
+ * console.log(result) // => true
+ * ```
+ */
+export function isSymbol(value: unknown): value is symbol {
+  return typeof value === 'symbol'
+}
+
+/**
  * Checks whether a value is a boolean.
  * @param value - The value to test.
  * @returns True if the value is a boolean.

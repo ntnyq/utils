@@ -7,7 +7,7 @@ outline: deep
 
 A broad collection of runtime type guards and predicate helpers.
 
-This section documents 43 exported methods from the is module.
+This section documents 44 exported methods from the is module.
 
 ## Methods
 
@@ -48,6 +48,7 @@ This section documents 43 exported methods from the is module.
 - [isRegExp](#isregexp)
 - [isSet](#isset)
 - [isString](#isstring)
+- [isSymbol](#issymbol)
 - [isTruthy](#istruthy)
 - [isUndefined](#isundefined)
 - [isUrlString](#isurlstring)
@@ -898,6 +899,29 @@ True if the value is a string.
 import { isString } from '@ntnyq/utils'
 
 const result = isString('hello')
+console.log(result) // => true
+```
+
+---
+
+## isSymbol
+
+Checks whether a value is a symbol.
+
+### Parameters
+
+- **value**: The value to test.
+
+### Returns
+
+True if the value is a symbol.
+
+### Example
+
+```ts
+import { isSymbol } from '@ntnyq/utils'
+
+const result = isSymbol(Symbol('example'))
 console.log(result) // => true
 ```
 

@@ -8,6 +8,7 @@ import {
   isBigInt,
   isBlob,
   isBoolean,
+  isDate,
   isDeepEqual,
   isEmptyArray,
   isEmptyMap,
@@ -29,12 +30,16 @@ import {
   isNanoID,
   isUUID,
   isNonEmptyArray,
+  isNonEmptyMap,
+  isNonEmptyObject,
+  isNonEmptySet,
   isNonEmptyString,
   isNull,
   isNullOrUndefined,
   isNumber,
   isNumbericString,
   isObject,
+  isPrimitive,
   isPromise,
   isRecord,
   isRegExp,
@@ -44,6 +49,8 @@ import {
   isTruthy,
   isUndefined,
   isUrlString,
+  isWeakMap,
+  isWeakSet,
   isWhitespaceString,
   isZero,
 } from '../src/is'
@@ -348,6 +355,26 @@ describe(isBoolean, () => {
   })
 })
 
+describe(isPrimitive, () => {
+  it('should return true for primitive values', () => {
+    expect(isPrimitive(null)).toBeTruthy()
+    expect(isPrimitive(undefined)).toBeTruthy()
+    expect(isPrimitive('hello')).toBeTruthy()
+    expect(isPrimitive(123)).toBeTruthy()
+    expect(isPrimitive(Number.NaN)).toBeTruthy()
+    expect(isPrimitive(true)).toBeTruthy()
+    expect(isPrimitive(Symbol('example'))).toBeTruthy()
+    expect(isPrimitive(123n)).toBeTruthy()
+  })
+
+  it('should return false for objects and functions', () => {
+    expect(isPrimitive({})).toBeFalsy()
+    expect(isPrimitive([])).toBeFalsy()
+    expect(isPrimitive(new Date())).toBeFalsy()
+    expect(isPrimitive(() => {})).toBeFalsy()
+  })
+})
+
 describe(isTruthy, () => {
   it('should return true for truthy values', () => {
     expect(isTruthy(true)).toBeTruthy()
@@ -479,6 +506,21 @@ describe(isEmptyObject, () => {
   })
 })
 
+describe(isNonEmptyObject, () => {
+  it('should return true for objects with own enumerable keys', () => {
+    expect(isNonEmptyObject({ key: 'value' })).toBeTruthy()
+    expect(isNonEmptyObject([1])).toBeTruthy()
+  })
+
+  it('should return false for empty objects and collections', () => {
+    expect(isNonEmptyObject({})).toBeFalsy()
+    expect(isNonEmptyObject([])).toBeFalsy()
+    expect(isNonEmptyObject(new Map([['key', 'value']]))).toBeFalsy()
+    expect(isNonEmptyObject(new Set([1]))).toBeFalsy()
+    expect(isNonEmptyObject(null)).toBeFalsy()
+  })
+})
+
 describe(isMap, () => {
   it('should return true for Map instances', () => {
     expect(isMap(new Map())).toBeTruthy()
@@ -509,6 +551,34 @@ describe(isEmptyMap, () => {
   })
 })
 
+describe(isNonEmptyMap, () => {
+  it('should return true for non-empty Maps', () => {
+    expect(isNonEmptyMap(new Map([['key', 'value']]))).toBeTruthy()
+  })
+
+  it('should return false for empty Maps and other values', () => {
+    expect(isNonEmptyMap(new Map())).toBeFalsy()
+    expect(isNonEmptyMap(new Set([1]))).toBeFalsy()
+    expect(isNonEmptyMap({ key: 'value' })).toBeFalsy()
+    expect(isNonEmptyMap(null)).toBeFalsy()
+  })
+})
+
+describe(isWeakMap, () => {
+  it('should return true for WeakMap instances', () => {
+    const key = {}
+
+    expect(isWeakMap(new WeakMap([[key, 'value']]))).toBeTruthy()
+    expect(isWeakMap(new WeakMap())).toBeTruthy()
+  })
+
+  it('should return false for non-WeakMap values', () => {
+    expect(isWeakMap(new Map())).toBeFalsy()
+    expect(isWeakMap({})).toBeFalsy()
+    expect(isWeakMap(null)).toBeFalsy()
+  })
+})
+
 describe(isSet, () => {
   it('should return true for Set instances', () => {
     expect(isSet(new Set())).toBeTruthy()
@@ -536,6 +606,34 @@ describe(isEmptySet, () => {
   it('should return false for non-Sets', () => {
     expect(isEmptySet({})).toBeFalsy()
     expect(isEmptySet(null)).toBeFalsy()
+  })
+})
+
+describe(isNonEmptySet, () => {
+  it('should return true for non-empty Sets', () => {
+    expect(isNonEmptySet(new Set([1]))).toBeTruthy()
+  })
+
+  it('should return false for empty Sets and other values', () => {
+    expect(isNonEmptySet(new Set())).toBeFalsy()
+    expect(isNonEmptySet(new Map([['key', 'value']]))).toBeFalsy()
+    expect(isNonEmptySet([1])).toBeFalsy()
+    expect(isNonEmptySet(null)).toBeFalsy()
+  })
+})
+
+describe(isWeakSet, () => {
+  it('should return true for WeakSet instances', () => {
+    const value = {}
+
+    expect(isWeakSet(new WeakSet([value]))).toBeTruthy()
+    expect(isWeakSet(new WeakSet())).toBeTruthy()
+  })
+
+  it('should return false for non-WeakSet values', () => {
+    expect(isWeakSet(new Set())).toBeFalsy()
+    expect(isWeakSet({})).toBeFalsy()
+    expect(isWeakSet(null)).toBeFalsy()
   })
 })
 
@@ -574,6 +672,20 @@ describe(isRegExp, () => {
     expect(isRegExp('/test/')).toBeFalsy()
     expect(isRegExp({})).toBeFalsy()
     expect(isRegExp(null)).toBeFalsy()
+  })
+})
+
+describe(isDate, () => {
+  it('should return true for Date instances', () => {
+    expect(isDate(new Date())).toBeTruthy()
+    expect(isDate(new Date('invalid'))).toBeTruthy()
+  })
+
+  it('should return false for non-Date values', () => {
+    expect(isDate(Date.now())).toBeFalsy()
+    expect(isDate('2026-07-17')).toBeFalsy()
+    expect(isDate({})).toBeFalsy()
+    expect(isDate(null)).toBeFalsy()
   })
 })
 

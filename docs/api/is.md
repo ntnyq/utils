@@ -7,7 +7,7 @@ outline: deep
 
 A broad collection of runtime type guards and predicate helpers.
 
-This section documents 44 exported methods from the is module.
+This section documents 51 exported methods from the is module.
 
 ## Methods
 
@@ -17,6 +17,7 @@ This section documents 44 exported methods from the is module.
 - [isBigInt](#isbigint)
 - [isBlob](#isblob)
 - [isBoolean](#isboolean)
+- [isDate](#isdate)
 - [isDeepEqual](#isdeepequal)
 - [isEmptyArray](#isemptyarray)
 - [isEmptyMap](#isemptymap)
@@ -37,12 +38,16 @@ This section documents 44 exported methods from the is module.
 - [isNativePromise](#isnativepromise)
 - [isNil](#isnil)
 - [isNonEmptyArray](#isnonemptyarray)
+- [isNonEmptyMap](#isnonemptymap)
+- [isNonEmptyObject](#isnonemptyobject)
+- [isNonEmptySet](#isnonemptyset)
 - [isNonEmptyString](#isnonemptystring)
 - [isNull](#isnull)
 - [isNullOrUndefined](#isnullorundefined)
 - [isNumber](#isnumber)
 - [isNumbericString](#isnumbericstring)
 - [isObject](#isobject)
+- [isPrimitive](#isprimitive)
 - [isPromise](#ispromise)
 - [isRecord](#isrecord)
 - [isRegExp](#isregexp)
@@ -53,6 +58,8 @@ This section documents 44 exported methods from the is module.
 - [isUndefined](#isundefined)
 - [isUrlString](#isurlstring)
 - [isUUID](#isuuid)
+- [isWeakMap](#isweakmap)
+- [isWeakSet](#isweakset)
 - [isWhitespaceString](#iswhitespacestring)
 - [isZero](#iszero)
 
@@ -191,6 +198,29 @@ True if the value is a boolean.
 import { isBoolean } from '@ntnyq/utils'
 
 const result = isBoolean(false)
+console.log(result) // => true
+```
+
+---
+
+## isDate
+
+Checks whether a value is a Date.
+
+### Parameters
+
+- **value**: The value to test.
+
+### Returns
+
+True if the value is a Date instance.
+
+### Example
+
+```ts
+import { isDate } from '@ntnyq/utils'
+
+const result = isDate(new Date())
 console.log(result) // => true
 ```
 
@@ -659,6 +689,75 @@ console.log(result) // => true
 
 ---
 
+## isNonEmptyMap
+
+Checks whether a value is a non-empty Map.
+
+### Parameters
+
+- **value**: The value to test.
+
+### Returns
+
+True if the value is a Map containing at least one entry.
+
+### Example
+
+```ts
+import { isNonEmptyMap } from '@ntnyq/utils'
+
+const result = isNonEmptyMap(new Map([['key', 'value']]))
+console.log(result) // => true
+```
+
+---
+
+## isNonEmptyObject
+
+Checks whether a value is an object with at least one own enumerable key.
+
+### Parameters
+
+- **value**: The value to test.
+
+### Returns
+
+True if the value is an object with one or more own enumerable keys.
+
+### Example
+
+```ts
+import { isNonEmptyObject } from '@ntnyq/utils'
+
+const result = isNonEmptyObject({ key: 'value' })
+console.log(result) // => true
+```
+
+---
+
+## isNonEmptySet
+
+Checks whether a value is a non-empty Set.
+
+### Parameters
+
+- **value**: The value to test.
+
+### Returns
+
+True if the value is a Set containing at least one entry.
+
+### Example
+
+```ts
+import { isNonEmptySet } from '@ntnyq/utils'
+
+const result = isNonEmptySet(new Set([1]))
+console.log(result) // => true
+```
+
+---
+
 ## isNonEmptyString
 
 Checks whether a value is a non-empty string.
@@ -784,6 +883,29 @@ True if the value is a non-null object.
 import { isObject } from '@ntnyq/utils'
 
 const result = isObject({ foo: 'bar' })
+console.log(result) // => true
+```
+
+---
+
+## isPrimitive
+
+Checks whether a value is a JavaScript primitive.
+
+### Parameters
+
+- **value**: The value to test.
+
+### Returns
+
+True if the value is `null`, `undefined`, a string, number, boolean, symbol, or bigint.
+
+### Example
+
+```ts
+import { isPrimitive } from '@ntnyq/utils'
+
+const result = isPrimitive('hello')
 console.log(result) // => true
 ```
 
@@ -1014,6 +1136,52 @@ true if the value is a UUID string, otherwise false.
 import { isUUID } from '@ntnyq/utils'
 
 const result = isUUID('123e4567-e89b-12d3-a456-426614174000')
+console.log(result) // => true
+```
+
+---
+
+## isWeakMap
+
+Checks whether a value is a WeakMap.
+
+### Parameters
+
+- **value**: The value to test.
+
+### Returns
+
+True if the value is a WeakMap instance.
+
+### Example
+
+```ts
+import { isWeakMap } from '@ntnyq/utils'
+
+const result = isWeakMap(new WeakMap())
+console.log(result) // => true
+```
+
+---
+
+## isWeakSet
+
+Checks whether a value is a WeakSet.
+
+### Parameters
+
+- **value**: The value to test.
+
+### Returns
+
+True if the value is a WeakSet instance.
+
+### Example
+
+```ts
+import { isWeakSet } from '@ntnyq/utils'
+
+const result = isWeakSet(new WeakSet())
 console.log(result) // => true
 ```
 

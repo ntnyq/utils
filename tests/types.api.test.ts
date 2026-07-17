@@ -6,6 +6,15 @@ import type {
   OpenExternalURLOptions,
   ScrollElementIntoViewOptions,
 } from '../src/dom'
+import {
+  isDate,
+  isNonEmptyMap,
+  isNonEmptyObject,
+  isNonEmptySet,
+  isPrimitive,
+  isWeakMap,
+  isWeakSet,
+} from '../src/is'
 import { randomNumber, toInteger } from '../src/number'
 import { deepMerge, objectOmit } from '../src/object'
 import type { ObjectOmitOptions } from '../src/object'
@@ -50,6 +59,40 @@ describe('public API types', () => {
     expectTypeOf(enhanced.extra).toEqualTypeOf<boolean>()
     expectTypeOf(original).toEqualTypeOf<number | string>()
     expectTypeOf(toInteger('1')).toEqualTypeOf<number>()
+  })
+
+  it('should narrow collection and primitive checks', () => {
+    const date: unknown = new Date()
+    const map: unknown = new Map<string, number>([['one', 1]])
+    const objectValue: unknown = { key: 'value' }
+    const primitive: unknown = 'value'
+    const set: unknown = new Set<string>(['value'])
+    const weakMap: unknown = new WeakMap<object, number>()
+    const weakSet: unknown = new WeakSet<object>()
+
+    if (isDate(date)) {
+      expectTypeOf(date).toEqualTypeOf<Date>()
+    }
+    if (isNonEmptyMap<string, number>(map)) {
+      expectTypeOf(map).toEqualTypeOf<Map<string, number>>()
+    }
+    if (isNonEmptyObject(objectValue)) {
+      expectTypeOf(objectValue).toEqualTypeOf<object>()
+    }
+    if (isNonEmptySet<string>(set)) {
+      expectTypeOf(set).toEqualTypeOf<Set<string>>()
+    }
+    if (isPrimitive(primitive)) {
+      expectTypeOf(primitive).toEqualTypeOf<
+        bigint | boolean | number | string | symbol | null | undefined
+      >()
+    }
+    if (isWeakMap<object, number>(weakMap)) {
+      expectTypeOf(weakMap).toEqualTypeOf<WeakMap<object, number>>()
+    }
+    if (isWeakSet<object>(weakSet)) {
+      expectTypeOf(weakSet).toEqualTypeOf<WeakSet<object>>()
+    }
   })
 
   it('should infer mapped trees and property grouping', () => {

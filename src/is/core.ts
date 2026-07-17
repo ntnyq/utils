@@ -335,6 +335,33 @@ export function isBoolean(value: unknown): value is boolean {
 }
 
 /**
+ * Checks whether a value is a JavaScript primitive.
+ * @param value - The value to test.
+ * @returns True if the value is null, undefined, a string, number, boolean, symbol, or bigint.
+ *
+ * @example
+ *
+ * ```typescript
+ * import { isPrimitive } from '@ntnyq/utils'
+ *
+ * const result = isPrimitive('hello')
+ * console.log(result) // => true
+ * ```
+ */
+export function isPrimitive(
+  value: unknown,
+): value is bigint | boolean | number | string | symbol | null | undefined {
+  return (
+    isNil(value) ||
+    isString(value) ||
+    isNumber(value) ||
+    isBoolean(value) ||
+    isSymbol(value) ||
+    isBigInt(value)
+  )
+}
+
+/**
  * Checks whether a value is truthy.
  * @param value - The value to test.
  * @returns True if the value is truthy.
@@ -467,6 +494,46 @@ export function isEmptyMap(value: unknown): value is Map<never, never> {
 }
 
 /**
+ * Checks whether a value is a non-empty Map.
+ * @param value - The value to test.
+ * @returns True if the value is a Map containing at least one entry.
+ *
+ * @example
+ *
+ * ```typescript
+ * import { isNonEmptyMap } from '@ntnyq/utils'
+ *
+ * const result = isNonEmptyMap(new Map([['key', 'value']]))
+ * console.log(result) // => true
+ * ```
+ */
+export function isNonEmptyMap<Key = unknown, Value = unknown>(
+  value: unknown,
+): value is Map<Key, Value> {
+  return isMap<Key, Value>(value) && value.size > 0
+}
+
+/**
+ * Checks whether a value is a WeakMap.
+ * @param value - The value to test.
+ * @returns True if the value is a WeakMap instance.
+ *
+ * @example
+ *
+ * ```typescript
+ * import { isWeakMap } from '@ntnyq/utils'
+ *
+ * const result = isWeakMap(new WeakMap())
+ * console.log(result) // => true
+ * ```
+ */
+export function isWeakMap<Key extends WeakKey = WeakKey, Value = unknown>(
+  value: unknown,
+): value is WeakMap<Key, Value> {
+  return getObjectType(value) === 'WeakMap'
+}
+
+/**
  * Checks whether a value is a Set.
  * @param value - The value to test.
  * @returns True if the value is a Set instance.
@@ -500,6 +567,46 @@ export function isSet<Value = unknown>(value: unknown): value is Set<Value> {
  */
 export function isEmptySet(value: unknown): value is Set<never> {
   return isSet(value) && value.size === 0
+}
+
+/**
+ * Checks whether a value is a non-empty Set.
+ * @param value - The value to test.
+ * @returns True if the value is a Set containing at least one entry.
+ *
+ * @example
+ *
+ * ```typescript
+ * import { isNonEmptySet } from '@ntnyq/utils'
+ *
+ * const result = isNonEmptySet(new Set([1]))
+ * console.log(result) // => true
+ * ```
+ */
+export function isNonEmptySet<Value = unknown>(
+  value: unknown,
+): value is Set<Value> {
+  return isSet<Value>(value) && value.size > 0
+}
+
+/**
+ * Checks whether a value is a WeakSet.
+ * @param value - The value to test.
+ * @returns True if the value is a WeakSet instance.
+ *
+ * @example
+ *
+ * ```typescript
+ * import { isWeakSet } from '@ntnyq/utils'
+ *
+ * const result = isWeakSet(new WeakSet())
+ * console.log(result) // => true
+ * ```
+ */
+export function isWeakSet<Value extends WeakKey = WeakKey>(
+  value: unknown,
+): value is WeakSet<Value> {
+  return getObjectType(value) === 'WeakSet'
 }
 
 /**
@@ -544,6 +651,29 @@ export function isEmptyObject(value: unknown): value is {} {
 }
 
 /**
+ * Checks whether a value is an object with at least one own enumerable key.
+ * @param value - The value to test.
+ * @returns True if the value is an object with one or more own enumerable keys.
+ *
+ * @example
+ *
+ * ```typescript
+ * import { isNonEmptyObject } from '@ntnyq/utils'
+ *
+ * const result = isNonEmptyObject({ key: 'value' })
+ * console.log(result) // => true
+ * ```
+ */
+export function isNonEmptyObject(value: unknown): value is object {
+  return (
+    isObject(value) &&
+    !isMap(value) &&
+    !isSet(value) &&
+    Object.keys(value).length > 0
+  )
+}
+
+/**
  * Checks whether a value is a record-like object.
  * @param value - The value to test.
  * @returns True if the value is a non-array object.
@@ -577,6 +707,24 @@ export function isRecord(value: unknown): value is Record<string, unknown> {
  */
 export function isRegExp(value: unknown): value is RegExp {
   return getObjectType(value) === 'RegExp'
+}
+
+/**
+ * Checks whether a value is a Date.
+ * @param value - The value to test.
+ * @returns True if the value is a Date instance.
+ *
+ * @example
+ *
+ * ```typescript
+ * import { isDate } from '@ntnyq/utils'
+ *
+ * const result = isDate(new Date())
+ * console.log(result) // => true
+ * ```
+ */
+export function isDate(value: unknown): value is Date {
+  return getObjectType(value) === 'Date'
 }
 
 /**

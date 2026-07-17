@@ -1,4 +1,4 @@
-export interface RandomNumberOptions {
+export interface RandomIntegerOptions {
   /**
    * include max value
    *
@@ -8,25 +8,25 @@ export interface RandomNumberOptions {
 }
 
 /**
- * random an integer by given range
+ * Generate a random integer within the given range.
  *
  * @param min - min value
  * @param max - max value
- * @returns random integer in range
+ * @returns A random integer within the range.
  * @example
  *
  * ```typescript
- * import { randomNumber } from '@ntnyq/utils'
+ * import { randomInteger } from '@ntnyq/utils'
  *
- * const result = randomNumber(10)
+ * const result = randomInteger(10)
  * console.log(result) // => a number between 0 and 9
  * ```
  *
  */
-export function randomNumber(
+export function randomInteger(
   min: number,
   max?: number,
-  options: RandomNumberOptions = {},
+  options: RandomIntegerOptions = {},
 ): number {
   if (max === undefined) {
     max = min
@@ -34,7 +34,7 @@ export function randomNumber(
   }
 
   if (!Number.isFinite(min) || !Number.isFinite(max)) {
-    throw new RangeError('Random number bounds must be finite')
+    throw new RangeError('Random integer bounds must be finite')
   }
 
   if (min > max) {
@@ -49,7 +49,7 @@ export function randomNumber(
   const upper = options.includeMax ? Math.floor(max) : Math.ceil(max) - 1
 
   if (lower > upper) {
-    throw new RangeError('Random number range contains no integers')
+    throw new RangeError('Random integer range contains no integers')
   }
 
   return Math.floor(Math.random() * (upper - lower + 1)) + lower

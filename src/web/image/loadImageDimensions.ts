@@ -7,7 +7,7 @@ export interface ImageSize {
   height: number
 }
 
-export interface GetImageNaturalSizeOptions {
+export interface LoadImageDimensionsOptions {
   /**
    * Timeout in milliseconds to wait for the image to load.
    *
@@ -43,8 +43,8 @@ let cacheBustCounter = 0
 
 function createOptionsKey(
   timeout: number,
-  decoding: NonNullable<GetImageNaturalSizeOptions['decoding']>,
-  crossOrigin: Exclude<GetImageNaturalSizeOptions['crossOrigin'], undefined>,
+  decoding: NonNullable<LoadImageDimensionsOptions['decoding']>,
+  crossOrigin: Exclude<LoadImageDimensionsOptions['crossOrigin'], undefined>,
 ): string {
   return `${timeout}:${decoding}:${crossOrigin ?? 'none'}`
 }
@@ -109,8 +109,8 @@ function cacheBlobPromise(
 
 interface LoadImageOptions {
   timeout: number
-  decoding: NonNullable<GetImageNaturalSizeOptions['decoding']>
-  crossOrigin: Exclude<GetImageNaturalSizeOptions['crossOrigin'], undefined>
+  decoding: NonNullable<LoadImageDimensionsOptions['decoding']>
+  crossOrigin: Exclude<LoadImageDimensionsOptions['crossOrigin'], undefined>
 }
 
 function loadImage(
@@ -176,14 +176,14 @@ function loadImage(
 }
 
 /**
- * Gets the natural width and height of an image source.
- * @param source - The image URL, Blob, or File to inspect.
+ * Loads an image source and resolves its natural dimensions.
+ * @param source - The image URL, Blob, or File to load.
  * @param options - Loading and cache options.
- * @returns A promise that resolves with the image's natural size.
+ * @returns A promise that resolves with the image's natural dimensions.
  */
-export async function getImageNaturalSize(
+export async function loadImageDimensions(
   source: string | Blob | File,
-  options: GetImageNaturalSizeOptions = {},
+  options: LoadImageDimensionsOptions = {},
 ): Promise<ImageSize> {
   const {
     timeout = 30_000,

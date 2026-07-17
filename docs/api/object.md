@@ -23,7 +23,7 @@ This section documents 13 exported methods from the object module.
 - [omit](#omit)
 - [pick](#pick)
 - [setIn](#setin)
-- [sortObject](#sortobject)
+- [sortObjectKeys](#sortobjectkeys)
 
 ---
 
@@ -328,7 +328,7 @@ console.log(result.user.profile.name) // => 'Alice'
 
 ---
 
-## sortObject
+## sortObjectKeys
 
 Sorts an object's keys and optionally sorts nested plain objects recursively.
 
@@ -344,8 +344,8 @@ A new object with keys sorted according to the provided options.
 ### Example
 
 ```ts
-import { sortObject } from '@ntnyq/utils'
+import { sortObjectKeys } from '@ntnyq/utils'
 
-const result = sortObject({ c: 3, a: 1, b: 2 })
+const result = sortObjectKeys({ c: 3, a: 1, b: 2 })
 console.log(Object.keys(result)) // => ['a', 'b', 'c']
 ```

@@ -5,35 +5,35 @@ outline: deep
 
 # Proxy Utilities
 
-Helpers for enhancing objects through proxy-based composition.
+Helpers for overlaying object properties through proxy-based composition.
 
 This section documents 1 exported method from the proxy module.
 
 ## Methods
 
-- [enhance](#enhance)
+- [createOverlayProxy](#createoverlayproxy)
 
 ---
 
-## enhance
+## createOverlayProxy
 
-Creates a proxy that enhances an object with additional fallback properties.
+Creates a proxy that overlays properties on a target object.
 
 ### Parameters
 
-- **module**: The original object to proxy.
-- **extra**: Additional properties to expose through the proxy.
+- **target**: The original object to proxy.
+- **overlay**: Properties that take precedence over the target object.
 
 ### Returns
 
-A proxy object that reads from the extra object before the original object.
+A proxy object that reads from the overlay before the target object.
 
 ### Example
 
 ```ts
-import { enhance } from '@ntnyq/utils'
+import { createOverlayProxy } from '@ntnyq/utils'
 
 const target = { a: 1 }
-const proxy = enhance(target, { b: 2 })
+const proxy = createOverlayProxy(target, { b: 2 })
 console.log(proxy.b) // => 2
 ```

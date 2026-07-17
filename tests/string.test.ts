@@ -4,8 +4,8 @@ import {
   ensurePrefix,
   ensureSuffix,
   escapeStringRegexp,
-  getStringLength,
-  getStringSimilarity,
+  countGraphemes,
+  calculateNGramSimilarity,
   join,
   randomString,
   slugify,
@@ -87,23 +87,23 @@ describe(escapeStringRegexp, () => {
   })
 })
 
-describe(getStringLength, () => {
+describe(countGraphemes, () => {
   it('should count ASCII characters', () => {
-    expect(getStringLength('hello')).toBe(5)
-    expect(getStringLength('12345')).toBe(5)
-    expect(getStringLength('')).toBe(0)
+    expect(countGraphemes('hello')).toBe(5)
+    expect(countGraphemes('12345')).toBe(5)
+    expect(countGraphemes('')).toBe(0)
   })
 
   it('should count unicode characters correctly', () => {
-    expect(getStringLength('emoji😀')).toBe(6)
-    expect(getStringLength('你好')).toBe(2)
-    expect(getStringLength('café')).toBe(4) // é is counted as one grapheme
+    expect(countGraphemes('emoji😀')).toBe(6)
+    expect(countGraphemes('你好')).toBe(2)
+    expect(countGraphemes('café')).toBe(4) // é is counted as one grapheme
   })
 
   it('should handle combining characters', () => {
     // e + combining accent
     const combinedChar = 'e\u0301'
-    expect(getStringLength(combinedChar)).toBeLessThanOrEqual(2)
+    expect(countGraphemes(combinedChar)).toBeLessThanOrEqual(2)
   })
 })
 
@@ -345,55 +345,57 @@ describe(truncate, () => {
   })
 })
 
-describe(getStringSimilarity, () => {
+describe(calculateNGramSimilarity, () => {
   it('should return 1 for same string', () => {
-    expect(getStringSimilarity('hello', 'hello')).toBe(1)
-    expect(getStringSimilarity('hello', 'hello', { sliceLength: 2 })).toBe(1)
+    expect(calculateNGramSimilarity('hello', 'hello')).toBe(1)
+    expect(calculateNGramSimilarity('hello', 'hello', { sliceLength: 2 })).toBe(
+      1,
+    )
   })
 
   it('should return 0 for different strings', () => {
-    expect(getStringSimilarity('hello', 'world')).toBe(0)
+    expect(calculateNGramSimilarity('hello', 'world')).toBe(0)
   })
 
   it('should return 0 if either string is empty', () => {
-    expect(getStringSimilarity('hello', '')).toBe(0)
-    expect(getStringSimilarity('', 'hello')).toBe(0)
-    expect(getStringSimilarity('', '')).toBe(0)
+    expect(calculateNGramSimilarity('hello', '')).toBe(0)
+    expect(calculateNGramSimilarity('', 'hello')).toBe(0)
+    expect(calculateNGramSimilarity('', '')).toBe(0)
   })
 
   it('should be case-insensitive by default', () => {
-    expect(getStringSimilarity('Hello', 'hello')).toBe(1)
-    expect(getStringSimilarity('HELLO', 'hello')).toBe(1)
+    expect(calculateNGramSimilarity('Hello', 'hello')).toBe(1)
+    expect(calculateNGramSimilarity('HELLO', 'hello')).toBe(1)
   })
 
   it('should be case-sensitive when specified', () => {
     expect(
-      getStringSimilarity('Hello', 'hello', { caseSensitive: true }),
+      calculateNGramSimilarity('Hello', 'hello', { caseSensitive: true }),
     ).toBeLessThan(1)
   })
 
   it('should return strong match for rearranged words', () => {
     expect(
-      getStringSimilarity('Lorem ipsum dolor', 'Dolor lorem ipsum'),
+      calculateNGramSimilarity('Lorem ipsum dolor', 'Dolor lorem ipsum'),
     ).toBeGreaterThan(0.8)
   })
 
   it('should return strong match for misspellings', () => {
     expect(
-      getStringSimilarity('Lorem ipsum dolor', 'Lorem ipsum dlr'),
+      calculateNGramSimilarity('Lorem ipsum dolor', 'Lorem ipsum dlr'),
     ).toBeGreaterThan(0.7)
   })
 
   it('should support custom sliceLength', () => {
     expect(
-      getStringSimilarity('hello', 'hallo', { sliceLength: 1 }),
+      calculateNGramSimilarity('hello', 'hallo', { sliceLength: 1 }),
     ).toBeGreaterThan(0)
     expect(
-      getStringSimilarity('hello', 'hallo', { sliceLength: 3 }),
+      calculateNGramSimilarity('hello', 'hallo', { sliceLength: 3 }),
     ).toBeGreaterThanOrEqual(0)
   })
 
   it('should return string length if too short for slice length', () => {
-    expect(getStringSimilarity('a', 'b', { sliceLength: 3 })).toBe(0)
+    expect(calculateNGramSimilarity('a', 'b', { sliceLength: 3 })).toBe(0)
   })
 })

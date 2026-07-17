@@ -1,4 +1,4 @@
-import { getObjectType, isFunction } from '../primitive'
+import { getObjectTag, isFunction } from '../primitive'
 
 /**
  * @internal
@@ -28,7 +28,7 @@ function hasPromiseApi<T = unknown>(value: unknown): value is Promise<T> {
 export function isNativePromise<T = unknown>(
   value: unknown,
 ): value is Promise<T> {
-  return getObjectType(value) === 'Promise'
+  return getObjectTag(value) === 'Promise'
 }
 
 /**

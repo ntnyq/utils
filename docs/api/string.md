@@ -17,8 +17,8 @@ This section documents 12 exported methods from the string module.
 - [ensurePrefix](#ensureprefix)
 - [ensureSuffix](#ensuresuffix)
 - [escapeStringRegexp](#escapestringregexp)
-- [getStringLength](#getstringlength)
-- [getStringSimilarity](#getstringsimilarity)
+- [countGraphemes](#countgraphemes)
+- [calculateNGramSimilarity](#calculatengramsimilarity)
 - [join](#join)
 - [randomString](#randomstring)
 - [slugify](#slugify)
@@ -121,9 +121,9 @@ console.log(result) // => 'hello\\.world\\?'
 
 ---
 
-## getStringLength
+## countGraphemes
 
-Counts graphemes in a given string
+Counts graphemes in a given string.
 
 ### Parameters
 
@@ -136,17 +136,17 @@ The number of graphemes in `value`.
 ### Example
 
 ```ts
-import { getStringLength } from '@ntnyq/utils'
+import { countGraphemes } from '@ntnyq/utils'
 
-const result = getStringLength('👋🌍')
+const result = countGraphemes('👋🌍')
 console.log(result) // => 2
 ```
 
 ---
 
-## getStringSimilarity
+## calculateNGramSimilarity
 
-Calculates the similarity score between two strings.
+Calculates the n-gram similarity score between two strings.
 
 ### Parameters
 
@@ -161,9 +161,9 @@ A similarity score between 0 and 1.
 ### Example
 
 ```ts
-import { getStringSimilarity } from '@ntnyq/utils'
+import { calculateNGramSimilarity } from '@ntnyq/utils'
 
-const result = getStringSimilarity('hello', 'hallo')
+const result = calculateNGramSimilarity('hello', 'hallo')
 console.log(result > 0.5) // => true
 ```
 

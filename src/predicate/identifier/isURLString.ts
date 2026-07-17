@@ -1,6 +1,6 @@
 import { isString } from '../primitive'
 
-export type UrlString = string & { readonly __brand: 'UrlString' }
+export type URLString = string & { readonly __brand: 'URLString' }
 
 /**
  * Checks whether a value is a valid URL string.
@@ -10,13 +10,13 @@ export type UrlString = string & { readonly __brand: 'UrlString' }
  * @example
  *
  * ```typescript
- * import { isUrlString } from '@ntnyq/utils'
+ * import { isURLString } from '@ntnyq/utils'
  *
- * const result = isUrlString('https://example.com')
+ * const result = isURLString('https://example.com')
  * console.log(result) // => true
  * ```
  */
-export function isUrlString(value: unknown): value is UrlString {
+export function isURLString(value: unknown): value is URLString {
   if (!isString(value)) {
     return false
   }

@@ -2,18 +2,18 @@
 import { describe, expect, it, vi } from 'vitest'
 import {
   clamp,
-  randomNumber,
+  randomInteger,
   round,
   toFixed,
   toInteger,
   toNumber,
 } from '../src/number'
 
-describe(randomNumber, () => {
+describe(randomInteger, () => {
   it('should return a number within the specified range', () => {
     const min = 1
     const max = 10
-    const result = randomNumber(min, max)
+    const result = randomInteger(min, max)
 
     expect(result).toBeGreaterThanOrEqual(min)
     expect(result).toBeLessThan(max)
@@ -22,7 +22,7 @@ describe(randomNumber, () => {
 
   it('should handle single argument (max only)', () => {
     const max = 5
-    const result = randomNumber(max)
+    const result = randomInteger(max)
 
     expect(result).toBeGreaterThanOrEqual(0)
     expect(result).toBeLessThan(max)
@@ -32,7 +32,7 @@ describe(randomNumber, () => {
   it('should swap min and max when min > max', () => {
     const min = 10
     const max = 1
-    const result = randomNumber(min, max)
+    const result = randomInteger(min, max)
 
     expect(result).toBeGreaterThanOrEqual(max)
     expect(result).toBeLessThan(min)
@@ -46,7 +46,7 @@ describe(randomNumber, () => {
 
     // Generate many results to test probability
     for (let i = 0; i < 1000; i++) {
-      const result = randomNumber(min, max, { includeMax: true })
+      const result = randomInteger(min, max, { includeMax: true })
       results.add(result)
       expect(result).toBeGreaterThanOrEqual(min)
       expect(result).toBeLessThanOrEqual(max)
@@ -65,7 +65,7 @@ describe(randomNumber, () => {
 
     // Generate many results to test probability
     for (let i = 0; i < 1000; i++) {
-      const result = randomNumber(min, max, { includeMax: false })
+      const result = randomInteger(min, max, { includeMax: false })
       results.add(result)
       expect(result).toBeGreaterThanOrEqual(min)
       expect(result).toBeLessThan(max)
@@ -79,14 +79,14 @@ describe(randomNumber, () => {
 
   it('should handle equal min and max values', () => {
     const value = 5
-    const result = randomNumber(value, value)
+    const result = randomInteger(value, value)
 
     expect(result).toBe(value)
   })
 
   it('should handle equal min and max values with includeMax', () => {
     const value = 5
-    const result = randomNumber(value, value, { includeMax: true })
+    const result = randomInteger(value, value, { includeMax: true })
 
     expect(result).toBe(value)
   })
@@ -94,7 +94,7 @@ describe(randomNumber, () => {
   it('should handle negative numbers', () => {
     const min = -10
     const max = -1
-    const result = randomNumber(min, max)
+    const result = randomInteger(min, max)
 
     expect(result).toBeGreaterThanOrEqual(min)
     expect(result).toBeLessThanOrEqual(max)
@@ -102,11 +102,11 @@ describe(randomNumber, () => {
   })
 
   it('should handle zero as min or max', () => {
-    const result1 = randomNumber(0, 5)
+    const result1 = randomInteger(0, 5)
     expect(result1).toBeGreaterThanOrEqual(0)
     expect(result1).toBeLessThanOrEqual(5)
 
-    const result2 = randomNumber(-5, 0)
+    const result2 = randomInteger(-5, 0)
     expect(result2).toBeGreaterThanOrEqual(-5)
     expect(result2).toBeLessThanOrEqual(0)
   })
@@ -114,7 +114,7 @@ describe(randomNumber, () => {
   it('should return consistent type (integer)', () => {
     const min = 1.5
     const max = 5.7
-    const result = randomNumber(min, max)
+    const result = randomInteger(min, max)
 
     expect(Number.isInteger(result)).toBeTruthy()
     expect(result).toBeGreaterThanOrEqual(Math.floor(min))
@@ -124,7 +124,7 @@ describe(randomNumber, () => {
   it('should work with decimal inputs and truncate to integer', () => {
     const min = 1.9
     const max = 3.1
-    const result = randomNumber(min, max)
+    const result = randomInteger(min, max)
 
     expect(Number.isInteger(result)).toBeTruthy()
     expect(result).toBeGreaterThanOrEqual(1)
@@ -133,16 +133,16 @@ describe(randomNumber, () => {
 
   it('should honor exclusive bounds for negative ranges', () => {
     vi.spyOn(Math, 'random').mockReturnValueOnce(0.999_999)
-    expect(randomNumber(-5, -1)).toBe(-2)
+    expect(randomInteger(-5, -1)).toBe(-2)
 
     vi.spyOn(Math, 'random').mockReturnValueOnce(0.999_999)
-    expect(randomNumber(-5, -1, { includeMax: true })).toBe(-1)
+    expect(randomInteger(-5, -1, { includeMax: true })).toBe(-1)
     vi.restoreAllMocks()
   })
 
   it('should reject invalid or empty integer ranges', () => {
-    expect(() => randomNumber(Number.POSITIVE_INFINITY, 2)).toThrow(RangeError)
-    expect(() => randomNumber(1.1, 1.2)).toThrow(RangeError)
+    expect(() => randomInteger(Number.POSITIVE_INFINITY, 2)).toThrow(RangeError)
+    expect(() => randomInteger(1.1, 1.2)).toThrow(RangeError)
   })
 })
 

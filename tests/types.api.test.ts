@@ -1,23 +1,34 @@
 import { describe, expectTypeOf, it } from 'vitest'
 import { filterFalsy, groupBy } from '../src/array'
-import { randomNumber, toInteger } from '../src/number'
-import { deepMerge, objectOmit } from '../src/object'
-import type { ObjectOmitOptions } from '../src/object'
+import { randomInteger, toInteger } from '../src/number'
+import type { RandomIntegerOptions } from '../src/number'
+import { deepMerge, objectOmit, sortObjectKeys } from '../src/object'
+import type { ObjectOmitOptions, SortObjectKeysOptions } from '../src/object'
 import {
+  getObjectTag,
   isDate,
   isNonEmptyMap,
   isNonEmptyObject,
   isNonEmptySet,
   isPrimitive,
+  isURLString,
   isWeakMap,
   isWeakSet,
 } from '../src/predicate'
-import { enhance } from '../src/proxy'
-import { flatTree } from '../src/tree'
+import type { URLString } from '../src/predicate'
+import { createOverlayProxy } from '../src/proxy'
+import { calculateNGramSimilarity, countGraphemes } from '../src/string'
+import type { CalculateNGramSimilarityOptions } from '../src/string'
+import { flattenTree } from '../src/tree'
+import type { FlattenTreeContext, FlattenTreeOptions } from '../src/tree'
 import type { DeepRequired } from '../src/types'
-import { openExternalURL, scrollElementIntoView } from '../src/web'
+import {
+  loadImageDimensions,
+  openExternalURL,
+  scrollElementIntoView,
+} from '../src/web'
 import type {
-  GetImageNaturalSizeOptions,
+  LoadImageDimensionsOptions,
   OpenExternalURLOptions,
   ScrollElementIntoViewOptions,
 } from '../src/web'
@@ -39,12 +50,15 @@ describe('public API types', () => {
   it('should expose corrected utility result types', () => {
     const token = Symbol('token')
     const filtered = filterFalsy([token, 0n, 1n] as (symbol | 0n | 1n)[])
-    const enhanced = enhance({ value: 1 }, { value: 'one', extra: true })
+    const overlaid = createOverlayProxy(
+      { value: 1 },
+      { value: 'one', extra: true },
+    )
     const original = toInteger('bad', { onError: 'returnOriginal' })
 
     expectTypeOf(filtered).toEqualTypeOf<(symbol | 1n)[]>()
-    expectTypeOf(enhanced.value).toEqualTypeOf<string>()
-    expectTypeOf(enhanced.extra).toEqualTypeOf<boolean>()
+    expectTypeOf(overlaid.value).toEqualTypeOf<string>()
+    expectTypeOf(overlaid.extra).toEqualTypeOf<boolean>()
     expectTypeOf(original).toEqualTypeOf<number | string>()
     expectTypeOf(toInteger('1')).toEqualTypeOf<number>()
   })
@@ -55,6 +69,7 @@ describe('public API types', () => {
     const objectValue: unknown = { key: 'value' }
     const primitive: unknown = 'value'
     const set: unknown = new Set<string>(['value'])
+    const url: unknown = 'https://example.com'
     const weakMap: unknown = new WeakMap<object, number>()
     const weakSet: unknown = new WeakSet<object>()
 
@@ -75,6 +90,9 @@ describe('public API types', () => {
         bigint | boolean | number | string | symbol | null | undefined
       >()
     }
+    if (isURLString(url)) {
+      expectTypeOf(url).toEqualTypeOf<URLString>()
+    }
     if (isWeakMap<object, number>(weakMap)) {
       expectTypeOf(weakMap).toEqualTypeOf<WeakMap<object, number>>()
     }
@@ -85,7 +103,7 @@ describe('public API types', () => {
 
   it('should infer mapped trees and property grouping', () => {
     const nodes = [{ id: 1, children: [] }] as const
-    const flattened = flatTree(nodes, {
+    const flattened = flattenTree(nodes, {
       map: ({ node, parent, path }) =>
         `${node.id}:${parent?.id ?? 0}:${path.length}`,
     })
@@ -113,14 +131,30 @@ describe('public API types', () => {
     expectTypeOf(merged.config).toEqualTypeOf<{ readonly b: 3 }>()
   })
 
-  it('should export public option types and the corrected random option name', () => {
-    expectTypeOf<GetImageNaturalSizeOptions>().toBeObject()
+  it('should export public option types and renamed utilities', () => {
+    interface TreeNode {
+      children?: TreeNode[]
+    }
+
+    expectTypeOf<CalculateNGramSimilarityOptions>().toBeObject()
+    expectTypeOf<FlattenTreeContext<TreeNode>>().toBeObject()
+    expectTypeOf<FlattenTreeOptions<TreeNode, 'children'>>().toBeObject()
+    expectTypeOf<LoadImageDimensionsOptions>().toBeObject()
     expectTypeOf<OpenExternalURLOptions>().toBeObject()
+    expectTypeOf<RandomIntegerOptions>().toBeObject()
     expectTypeOf<ScrollElementIntoViewOptions>().toBeObject()
+    expectTypeOf<SortObjectKeysOptions>().toBeObject()
     expectTypeOf<ObjectOmitOptions>().toBeObject()
+    expectTypeOf(calculateNGramSimilarity).toBeFunction()
+    expectTypeOf(countGraphemes).toBeFunction()
+    expectTypeOf(flattenTree).toBeFunction()
+    expectTypeOf(getObjectTag).toBeFunction()
+    expectTypeOf(isURLString).toBeFunction()
+    expectTypeOf(loadImageDimensions).toBeFunction()
     expectTypeOf(openExternalURL).toBeFunction()
     expectTypeOf(scrollElementIntoView).toBeFunction()
     expectTypeOf(objectOmit).toBeFunction()
-    expectTypeOf(randomNumber).toBeFunction()
+    expectTypeOf(randomInteger).toBeFunction()
+    expectTypeOf(sortObjectKeys).toBeFunction()
   })
 })

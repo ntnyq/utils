@@ -1,4 +1,4 @@
-import { getObjectType, isFunction, isNull } from '../primitive'
+import { getObjectTag, isFunction, isNull } from '../primitive'
 
 /**
  * Checks whether a value is an array.
@@ -73,7 +73,7 @@ export function isNonEmptyArray<T = unknown, Item = unknown>(
 export function isMap<Key = unknown, Value = unknown>(
   value: unknown,
 ): value is Map<Key, Value> {
-  return getObjectType(value) === 'Map'
+  return getObjectTag(value) === 'Map'
 }
 
 /**
@@ -131,7 +131,7 @@ export function isNonEmptyMap<Key = unknown, Value = unknown>(
 export function isWeakMap<Key extends WeakKey = WeakKey, Value = unknown>(
   value: unknown,
 ): value is WeakMap<Key, Value> {
-  return getObjectType(value) === 'WeakMap'
+  return getObjectTag(value) === 'WeakMap'
 }
 
 /**
@@ -149,7 +149,7 @@ export function isWeakMap<Key extends WeakKey = WeakKey, Value = unknown>(
  * ```
  */
 export function isSet<Value = unknown>(value: unknown): value is Set<Value> {
-  return getObjectType(value) === 'Set'
+  return getObjectTag(value) === 'Set'
 }
 
 /**
@@ -207,7 +207,7 @@ export function isNonEmptySet<Value = unknown>(
 export function isWeakSet<Value extends WeakKey = WeakKey>(
   value: unknown,
 ): value is WeakSet<Value> {
-  return getObjectType(value) === 'WeakSet'
+  return getObjectTag(value) === 'WeakSet'
 }
 
 /**
@@ -307,7 +307,7 @@ export function isRecord(value: unknown): value is Record<string, unknown> {
  * ```
  */
 export function isRegExp(value: unknown): value is RegExp {
-  return getObjectType(value) === 'RegExp'
+  return getObjectTag(value) === 'RegExp'
 }
 
 /**
@@ -325,7 +325,7 @@ export function isRegExp(value: unknown): value is RegExp {
  * ```
  */
 export function isDate(value: unknown): value is Date {
-  return getObjectType(value) === 'Date'
+  return getObjectTag(value) === 'Date'
 }
 
 /**
@@ -344,7 +344,7 @@ export function isDate(value: unknown): value is Date {
  */
 export function isError(value: unknown): value is Error {
   // TODO: use `Error.isError` when targeting node v24
-  return getObjectType(value) === 'Error'
+  return getObjectTag(value) === 'Error'
 }
 
 /**
@@ -380,7 +380,7 @@ export function isIterable<T = unknown>(value: unknown): value is Iterable<T> {
  * ```
  */
 export function isBlob(value: unknown): value is Blob {
-  return getObjectType(value) === 'Blob'
+  return getObjectTag(value) === 'Blob'
 }
 
 /**
@@ -398,7 +398,7 @@ export function isBlob(value: unknown): value is Blob {
  * ```
  */
 export function isFormData(value: unknown): value is FormData {
-  return getObjectType(value) === 'FormData'
+  return getObjectTag(value) === 'FormData'
 }
 
 /**
@@ -417,5 +417,5 @@ export function isFormData(value: unknown): value is FormData {
  * ```
  */
 export function isFile(value: unknown): value is File {
-  return getObjectType(value) === 'File'
+  return getObjectTag(value) === 'File'
 }

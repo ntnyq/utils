@@ -13,7 +13,7 @@ This section documents 6 exported methods from the number module.
 
 - [clamp](#clamp)
 
-- [randomNumber](#randomnumber)
+- [randomInteger](#randominteger)
 - [round](#round)
 - [toFixed](#tofixed)
 - [toInteger](#tointeger)
@@ -21,9 +21,9 @@ This section documents 6 exported methods from the number module.
 
 ---
 
-## randomNumber
+## randomInteger
 
-random an integer by given range
+Generate a random integer within the given range.
 
 ### Parameters
 
@@ -32,14 +32,14 @@ random an integer by given range
 
 ### Returns
 
-random integer in range
+A random integer within the range.
 
 ### Example
 
 ```ts
-import { randomNumber } from '@ntnyq/utils'
+import { randomInteger } from '@ntnyq/utils'
 
-const result = randomNumber(10)
+const result = randomInteger(10)
 console.log(result) // => a number between 0 and 9
 ```
 

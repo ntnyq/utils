@@ -1,6 +1,6 @@
 import { isPlainObject } from './isPlainObject'
 
-export interface SortObjectOptions {
+export interface SortObjectKeysOptions {
   /**
    * Recursive sorting
    * @default false
@@ -22,15 +22,15 @@ export interface SortObjectOptions {
  * @example
  *
  * ```typescript
- * import { sortObject } from '@ntnyq/utils'
+ * import { sortObjectKeys } from '@ntnyq/utils'
  *
- * const result = sortObject({ c: 3, a: 1, b: 2 })
+ * const result = sortObjectKeys({ c: 3, a: 1, b: 2 })
  * console.log(Object.keys(result)) // => ['a', 'b', 'c']
  * ```
  */
-export function sortObject<T extends Record<string, any>>(
+export function sortObjectKeys<T extends Record<string, any>>(
   object: T,
-  options: SortObjectOptions = {},
+  options: SortObjectKeysOptions = {},
 ) {
   const { compareFn = (a, b) => a.localeCompare(b) } = options
 

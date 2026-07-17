@@ -13,7 +13,7 @@ import {
   omit,
   setIn,
   pick,
-  sortObject,
+  sortObjectKeys,
   objectOmit,
 } from '../src/object'
 
@@ -292,22 +292,22 @@ describe(cleanObject, () => {
   })
 })
 
-describe(sortObject, () => {
+describe(sortObjectKeys, () => {
   it('should sort object keys alphabetically', () => {
     const obj = { c: 3, a: 1, b: 2 }
-    const result = sortObject(obj)
+    const result = sortObjectKeys(obj)
     expect(Object.keys(result)).toStrictEqual(['a', 'b', 'c'])
     expect(result).toStrictEqual({ a: 1, b: 2, c: 3 })
   })
 
   it('should handle empty object', () => {
     const obj = {}
-    expect(sortObject(obj)).toStrictEqual({})
+    expect(sortObjectKeys(obj)).toStrictEqual({})
   })
 
   it('should sort using custom compare function', () => {
     const obj = { a: 1, b: 2, c: 3 }
-    const result = sortObject(obj, {
+    const result = sortObjectKeys(obj, {
       compareFn: (a, b) => b.localeCompare(a), // reverse order
     })
     expect(Object.keys(result)).toStrictEqual(['c', 'b', 'a'])
@@ -315,14 +315,14 @@ describe(sortObject, () => {
 
   it('should not sort nested objects by default', () => {
     const obj = { c: 3, a: 1, nested: { z: 3, x: 1, y: 2 } }
-    const result = sortObject(obj)
+    const result = sortObjectKeys(obj)
     expect(Object.keys(result)).toStrictEqual(['a', 'c', 'nested'])
     expect(Object.keys(result.nested)).toStrictEqual(['z', 'x', 'y'])
   })
 
   it('should sort nested objects when deep is true', () => {
     const obj = { c: 3, a: 1, nested: { z: 3, x: 1, y: 2 } }
-    const result = sortObject(obj, { deep: true })
+    const result = sortObjectKeys(obj, { deep: true })
     expect(Object.keys(result)).toStrictEqual(['a', 'c', 'nested'])
     expect(Object.keys(result.nested)).toStrictEqual(['x', 'y', 'z'])
   })
@@ -338,7 +338,7 @@ describe(sortObject, () => {
         },
       },
     }
-    const result = sortObject(obj, { deep: true })
+    const result = sortObjectKeys(obj, { deep: true })
     expect(Object.keys(result)).toStrictEqual(['a', 'z'])
     expect(Object.keys(result.a)).toStrictEqual(['b', 'c'])
     expect(Object.keys(result.a.b)).toStrictEqual(['x', 'y'])
@@ -346,7 +346,7 @@ describe(sortObject, () => {
 
   it('should not modify arrays in values', () => {
     const obj = { c: [3, 2, 1], a: 1, b: 2 }
-    const result = sortObject(obj)
+    const result = sortObjectKeys(obj)
     expect(result.c).toStrictEqual([3, 2, 1])
   })
 
@@ -357,7 +357,7 @@ describe(sortObject, () => {
       enumerable: true,
       writable: false,
     })
-    const result = sortObject(obj)
+    const result = sortObjectKeys(obj)
     const descriptor = Object.getOwnPropertyDescriptor(result, 'c')
     expect(descriptor?.writable).toBeFalsy()
   })
@@ -373,7 +373,7 @@ describe(sortObject, () => {
       get: getter,
     })
 
-    const result = sortObject(obj)
+    const result = sortObjectKeys(obj)
 
     expect(Reflect.ownKeys(result)).toStrictEqual(['a', 'z', symbol])
     expect(Object.getOwnPropertyDescriptor(result, 'a')?.get).toBe(getter)

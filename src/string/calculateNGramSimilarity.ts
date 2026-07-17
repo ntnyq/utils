@@ -2,7 +2,7 @@
  * @copyright {@link https://github.com/stephenjjbrown/string-similarity-js}
  */
 
-export interface GetStringSimilarityOptions {
+export interface CalculateNGramSimilarityOptions {
   /**
    * The length of the slice to compare.
    * @default 2
@@ -16,7 +16,7 @@ export interface GetStringSimilarityOptions {
 }
 
 /**
- * Calculates the similarity score between two strings.
+ * Calculates the n-gram similarity score between two strings.
  * @param str1 - The first string to compare.
  * @param str2 - The second string to compare.
  * @param options - Options for controlling the comparison behavior.
@@ -25,16 +25,16 @@ export interface GetStringSimilarityOptions {
  * @example
  *
  * ```typescript
- * import { getStringSimilarity } from '@ntnyq/utils'
+ * import { calculateNGramSimilarity } from '@ntnyq/utils'
  *
- * const result = getStringSimilarity('hello', 'hallo')
+ * const result = calculateNGramSimilarity('hello', 'hallo')
  * console.log(result > 0.5) // => true
  * ```
  */
-export function getStringSimilarity(
+export function calculateNGramSimilarity(
   str1: string,
   str2: string,
-  options: GetStringSimilarityOptions = {},
+  options: CalculateNGramSimilarityOptions = {},
 ): number {
   const { sliceLength = 2, caseSensitive = false } = options
 

@@ -1,1 +1,1 @@
-export * from './flatTree'
+export * from './flattenTree'

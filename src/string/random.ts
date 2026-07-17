@@ -1,4 +1,4 @@
-import { randomNumber } from '../number'
+import { randomInteger } from '../number'
 
 /**
  * randome a string useing given chars
@@ -22,7 +22,7 @@ export function randomString(
 ): string {
   const result: string[] = []
   for (let i = length; i > 0; --i) {
-    const matchedChar = chars[randomNumber(chars.length)]
+    const matchedChar = chars[randomInteger(chars.length)]
     if (matchedChar) {
       result.push(matchedChar)
     }

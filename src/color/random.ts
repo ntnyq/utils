@@ -1,4 +1,4 @@
-import { randomNumber } from '../number'
+import { randomInteger } from '../number'
 
 /**
  * the maximum value of RGB
@@ -19,7 +19,7 @@ const MAX_RGB = 255
  *
  */
 export function randomRGBColor() {
-  return `rgb(${randomNumber(MAX_RGB)}, ${randomNumber(MAX_RGB)}, ${randomNumber(MAX_RGB)})`
+  return `rgb(${randomInteger(MAX_RGB)}, ${randomInteger(MAX_RGB)}, ${randomInteger(MAX_RGB)})`
 }
 
 /**
@@ -36,7 +36,7 @@ export function randomRGBColor() {
  *
  */
 export function randomRGBAColor() {
-  return `rgba(${randomNumber(MAX_RGB)}, ${randomNumber(MAX_RGB)}, ${randomNumber(MAX_RGB)}, ${Math.random().toFixed(1)})`
+  return `rgba(${randomInteger(MAX_RGB)}, ${randomInteger(MAX_RGB)}, ${randomInteger(MAX_RGB)}, ${Math.random().toFixed(1)})`
 }
 
 /**

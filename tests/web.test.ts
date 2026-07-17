@@ -7,7 +7,7 @@ import {
   rAF,
   scrollElementIntoView,
 } from '../src/web'
-import { getImageNaturalSize } from '../src/web/image/getImageNaturalSize'
+import { loadImageDimensions } from '../src/web/image/loadImageDimensions'
 
 const originalDocument = globalThis.document
 const originalWindow = globalThis.window
@@ -273,7 +273,7 @@ describe(openExternalURL, () => {
   })
 })
 
-describe(getImageNaturalSize, () => {
+describe(loadImageDimensions, () => {
   beforeEach(() => {
     MockImage.instances = []
     vi.useRealTimers()
@@ -313,7 +313,7 @@ describe(getImageNaturalSize, () => {
   })
 
   it('should resolve image size when loaded', async () => {
-    const promise = getImageNaturalSize('https://example.com/image.png')
+    const promise = loadImageDimensions('https://example.com/image.png')
     const instance = MockImage.instances[0]!
 
     instance.naturalWidth = 640
@@ -330,7 +330,7 @@ describe(getImageNaturalSize, () => {
   })
 
   it('should reject when image load fails', async () => {
-    const promise = getImageNaturalSize('https://example.com/fail.png')
+    const promise = loadImageDimensions('https://example.com/fail.png')
     const instance = MockImage.instances[0]!
 
     instance.onerror?.()
@@ -341,7 +341,7 @@ describe(getImageNaturalSize, () => {
   })
 
   it('should reject when image loading is aborted', async () => {
-    const promise = getImageNaturalSize('https://example.com/abort.png')
+    const promise = loadImageDimensions('https://example.com/abort.png')
     const instance = MockImage.instances[0]!
 
     instance.onabort?.()
@@ -353,7 +353,7 @@ describe(getImageNaturalSize, () => {
 
   it('should reject when loading times out', async () => {
     vi.useFakeTimers()
-    const promise = getImageNaturalSize('https://example.com/timeout.png', {
+    const promise = loadImageDimensions('https://example.com/timeout.png', {
       timeout: 10,
     })
 
@@ -364,8 +364,8 @@ describe(getImageNaturalSize, () => {
   })
 
   it('should cache promise for identical string source by default', async () => {
-    const first = getImageNaturalSize('https://example.com/cache.png')
-    const second = getImageNaturalSize('https://example.com/cache.png')
+    const first = loadImageDimensions('https://example.com/cache.png')
+    const second = loadImageDimensions('https://example.com/cache.png')
 
     expect(MockImage.instances).toHaveLength(1)
 
@@ -379,10 +379,10 @@ describe(getImageNaturalSize, () => {
   })
 
   it('should skip cache when cache option is false', async () => {
-    const first = getImageNaturalSize('https://example.com/no-cache.png', {
+    const first = loadImageDimensions('https://example.com/no-cache.png', {
       cache: false,
     })
-    const second = getImageNaturalSize('https://example.com/no-cache.png', {
+    const second = loadImageDimensions('https://example.com/no-cache.png', {
       cache: false,
     })
 
@@ -406,7 +406,7 @@ describe(getImageNaturalSize, () => {
 
   it('should create and revoke object URL for blob source', async () => {
     const blob = new Blob(['image-binary'], { type: 'image/png' })
-    const promise = getImageNaturalSize(blob)
+    const promise = loadImageDimensions(blob)
     const instance = MockImage.instances[0]!
 
     expect(URL.createObjectURL).toHaveBeenCalledWith(blob)
@@ -422,8 +422,8 @@ describe(getImageNaturalSize, () => {
 
   it('should cache a blob by identity and loading options', async () => {
     const blob = new Blob(['image-binary'], { type: 'image/png' })
-    const first = getImageNaturalSize(blob)
-    const second = getImageNaturalSize(blob)
+    const first = loadImageDimensions(blob)
+    const second = loadImageDimensions(blob)
 
     expect(URL.createObjectURL).toHaveBeenCalledOnce()
     expect(MockImage.instances).toHaveLength(1)
@@ -438,8 +438,8 @@ describe(getImageNaturalSize, () => {
 
   it('should separate cache entries by loading options', async () => {
     const source = 'https://example.com/options-cache.png'
-    const first = getImageNaturalSize(source, { decoding: 'sync' })
-    const second = getImageNaturalSize(source, { decoding: 'async' })
+    const first = loadImageDimensions(source, { decoding: 'sync' })
+    const second = loadImageDimensions(source, { decoding: 'async' })
 
     expect(MockImage.instances).toHaveLength(2)
     MockImage.instances.forEach(instance => {
@@ -452,7 +452,7 @@ describe(getImageNaturalSize, () => {
 
   it('should evict rejected promises so the source can be retried', async () => {
     const source = 'https://example.com/retry.png?token=secret'
-    const first = getImageNaturalSize(source)
+    const first = loadImageDimensions(source)
     MockImage.instances[0]!.onerror?.()
 
     await expect(first).rejects.toThrow(
@@ -460,7 +460,7 @@ describe(getImageNaturalSize, () => {
     )
     expect(MockImage.instances).toHaveLength(1)
 
-    const second = getImageNaturalSize(source)
+    const second = loadImageDimensions(source)
     expect(MockImage.instances).toHaveLength(2)
     MockImage.instances[1]!.naturalWidth = 30
     MockImage.instances[1]!.naturalHeight = 40
@@ -469,7 +469,7 @@ describe(getImageNaturalSize, () => {
   })
 
   it('should not set crossOrigin when crossOrigin is null', async () => {
-    const promise = getImageNaturalSize(
+    const promise = loadImageDimensions(
       'https://example.com/no-cross-origin.png',
       { crossOrigin: null },
     )

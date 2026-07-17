@@ -11,7 +11,7 @@ This section documents 50 exported methods across the predicate submodules.
 
 ## Methods
 
-- [getObjectType](#getobjecttype)
+- [getObjectTag](#getobjecttag)
 - [isAllEmpty](#isallempty)
 - [isArray](#isarray)
 - [isBigInt](#isbigint)
@@ -55,7 +55,7 @@ This section documents 50 exported methods across the predicate submodules.
 - [isSymbol](#issymbol)
 - [isTruthy](#istruthy)
 - [isUndefined](#isundefined)
-- [isUrlString](#isurlstring)
+- [isURLString](#isurlstring)
 - [isUUID](#isuuid)
 - [isWeakMap](#isweakmap)
 - [isWeakSet](#isweakset)
@@ -64,9 +64,9 @@ This section documents 50 exported methods across the predicate submodules.
 
 ---
 
-## getObjectType
+## getObjectTag
 
-Gets the internal object type name of a value.
+Gets the `Object.prototype.toString` tag of a value.
 
 ### Parameters
 
@@ -74,14 +74,14 @@ Gets the internal object type name of a value.
 
 ### Returns
 
-The object type string such as String, Array, or Map.
+The object tag such as String, Array, or Map.
 
 ### Example
 
 ```ts
-import { getObjectType } from '@ntnyq/utils'
+import { getObjectTag } from '@ntnyq/utils'
 
-const result = getObjectType(new Map())
+const result = getObjectTag(new Map())
 console.log(result) // => 'Map'
 ```
 
@@ -1070,7 +1070,7 @@ console.log(result) // => true
 
 ---
 
-## isUrlString
+## isURLString
 
 Checks whether a value is a valid URL string.
 
@@ -1085,9 +1085,9 @@ True if the value is a valid absolute URL string.
 ### Example
 
 ```ts
-import { isUrlString } from '@ntnyq/utils'
+import { isURLString } from '@ntnyq/utils'
 
-const result = isUrlString('https://example.com')
+const result = isURLString('https://example.com')
 console.log(result) // => true
 ```
 

@@ -1,12 +1,12 @@
 import { describe, expect, it } from 'vitest'
-import { enhance } from '../src/proxy'
+import { createOverlayProxy } from '../src/proxy'
 
-describe(enhance, () => {
-  it('should overlay extra properties and preserve originals', () => {
-    const base = { a: 1, b: 2 }
-    const extra = { b: 3, c: 4 }
+describe(createOverlayProxy, () => {
+  it('should overlay properties and preserve the target', () => {
+    const target = { a: 1, b: 2 }
+    const overlay = { b: 3, c: 4 }
 
-    const proxied = enhance(base, extra)
+    const proxied = createOverlayProxy(target, overlay)
 
     expect(proxied.a).toBe(1)
     expect(proxied.b).toBe(3)

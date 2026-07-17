@@ -2,7 +2,7 @@ import { nanoid } from 'nanoid'
 import { v4 as uuid } from 'uuid'
 import { describe, expect, it } from 'vitest'
 import {
-  getObjectType,
+  getObjectTag,
   isAllEmpty,
   isArray,
   isBigInt,
@@ -47,7 +47,7 @@ import {
   isSymbol,
   isTruthy,
   isUndefined,
-  isUrlString,
+  isURLString,
   isWeakMap,
   isWeakSet,
   isWhitespaceString,
@@ -55,19 +55,19 @@ import {
 } from '../src/predicate'
 import { isHTMLElement } from '../src/web/dom'
 
-describe(getObjectType, () => {
+describe(getObjectTag, () => {
   it('should return correct object type', () => {
-    expect(getObjectType({})).toBe('Object')
-    expect(getObjectType([])).toBe('Array')
-    expect(getObjectType(new Map())).toBe('Map')
-    expect(getObjectType(new Set())).toBe('Set')
-    expect(getObjectType(new Date())).toBe('Date')
-    expect(getObjectType(/test/u)).toBe('RegExp')
-    expect(getObjectType(new Error('error'))).toBe('Error')
-    expect(getObjectType(Promise.resolve())).toBe('Promise')
-    expect(getObjectType(null)).toBe('Null')
+    expect(getObjectTag({})).toBe('Object')
+    expect(getObjectTag([])).toBe('Array')
+    expect(getObjectTag(new Map())).toBe('Map')
+    expect(getObjectTag(new Set())).toBe('Set')
+    expect(getObjectTag(new Date())).toBe('Date')
+    expect(getObjectTag(/test/u)).toBe('RegExp')
+    expect(getObjectTag(new Error('error'))).toBe('Error')
+    expect(getObjectTag(Promise.resolve())).toBe('Promise')
+    expect(getObjectTag(null)).toBe('Null')
     // @ts-expect-error testing undefined
-    expect(getObjectType()).toBe('Undefined')
+    expect(getObjectTag()).toBe('Undefined')
   })
 })
 
@@ -798,27 +798,27 @@ describe(isFile, () => {
   })
 })
 
-describe(isUrlString, () => {
+describe(isURLString, () => {
   it('should return true for valid URL strings', () => {
-    expect(isUrlString('http://example.com')).toBeTruthy()
-    expect(isUrlString('https://example.com')).toBeTruthy()
-    expect(isUrlString('https://example.com/path')).toBeTruthy()
-    expect(isUrlString('https://example.com/path?query=1')).toBeTruthy()
-    expect(isUrlString('ftp://example.com')).toBeTruthy()
+    expect(isURLString('http://example.com')).toBeTruthy()
+    expect(isURLString('https://example.com')).toBeTruthy()
+    expect(isURLString('https://example.com/path')).toBeTruthy()
+    expect(isURLString('https://example.com/path?query=1')).toBeTruthy()
+    expect(isURLString('ftp://example.com')).toBeTruthy()
   })
 
   it('should return false for invalid URL strings', () => {
-    expect(isUrlString('not a url')).toBeFalsy()
-    expect(isUrlString('example.com')).toBeFalsy()
-    expect(isUrlString('/relative/path')).toBeFalsy()
-    expect(isUrlString('')).toBeFalsy()
+    expect(isURLString('not a url')).toBeFalsy()
+    expect(isURLString('example.com')).toBeFalsy()
+    expect(isURLString('/relative/path')).toBeFalsy()
+    expect(isURLString('')).toBeFalsy()
   })
 
   it('should return false for non-strings', () => {
-    expect(isUrlString(123)).toBeFalsy()
-    expect(isUrlString(null)).toBeFalsy()
+    expect(isURLString(123)).toBeFalsy()
+    expect(isURLString(null)).toBeFalsy()
     // @ts-expect-error testing undefined
-    expect(isUrlString()).toBeFalsy()
+    expect(isURLString()).toBeFalsy()
   })
 })
 

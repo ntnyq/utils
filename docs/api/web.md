@@ -21,8 +21,8 @@ and utility modules.
 
 ## Image
 
-- `getImageNaturalSize` resolves the natural dimensions of a URL, Blob, or
-  File source and supports timeout, decoding, cross-origin, and cache options.
+- `loadImageDimensions` loads a URL, Blob, or File and resolves its natural
+  dimensions. It supports timeout, decoding, cross-origin, and cache options.
 
 ## Animation frame
 
@@ -30,11 +30,11 @@ and utility modules.
 - `rAF` and `cAF` wrap animation-frame scheduling and cancellation.
 
 ```ts
-import { getImageNaturalSize, isBrowser, rAF } from '@ntnyq/utils'
+import { loadImageDimensions, isBrowser, rAF } from '@ntnyq/utils'
 
 if (isBrowser()) {
   rAF(() => console.log('next frame'))
-  const size = await getImageNaturalSize('/logo.png')
-  console.log(size)
+  const dimensions = await loadImageDimensions('/logo.png')
+  console.log(dimensions)
 }
 ```

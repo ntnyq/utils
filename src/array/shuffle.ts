@@ -1,4 +1,4 @@
-import { randomNumber } from '../number'
+import { randomInteger } from '../number'
 
 /**
  * Fisher–Yates shuffle
@@ -17,7 +17,7 @@ import { randomNumber } from '../number'
  */
 export function shuffle<T>(array: T[]): T[] {
   for (let i = array.length - 1; i > 0; i--) {
-    const j = randomNumber(0, i, { includeMax: true })
+    const j = randomInteger(0, i, { includeMax: true })
     // @ts-expect-error make TS happy
     ;[array[i], array[j]] = [array[j], array[i]]
   }

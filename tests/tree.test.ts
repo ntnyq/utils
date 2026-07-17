@@ -1,12 +1,12 @@
 import { describe, expect, it, vi } from 'vitest'
-import { flatTree } from '../src/tree'
+import { flattenTree } from '../src/tree'
 
 interface TreeNode {
   id: string
   children?: TreeNode[]
 }
 
-describe(flatTree, () => {
+describe(flattenTree, () => {
   it('should flatten tree in preorder by default', () => {
     const tree: TreeNode[] = [
       {
@@ -16,7 +16,7 @@ describe(flatTree, () => {
       { id: 'b' },
     ]
 
-    const result = flatTree(tree)
+    const result = flattenTree(tree)
 
     expect(result.map(node => node.id)).toStrictEqual([
       'a',
@@ -28,7 +28,7 @@ describe(flatTree, () => {
   })
 
   it('should return empty array for empty roots', () => {
-    expect(flatTree([])).toStrictEqual([])
+    expect(flattenTree([])).toStrictEqual([])
   })
 
   it('should not include nodes when includeSelf is false', () => {
@@ -39,7 +39,7 @@ describe(flatTree, () => {
       },
     ]
 
-    const result = flatTree(tree, { includeSelf: false })
+    const result = flattenTree(tree, { includeSelf: false })
 
     expect(result).toStrictEqual([])
   })
@@ -57,7 +57,7 @@ describe(flatTree, () => {
       },
     ]
 
-    const result = flatTree(tree, { childrenKey: 'nodes' })
+    const result = flattenTree(tree, { childrenKey: 'nodes' })
 
     expect(result.map(node => node.id)).toStrictEqual([
       'x',
@@ -74,7 +74,7 @@ describe(flatTree, () => {
       { id: 'c', children: 'not-array' },
     ] as unknown as TreeNode[]
 
-    const result = flatTree(tree)
+    const result = flattenTree(tree)
 
     expect(result.map(node => node.id)).toStrictEqual(['a', 'b', 'c'])
   })
@@ -90,7 +90,7 @@ describe(flatTree, () => {
       },
     ]
 
-    const result = flatTree(tree, {
+    const result = flattenTree(tree, {
       map: ({ node, parent, depth, index, path }) => ({
         id: node.id,
         parentId: parent?.id ?? null,
@@ -141,7 +141,7 @@ describe(flatTree, () => {
       },
     ]
 
-    const result = flatTree(tree, {
+    const result = flattenTree(tree, {
       includeSelf: false,
       map,
     })

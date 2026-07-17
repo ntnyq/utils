@@ -1,5 +1,5 @@
 export * from './clamp'
-export * from './random'
+export * from './randomInteger'
 export * from './toInteger'
 export * from './toNumber'
 export * from './round'

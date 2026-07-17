@@ -8,20 +8,20 @@ export type Whitespace = ' '
 export type NonEmptyString = string & { 0: '' }
 
 /**
- * Gets the internal object type name of a value.
+ * Gets the `Object.prototype.toString` tag of a value.
  * @param value - The value to inspect.
- * @returns The object type string such as String, Array, or Map.
+ * @returns The object tag such as String, Array, or Map.
  *
  * @example
  *
  * ```typescript
- * import { getObjectType } from '@ntnyq/utils'
+ * import { getObjectTag } from '@ntnyq/utils'
  *
- * const result = getObjectType(new Map())
+ * const result = getObjectTag(new Map())
  * console.log(result) // => 'Map'
  * ```
  */
-export function getObjectType(value: unknown): string {
+export function getObjectTag(value: unknown): string {
   return Object.prototype.toString.call(value).slice(8, -1)
 }
 

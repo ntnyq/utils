@@ -1,4 +1,4 @@
-export interface FlatTreeContext<T> {
+export interface FlattenTreeContext<T> {
   node: T
   parent: T | null
   depth: number
@@ -9,7 +9,7 @@ export interface FlatTreeContext<T> {
   path: T[]
 }
 
-export interface FlatTreeOptions<
+export interface FlattenTreeOptions<
   T extends Record<PropertyKey, any>,
   K extends keyof T,
 > {
@@ -29,7 +29,7 @@ export interface FlatTreeOptions<
   /**
    * map function, return value will be used as the result of the current node, if not provided, the current node will be used as the result
    */
-  map?: (ctx: FlatTreeContext<T>) => unknown
+  map?: (ctx: FlattenTreeContext<T>) => unknown
 }
 
 /**
@@ -43,18 +43,18 @@ export interface FlatTreeOptions<
  * @example
  *
  * ```typescript
- * import { flatTree } from '@ntnyq/utils'
+ * import { flattenTree } from '@ntnyq/utils'
  *
  * const tree = [{ id: 1, children: [{ id: 2, children: [] }] }]
- * const result = flatTree(tree)
+ * const result = flattenTree(tree)
  * console.log(result.map(item => item.id)) // => [1, 2]
  * ```
  *
  */
-export function flatTree<T extends Record<PropertyKey, any>, R>(
+export function flattenTree<T extends Record<PropertyKey, any>, R>(
   roots: readonly T[],
-  options: Omit<FlatTreeOptions<T, keyof T>, 'map'> & {
-    map: (ctx: FlatTreeContext<T>) => R
+  options: Omit<FlattenTreeOptions<T, keyof T>, 'map'> & {
+    map: (ctx: FlattenTreeContext<T>) => R
   },
 ): R[]
 
@@ -64,20 +64,20 @@ export function flatTree<T extends Record<PropertyKey, any>, R>(
  * @param options - Flatten options without a map callback.
  * @returns Flattened nodes.
  */
-export function flatTree<T extends Record<PropertyKey, any>>(
+export function flattenTree<T extends Record<PropertyKey, any>>(
   roots: readonly T[],
-  options?: Omit<FlatTreeOptions<T, keyof T>, 'map'>,
+  options?: Omit<FlattenTreeOptions<T, keyof T>, 'map'>,
 ): T[]
 
 /**
- * Internal implementation for the flatTree overloads.
+ * Internal implementation for the flattenTree overloads.
  * @param roots - Root nodes of the tree.
  * @param options - Flattening options.
  * @returns A flattened array of original nodes or mapped values.
  */
-export function flatTree<T extends Record<PropertyKey, any>>(
+export function flattenTree<T extends Record<PropertyKey, any>>(
   roots: readonly T[],
-  options: FlatTreeOptions<T, keyof T> = {},
+  options: FlattenTreeOptions<T, keyof T> = {},
 ): any[] {
   const { childrenKey = 'children', includeSelf = true, map } = options
 

@@ -1,1 +1,1 @@
-export * from './getImageNaturalSize'
+export * from './loadImageDimensions'

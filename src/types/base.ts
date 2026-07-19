@@ -1,10 +1,10 @@
-export type AnyFn<T = any, R = any> = (...args: T[]) => R
+export type AnyFn<R = any, T = any> = (...args: T[]) => R
 
 export type Arrayable<T> = T | T[]
 
 export type Awaitable<T> = Promise<T> | T
 
-export type Callable<T> = AnyFn<any, T> | T
+export type Callable<T> = AnyFn<T> | T
 
 export type MayBe<T> = T | undefined
 

@@ -183,6 +183,7 @@ describe(cleanObject, () => {
   it('should return empty object when input is null', () => {
     expect(cleanObject(null)).toStrictEqual({})
   })
+
   it('should return empty object when input is undefined', () => {
     expect(cleanObject(undefined)).toStrictEqual({})
   })

@@ -5,19 +5,46 @@ outline: deep
 
 # Number Utilities
 
-Helpers for ranges, random numbers, rounding, and number coercion.
+Helpers for ranges, random numbers, rounding, number coercion, and Chinese
+numeral formatting.
 
-This section documents 6 exported methods from the number module.
+This section documents 8 exported methods from the number module.
 
 ## Methods
 
 - [clamp](#clamp)
-
+- [digitsToChinese](#digitstochinese)
 - [randomInteger](#randominteger)
 - [round](#round)
+- [toChineseNumber](#tochinesenumber)
 - [toFixed](#tofixed)
 - [toInteger](#tointeger)
 - [toNumber](#tonumber)
+
+---
+
+## digitsToChinese
+
+Replaces each ASCII digit with its Chinese numeral counterpart while preserving
+all other characters. This is useful for years, phone numbers, and identifiers
+that should be read digit by digit.
+
+### Parameters
+
+- **value**: The number or string to convert.
+
+### Returns
+
+A string with each digit converted independently.
+
+### Example
+
+```ts
+import { digitsToChinese } from '@ntnyq/utils'
+
+digitsToChinese(2026) // => '二零二六'
+digitsToChinese('020-1234') // => '零二零-一二三四'
+```
 
 ---
 
@@ -65,6 +92,36 @@ import { round } from '@ntnyq/utils'
 
 round(1.2345) //=> 1
 round(1.2345, 2) //=> 1.23
+```
+
+---
+
+## toChineseNumber
+
+Converts a safe integer to its spoken Chinese numeral representation, including
+negative values and units up to `万亿`.
+
+### Parameters
+
+- **value**: The safe integer to convert.
+
+### Returns
+
+The spoken Chinese numeral representation.
+
+### Throws
+
+Throws a `TypeError` when `value` is not a safe integer.
+
+### Example
+
+```ts
+import { toChineseNumber } from '@ntnyq/utils'
+
+toChineseNumber(10) // => '十'
+toChineseNumber(1024) // => '一千零二十四'
+toChineseNumber(10001) // => '一万零一'
+toChineseNumber(-2026) // => '负二千零二十六'
 ```
 
 ---

@@ -18,7 +18,7 @@ glance.
 | [HTML](/api/html)           |       2 | HTML text escaping and unescaping.                             |
 | [Logging](/api/logging)     |       1 | Controlled warning output.                                     |
 | [Module](/api/module)       |       1 | Module interop.                                                |
-| [Number](/api/number)       |       6 | Range, random, rounding, and coercion helpers.                 |
+| [Number](/api/number)       |       8 | Range, rounding, coercion, and Chinese numeral helpers.        |
 | [Object](/api/object)       |      13 | Object selection, paths, cloning, merging, and cleanup.        |
 | [Path](/api/path)           |       3 | Pure path-string and extension helpers.                        |
 | [Predicate](/api/predicate) |      50 | Runtime checks grouped by semantic concern.                    |

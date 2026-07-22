@@ -1,6 +1,11 @@
 import { describe, expectTypeOf, it } from 'vitest'
 import { filterFalsy, groupBy } from '../src/array'
-import { randomInteger, toInteger } from '../src/number'
+import {
+  digitsToChinese,
+  randomInteger,
+  toChineseNumber,
+  toInteger,
+} from '../src/number'
 import type { RandomIntegerOptions } from '../src/number'
 import { deepMerge, objectOmit, sortObjectKeys } from '../src/object'
 import type { ObjectOmitOptions, SortObjectKeysOptions } from '../src/object'
@@ -60,6 +65,8 @@ describe('public API types', () => {
     expectTypeOf(overlaid.value).toEqualTypeOf<string>()
     expectTypeOf(overlaid.extra).toEqualTypeOf<boolean>()
     expectTypeOf(original).toEqualTypeOf<number | string>()
+    expectTypeOf(digitsToChinese('2026')).toEqualTypeOf<string>()
+    expectTypeOf(toChineseNumber(2026)).toEqualTypeOf<string>()
     expectTypeOf(toInteger('1')).toEqualTypeOf<number>()
   })
 

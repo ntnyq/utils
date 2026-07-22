@@ -2,12 +2,68 @@
 import { describe, expect, it, vi } from 'vitest'
 import {
   clamp,
+  digitsToChinese,
   randomInteger,
   round,
+  toChineseNumber,
   toFixed,
   toInteger,
   toNumber,
 } from '../src/number'
+
+describe(digitsToChinese, () => {
+  it('should convert each digit independently', () => {
+    expect(digitsToChinese(2026)).toBe('二零二六')
+    expect(digitsToChinese('020-1234.5')).toBe('零二零-一二三四.五')
+  })
+
+  it('should preserve non-digit characters', () => {
+    expect(digitsToChinese('version two')).toBe('version two')
+    expect(digitsToChinese('-10°C')).toBe('-一零°C')
+  })
+})
+
+describe(toChineseNumber, () => {
+  it('should convert integers smaller than ten thousand', () => {
+    expect(toChineseNumber(0)).toBe('零')
+    expect(toChineseNumber(9)).toBe('九')
+    expect(toChineseNumber(10)).toBe('十')
+    expect(toChineseNumber(11)).toBe('十一')
+    expect(toChineseNumber(20)).toBe('二十')
+    expect(toChineseNumber(101)).toBe('一百零一')
+    expect(toChineseNumber(110)).toBe('一百一十')
+    expect(toChineseNumber(1001)).toBe('一千零一')
+    expect(toChineseNumber(1024)).toBe('一千零二十四')
+  })
+
+  it('should place zeros across four-digit groups', () => {
+    expect(toChineseNumber(10_000)).toBe('一万')
+    expect(toChineseNumber(10_001)).toBe('一万零一')
+    expect(toChineseNumber(10_010)).toBe('一万零一十')
+    expect(toChineseNumber(100_000_000)).toBe('一亿')
+    expect(toChineseNumber(100_010_001)).toBe('一亿零一万零一')
+    expect(toChineseNumber(1_000_010_001)).toBe('十亿零一万零一')
+  })
+
+  it('should convert negative integers', () => {
+    expect(toChineseNumber(-2026)).toBe('负二千零二十六')
+  })
+
+  it('should support the safe integer boundary', () => {
+    expect(toChineseNumber(Number.MAX_SAFE_INTEGER)).toBe(
+      '九千零七万亿一千九百九十二亿五千四百七十四万零九百九十一',
+    )
+  })
+
+  it('should reject values that are not safe integers', () => {
+    expect(() => toChineseNumber(1.5)).toThrow(TypeError)
+    expect(() => toChineseNumber(Number.NaN)).toThrow(TypeError)
+    expect(() => toChineseNumber(Number.POSITIVE_INFINITY)).toThrow(TypeError)
+    expect(() => toChineseNumber(Number.MAX_SAFE_INTEGER + 1)).toThrow(
+      TypeError,
+    )
+  })
+})
 
 describe(randomInteger, () => {
   it('should return a number within the specified range', () => {

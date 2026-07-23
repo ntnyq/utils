@@ -1,10 +1,13 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import {
+  cancelFrame,
   cAF,
+  getGlobalRoot,
   getRoot,
   isElementVisibleInViewport,
   openExternalURL,
   rAF,
+  requestFrame,
   scrollElementIntoView,
 } from '../src/web'
 import { loadImageDimensions } from '../src/web/image/loadImageDimensions'
@@ -515,7 +518,7 @@ describe(loadImageDimensions, () => {
   })
 })
 
-describe('raf helpers', () => {
+describe('animation frame helpers', () => {
   it('should use window in browser-like env', () => {
     const win: any = {
       requestAnimationFrame: vi.fn(cb => {
@@ -530,11 +533,27 @@ describe('raf helpers', () => {
     vi.stubGlobal('document', doc)
     vi.stubGlobal('self', win)
 
-    expect(getRoot()).toBe(win)
-    const id = rAF(() => {})
+    expect(getGlobalRoot()).toBe(win)
+    const id = requestFrame(() => {})
     expect(id).toBe(1)
-    cAF(id)
+    cancelFrame(id)
     // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
     expect(win.cancelAnimationFrame).toHaveBeenCalledWith(1)
+  })
+
+  it('should preserve deprecated aliases', () => {
+    const win: any = {
+      requestAnimationFrame: vi.fn(() => 2),
+      cancelAnimationFrame: vi.fn(),
+    }
+    vi.stubGlobal('window', win)
+    vi.stubGlobal('document', {})
+    vi.stubGlobal('self', win)
+
+    expect(getRoot()).toBe(getGlobalRoot())
+    expect(rAF(() => {})).toBe(2)
+    cAF(2)
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+    expect(win.cancelAnimationFrame).toHaveBeenCalledWith(2)
   })
 })

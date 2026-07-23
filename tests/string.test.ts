@@ -7,6 +7,7 @@ import {
   countGraphemes,
   calculateNGramSimilarity,
   join,
+  joinNonEmptyValues,
   randomString,
   slugify,
   truncate,
@@ -107,37 +108,49 @@ describe(countGraphemes, () => {
   })
 })
 
-describe(join, () => {
+describe(joinNonEmptyValues, () => {
   it('should join array with default separator', () => {
-    expect(join(['a', 'b', 'c'])).toBe('abc')
+    expect(joinNonEmptyValues(['a', 'b', 'c'])).toBe('abc')
   })
 
   it('should join array with custom separator', () => {
-    expect(join(['a', 'b', 'c'], { separator: '-' })).toBe('a-b-c')
-    expect(join(['a', 'b', 'c'], { separator: ', ' })).toBe('a, b, c')
-  })
-
-  it('should filter out null and undefined', () => {
-    expect(join(['a', null, 'b', undefined, 'c'])).toBe('abc')
-    expect(join(['a', null, 'b', undefined, 'c'], { separator: '-' })).toBe(
+    expect(joinNonEmptyValues(['a', 'b', 'c'], { separator: '-' })).toBe(
       'a-b-c',
+    )
+    expect(joinNonEmptyValues(['a', 'b', 'c'], { separator: ', ' })).toBe(
+      'a, b, c',
     )
   })
 
+  it('should filter out null and undefined', () => {
+    expect(joinNonEmptyValues(['a', null, 'b', undefined, 'c'])).toBe('abc')
+    expect(
+      joinNonEmptyValues(['a', null, 'b', undefined, 'c'], {
+        separator: '-',
+      }),
+    ).toBe('a-b-c')
+  })
+
   it('should keep 0 and other falsy values', () => {
-    expect(join([0, 1, 2], { separator: '-' })).toBe('0-1-2')
+    expect(joinNonEmptyValues([0, 1, 2], { separator: '-' })).toBe('0-1-2')
     // Empty strings are filtered out, not kept
-    expect(join(['a', 'b'], { separator: '-' })).toBe('a-b')
+    expect(joinNonEmptyValues(['a', '', 'b'], { separator: '-' })).toBe('a-b')
   })
 
   it('should handle empty array', () => {
-    expect(join([])).toBe('')
-    expect(join([], { separator: '-' })).toBe('')
+    expect(joinNonEmptyValues([])).toBe('')
+    expect(joinNonEmptyValues([], { separator: '-' })).toBe('')
   })
 
   it('should handle single element', () => {
-    expect(join(['a'])).toBe('a')
-    expect(join([0])).toBe('0')
+    expect(joinNonEmptyValues(['a'])).toBe('a')
+    expect(joinNonEmptyValues([0])).toBe('0')
+  })
+})
+
+describe(join, () => {
+  it('should preserve the deprecated join behavior', () => {
+    expect(join(['a', null, '', 'b'], { separator: '-' })).toBe('a-b')
   })
 })
 

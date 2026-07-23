@@ -7,7 +7,7 @@ outline: deep
 
 Helpers for chunking, grouping, normalizing, comparing, and transforming arrays.
 
-This section documents 15 exported methods from the array module.
+This section documents 19 exported methods from the array module.
 
 ## Methods
 
@@ -21,11 +21,15 @@ This section documents 15 exported methods from the array module.
 - [last](#last)
 - [mergeArrayable](#mergearrayable)
 - [partition](#partition)
-- [remove](#remove)
+- [removeArrayItem](#removearrayitem)
+- [removeArrayItemInPlace](#removearrayiteminplace)
+- [remove](#remove-deprecated)
 - [shuffle](#shuffle)
+- [shuffleInPlace](#shuffleinplace)
 - [toArray](#toarray)
 - [unique](#unique)
 - [uniqueBy](#uniqueby)
+- [uniqueWith](#uniquewith)
 
 ---
 
@@ -282,42 +286,64 @@ console.log(even, odd) // => [2, 4] [1, 3]
 
 ---
 
-## remove
+## removeArrayItem
 
-Remove given item from an array
+Returns a new array without the first matching item.
 
 ### Parameters
 
-- **array**: given array
-- **value**: item to be removed
+- **array**: The source array.
+- **value**: The item to remove.
 
 ### Returns
 
-true if item was removed, otherwise false
+A new array without the first matching item. The source array is unchanged.
 
 ### Example
 
 ```ts
-import { remove } from '@ntnyq/utils'
+import { removeArrayItem } from '@ntnyq/utils'
 
 const list = [1, 2, 3]
-remove(list, 2)
-console.log(list) // => [1, 3]
+const result = removeArrayItem(list, 2)
+console.log(result) // => [1, 3]
+console.log(list) // => [1, 2, 3]
 ```
+
+---
+
+## removeArrayItemInPlace
+
+Removes the first matching item from an array in place and reports whether an
+item was removed.
+
+```ts
+import { removeArrayItemInPlace } from '@ntnyq/utils'
+
+const list = [1, 2, 3]
+const removed = removeArrayItemInPlace(list, 2)
+console.log(removed, list) // => true, [1, 3]
+```
+
+---
+
+## remove (deprecated)
+
+Deprecated compatibility name for `removeArrayItemInPlace`.
 
 ---
 
 ## shuffle
 
-Fisher–Yates shuffle
+Returns a Fisher–Yates shuffled copy.
 
 ### Parameters
 
-- **array**: array to shuffle
+- **array**: array to copy and shuffle
 
 ### Returns
 
-shuffled array
+a shuffled copy; the source array is unchanged
 
 ### Example
 
@@ -326,6 +352,19 @@ import { shuffle } from '@ntnyq/utils'
 
 const result = shuffle([1, 2, 3, 4])
 console.log(result) // => shuffled array
+```
+
+---
+
+## shuffleInPlace
+
+Applies a Fisher–Yates shuffle to an array in place.
+
+```ts
+import { shuffleInPlace } from '@ntnyq/utils'
+
+const values = [1, 2, 3, 4]
+shuffleInPlace(values)
 ```
 
 ---
@@ -355,7 +394,7 @@ console.log(result) // => ['hello']
 
 ## unique
 
-Returns a new array with unique values.
+Returns a new array with unique values selected by key.
 
 ### Parameters
 
@@ -383,7 +422,7 @@ Returns a new array with unique values.
 ### Parameters
 
 - **array**: The array to process.
-- **equalFn**: The function to compare values.
+- **selector**: Resolves the uniqueness key for each item.
 
 ### Returns
 
@@ -401,6 +440,29 @@ const result = uniqueBy(
     { id: 2, name: 'Bob' },
   ],
   item => item.id,
+)
+console.log(result.length) // => 2
+```
+
+---
+
+## uniqueWith
+
+Returns a new array with unique values using a custom equality function.
+
+### Parameters
+
+- **array**: The array to process.
+- **equals**: Returns true when two values should be treated as equal.
+
+### Example
+
+```ts
+import { uniqueWith } from '@ntnyq/utils'
+
+const result = uniqueWith(
+  [{ id: 1 }, { id: 1 }, { id: 2 }],
+  (left, right) => left.id === right.id,
 )
 console.log(result.length) // => 2
 ```

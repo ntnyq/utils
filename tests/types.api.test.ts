@@ -1,5 +1,13 @@
 import { describe, expectTypeOf, it } from 'vitest'
-import { filterFalsy, groupBy } from '../src/array'
+import {
+  filterFalsy,
+  groupBy,
+  removeArrayItem,
+  removeArrayItemInPlace,
+  shuffleInPlace,
+  uniqueBy,
+  uniqueWith,
+} from '../src/array'
 import {
   digitsToChinese,
   randomInteger,
@@ -7,7 +15,14 @@ import {
   toInteger,
 } from '../src/number'
 import type { RandomIntegerOptions } from '../src/number'
-import { deepMerge, objectOmit, sortObjectKeys } from '../src/object'
+import {
+  cleanObjectInPlace,
+  deepMerge,
+  objectOmit,
+  omit,
+  omitInPlace,
+  sortObjectKeys,
+} from '../src/object'
 import type { ObjectOmitOptions, SortObjectKeysOptions } from '../src/object'
 import {
   getObjectTag,
@@ -23,14 +38,21 @@ import {
 } from '../src/predicate'
 import type { URLString, Whitespace } from '../src/predicate'
 import { createOverlayProxy } from '../src/proxy'
-import { calculateNGramSimilarity, countGraphemes } from '../src/string'
+import {
+  calculateNGramSimilarity,
+  countGraphemes,
+  joinNonEmptyValues,
+} from '../src/string'
 import type { CalculateNGramSimilarityOptions } from '../src/string'
 import { flattenTree } from '../src/tree'
 import type { FlattenTreeContext, FlattenTreeOptions } from '../src/tree'
 import type { DeepRequired } from '../src/types'
 import {
+  cancelFrame,
+  getGlobalRoot,
   loadImageDimensions,
   openExternalURL,
+  requestFrame,
   scrollElementIntoView,
 } from '../src/web'
 import type {
@@ -61,6 +83,11 @@ describe('public API types', () => {
       { value: 'one', extra: true },
     )
     const original = toInteger('bad', { onError: 'returnOriginal' })
+    const uniqueIds = uniqueBy([{ id: 1 }], item => item.id)
+    const uniqueObjects = uniqueWith(
+      [{ id: 1 }],
+      (left, right) => left.id === right.id,
+    )
 
     expectTypeOf(filtered).toEqualTypeOf<(symbol | 1n)[]>()
     expectTypeOf(overlaid.value).toEqualTypeOf<string>()
@@ -69,6 +96,8 @@ describe('public API types', () => {
     expectTypeOf(digitsToChinese('2026')).toEqualTypeOf<string>()
     expectTypeOf(toChineseNumber(2026)).toEqualTypeOf<string>()
     expectTypeOf(toInteger('1')).toEqualTypeOf<number>()
+    expectTypeOf(uniqueIds).toEqualTypeOf<{ id: number }[]>()
+    expectTypeOf(uniqueObjects).toEqualTypeOf<{ id: number }[]>()
   })
 
   it('should narrow collection and primitive checks', () => {
@@ -159,15 +188,25 @@ describe('public API types', () => {
     expectTypeOf<SortObjectKeysOptions>().toBeObject()
     expectTypeOf<ObjectOmitOptions>().toBeObject()
     expectTypeOf(calculateNGramSimilarity).toBeFunction()
+    expectTypeOf(cancelFrame).toBeFunction()
+    expectTypeOf(cleanObjectInPlace).toBeFunction()
     expectTypeOf(countGraphemes).toBeFunction()
     expectTypeOf(flattenTree).toBeFunction()
+    expectTypeOf(getGlobalRoot).toBeFunction()
     expectTypeOf(getObjectTag).toBeFunction()
     expectTypeOf(isURLString).toBeFunction()
+    expectTypeOf(joinNonEmptyValues).toBeFunction()
     expectTypeOf(loadImageDimensions).toBeFunction()
+    expectTypeOf(omit).toBeFunction()
+    expectTypeOf(omitInPlace).toBeFunction()
     expectTypeOf(openExternalURL).toBeFunction()
     expectTypeOf(scrollElementIntoView).toBeFunction()
     expectTypeOf(objectOmit).toBeFunction()
     expectTypeOf(randomInteger).toBeFunction()
+    expectTypeOf(removeArrayItem).toBeFunction()
+    expectTypeOf(removeArrayItemInPlace).toBeFunction()
+    expectTypeOf(requestFrame).toBeFunction()
+    expectTypeOf(shuffleInPlace).toBeFunction()
     expectTypeOf(sortObjectKeys).toBeFunction()
   })
 })

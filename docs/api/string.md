@@ -7,7 +7,7 @@ outline: deep
 
 String formatting, normalization, padding, randomization, and similarity helpers.
 
-This section documents 12 exported methods from the string module.
+This section documents 13 exported values from the string module.
 
 ## Exports
 
@@ -19,7 +19,8 @@ This section documents 12 exported methods from the string module.
 - [escapeStringRegexp](#escapestringregexp)
 - [countGraphemes](#countgraphemes)
 - [calculateNGramSimilarity](#calculatengramsimilarity)
-- [join](#join)
+- [joinNonEmptyValues](#joinnonemptyvalues)
+- [join](#join-deprecated)
 - [randomString](#randomstring)
 - [slugify](#slugify)
 - [truncate](#truncate)
@@ -170,9 +171,10 @@ console.log(result > 0.5) // => true
 
 ---
 
-## join
+## joinNonEmptyValues
 
-Joins an array of strings or numbers into a single string.
+Joins non-empty strings and numbers into a single string. Empty strings,
+`null`, and `undefined` are skipped while zero is preserved.
 
 ### Parameters
 
@@ -186,11 +188,17 @@ A string.
 ### Example
 
 ```ts
-import { join } from '@ntnyq/utils'
+import { joinNonEmptyValues } from '@ntnyq/utils'
 
-const result = join(['hello', '', 'world'], { separator: ' ' })
+const result = joinNonEmptyValues(['hello', '', 'world'], { separator: ' ' })
 console.log(result) // => 'hello world'
 ```
+
+---
+
+## join (deprecated)
+
+Deprecated compatibility name for `joinNonEmptyValues`.
 
 ---
 

@@ -11,10 +11,14 @@ import {
   mergeArrayable,
   partition,
   remove,
+  removeArrayItem,
+  removeArrayItemInPlace,
   shuffle,
+  shuffleInPlace,
   toArray,
   unique,
   uniqueBy,
+  uniqueWith,
 } from '../src/array'
 
 describe(toArray, () => {
@@ -189,30 +193,58 @@ describe(unique, () => {
 })
 
 describe(uniqueBy, () => {
+  it('should remove duplicates by selected key', () => {
+    const arr = [{ id: 1 }, { id: 2 }, { id: 1 }, { id: 3 }]
+    const result = uniqueBy(arr, item => item.id)
+    expect(result).toStrictEqual([{ id: 1 }, { id: 2 }, { id: 3 }])
+  })
+
+  it('should select case-insensitive string keys', () => {
+    const arr = ['Apple', 'banana', 'APPLE', 'Banana', 'cherry']
+    const result = uniqueBy(arr, item => item.toLowerCase())
+    expect(result).toStrictEqual(['Apple', 'banana', 'cherry'])
+  })
+
+  it('should handle empty array', () => {
+    expect(uniqueBy([], item => item)).toStrictEqual([])
+  })
+
+  it('should pass the item index and source array to the selector', () => {
+    const arr = ['a', 'a', 'a']
+    expect(
+      uniqueBy(arr, (_item, index, source) => `${index}:${source.length}`),
+    ).toStrictEqual(arr)
+  })
+})
+
+describe(uniqueWith, () => {
   it('should remove duplicates by custom equality function', () => {
     const arr = [{ id: 1 }, { id: 2 }, { id: 1 }, { id: 3 }]
-    const result = uniqueBy(arr, (a, b) => a.id === b.id)
+    const result = uniqueWith(arr, (a, b) => a.id === b.id)
     expect(result).toStrictEqual([{ id: 1 }, { id: 2 }, { id: 3 }])
   })
 
   it('should handle case-insensitive string comparison', () => {
     const arr = ['Apple', 'banana', 'APPLE', 'Banana', 'cherry']
-    const result = uniqueBy(arr, (a, b) => a.toLowerCase() === b.toLowerCase())
+    const result = uniqueWith(
+      arr,
+      (a, b) => a.toLowerCase() === b.toLowerCase(),
+    )
     expect(result).toStrictEqual(['Apple', 'banana', 'cherry'])
   })
 
-  it('should handle empty array', () => {
-    expect(uniqueBy([], () => true)).toStrictEqual([])
+  it('should handle empty arrays', () => {
+    expect(uniqueWith([], () => true)).toStrictEqual([])
   })
 
-  it('should keep all items if equalFn always returns false', () => {
+  it('should keep all items if equals always returns false', () => {
     const arr = [1, 2, 3]
-    expect(uniqueBy(arr, () => false)).toStrictEqual([1, 2, 3])
+    expect(uniqueWith(arr, () => false)).toStrictEqual([1, 2, 3])
   })
 
-  it('should keep only first item if equalFn always returns true', () => {
+  it('should keep only the first item if equals always returns true', () => {
     const arr = [1, 2, 3]
-    expect(uniqueBy(arr, () => true)).toStrictEqual([1])
+    expect(uniqueWith(arr, () => true)).toStrictEqual([1])
   })
 })
 
@@ -373,40 +405,52 @@ describe(isArrayEqual, () => {
   })
 })
 
-describe(remove, () => {
-  it('should remove item from array and return true', () => {
+describe(removeArrayItem, () => {
+  it('should remove the first matching item from a copy', () => {
     const arr = [1, 2, 3, 4]
-    expect(remove(arr, 3)).toBeTruthy()
-    expect(arr).toStrictEqual([1, 2, 4])
+    expect(removeArrayItem(arr, 3)).toStrictEqual([1, 2, 4])
+    expect(arr).toStrictEqual([1, 2, 3, 4])
   })
 
   it('should remove only first occurrence', () => {
     const arr = [1, 2, 3, 2, 4]
-    expect(remove(arr, 2)).toBeTruthy()
-    expect(arr).toStrictEqual([1, 3, 2, 4])
+    expect(removeArrayItem(arr, 2)).toStrictEqual([1, 3, 2, 4])
+    expect(arr).toStrictEqual([1, 2, 3, 2, 4])
   })
 
-  it('should return false when item not found', () => {
+  it('should return a new copy when item is not found', () => {
     const arr = [1, 2, 3]
-    expect(remove(arr, 5)).toBeFalsy()
-    expect(arr).toStrictEqual([1, 2, 3])
+    const result = removeArrayItem(arr, 5)
+    expect(result).toStrictEqual(arr)
+    expect(result).not.toBe(arr)
   })
 
   it('should handle empty array', () => {
     const arr: number[] = []
-    expect(remove(arr, 1)).toBeFalsy()
+    expect(removeArrayItem(arr, 1)).toStrictEqual([])
     expect(arr).toStrictEqual([])
   })
+})
 
-  it('should work with different types', () => {
-    const arr = ['a', 'b', 'c']
-    expect(remove(arr, 'b')).toBeTruthy()
-    expect(arr).toStrictEqual(['a', 'c'])
+describe(removeArrayItemInPlace, () => {
+  it('should mutate the source and report whether an item was removed', () => {
+    const arr = [1, 2, 3]
+    expect(removeArrayItemInPlace(arr, 2)).toBeTruthy()
+    expect(arr).toStrictEqual([1, 3])
+    expect(removeArrayItemInPlace(arr, 4)).toBeFalsy()
   })
 
   it('should return false for null array', () => {
     // @ts-expect-error testing edge case
-    expect(remove(null, 1)).toBeFalsy()
+    expect(removeArrayItemInPlace(null, 1)).toBeFalsy()
+  })
+})
+
+describe(remove, () => {
+  it('should preserve the deprecated in-place behavior', () => {
+    const arr = ['a', 'b', 'c']
+    expect(remove(arr, 'b')).toBeTruthy()
+    expect(arr).toStrictEqual(['a', 'c'])
   })
 })
 
@@ -431,16 +475,25 @@ describe(shuffle, () => {
     expect(shuffle([1])).toStrictEqual([1])
   })
 
-  it('should mutate original array', () => {
+  it('should not mutate original array', () => {
     const arr = [1, 2, 3, 4, 5]
     const result = shuffle(arr)
-    expect(result).toBe(arr) // same reference
+    expect(result).not.toBe(arr)
+    expect(arr).toStrictEqual([1, 2, 3, 4, 5])
   })
 
   it('should handle array with duplicate values', () => {
     const arr = [1, 1, 2, 2, 3]
     const shuffled = shuffle([...arr])
     expect(shuffled.toSorted()).toStrictEqual([1, 1, 2, 2, 3])
+  })
+})
+
+describe(shuffleInPlace, () => {
+  it('should mutate and return the source array', () => {
+    const arr = [1, 2, 3, 4, 5]
+    expect(shuffleInPlace(arr)).toBe(arr)
+    expect(arr.toSorted()).toStrictEqual([1, 2, 3, 4, 5])
   })
 })
 

@@ -3,8 +3,8 @@ import { randomInteger } from '../number'
 /**
  * Fisher–Yates shuffle
  *
- * @param array - array to shuffle
- * @returns shuffled array
+ * @param array - array to copy and shuffle
+ * @returns a shuffled copy
  * @example
  *
  * ```typescript
@@ -15,7 +15,16 @@ import { randomInteger } from '../number'
  * ```
  *
  */
-export function shuffle<T>(array: T[]): T[] {
+export function shuffle<T>(array: readonly T[]): T[] {
+  return shuffleInPlace([...array])
+}
+
+/**
+ * Applies a Fisher–Yates shuffle to an array in place.
+ * @param array - Array to mutate.
+ * @returns The source array after shuffling.
+ */
+export function shuffleInPlace<T>(array: T[]): T[] {
   for (let i = array.length - 1; i > 0; i--) {
     const j = randomInteger(0, i, { includeMax: true })
     // @ts-expect-error make TS happy

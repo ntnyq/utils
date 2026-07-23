@@ -3,6 +3,7 @@
 import { describe, expect, it } from 'vitest'
 import {
   cleanObject,
+  cleanObjectInPlace,
   cloneDeep,
   deepMerge,
   deepMergeWithOptions,
@@ -11,6 +12,7 @@ import {
   isKeyOf,
   isPlainObject,
   omit,
+  omitInPlace,
   setIn,
   pick,
   sortObjectKeys,
@@ -61,31 +63,71 @@ describe(pick, () => {
 })
 
 describe(omit, () => {
-  it('should omit specified keys from object', () => {
+  it('should omit specified keys from a copy', () => {
     const obj = { a: 1, b: 2, c: 3, d: 4 }
-    expect(omit(obj, 'a', 'c')).toStrictEqual({ b: 2, d: 4 })
+    expect(omit(obj, ['a', 'c'])).toStrictEqual({ b: 2, d: 4 })
+    expect(obj).toStrictEqual({ a: 1, b: 2, c: 3, d: 4 })
   })
 
-  it('should return same object when omitting no keys', () => {
+  it('should return a new object when omitting no keys', () => {
     const obj = { a: 1, b: 2, c: 3 }
-    expect(omit(obj)).toStrictEqual({ a: 1, b: 2, c: 3 })
+    const result = omit(obj)
+    expect(result).toStrictEqual(obj)
+    expect(result).not.toBe(obj)
   })
 
   it('should handle omitting non-existent keys', () => {
     const obj = { a: 1, b: 2 }
-    expect(omit(obj, 'c' as keyof typeof obj)).toStrictEqual({ a: 1, b: 2 })
+    expect(omit(obj, ['c' as keyof typeof obj])).toStrictEqual({ a: 1, b: 2 })
   })
 
-  it('should mutate original object', () => {
-    const obj = { a: 1, b: 2, c: 3 }
-    const result = omit(obj, 'b')
-    expect(result).toBe(obj)
-    expect(obj).toStrictEqual({ a: 1, c: 3 })
+  it('should omit undefined values when requested', () => {
+    const obj = { a: 1, b: undefined, c: 3 }
+    expect(omit(obj, [], { omitUndefined: true })).toStrictEqual({
+      a: 1,
+      c: 3,
+    })
   })
 
   it('should handle omitting all keys', () => {
     const obj = { a: 1, b: 2 }
-    expect(omit(obj, 'a', 'b')).toStrictEqual({})
+    expect(omit(obj, ['a', 'b'])).toStrictEqual({})
+  })
+
+  it('should preserve descriptors without invoking getters', () => {
+    let getterCalls = 0
+    const object = { a: 1 }
+    Object.defineProperty(object, 'computed', {
+      enumerable: true,
+      get() {
+        getterCalls++
+        return 2
+      },
+    })
+
+    const result = omit(object)
+    expect(getterCalls).toBe(0)
+    expect(Object.getOwnPropertyDescriptor(result, 'computed')?.get).toBe(
+      Object.getOwnPropertyDescriptor(object, 'computed')?.get,
+    )
+  })
+
+  it('should omit symbol keys without mutating the source', () => {
+    const key = Symbol('key')
+    const object = { [key]: true, visible: true }
+    const result = omit(object, [key])
+
+    expect(Reflect.ownKeys(result)).toStrictEqual(['visible'])
+    expect(object[key]).toBeTruthy()
+  })
+})
+
+describe(omitInPlace, () => {
+  it('should mutate and return the source object', () => {
+    const obj = { a: 1, b: 2, c: 3 }
+    const result = omitInPlace(obj, 'b')
+    expect(result).toBe(obj)
+    expect(obj).toStrictEqual({ a: 1, c: 3 })
   })
 })
 
@@ -314,9 +356,16 @@ describe(cleanObject, () => {
     }
     obj['self'] = obj
 
-    expect(cleanObject(obj)).toBe(obj)
-    expect(obj).toStrictEqual({
+    const result = cleanObject(obj)
+    expect(result).not.toBe(obj)
+    expect(result['self']).toBe(result)
+    expect(result).toStrictEqual({
       nested: { value: 1 },
+      self: result,
+    })
+    expect(obj).toStrictEqual({
+      nested: { remove: null, value: 1 },
+      remove: undefined,
       self: obj,
     })
   })
@@ -341,10 +390,20 @@ describe(cleanObject, () => {
     ).toStrictEqual({ a: 1 })
   })
 
-  it('should mutate original object', () => {
+  it('should not mutate original object', () => {
     const obj = { a: 1, b: null, c: 3 }
     const result = cleanObject(obj)
+    expect(result).not.toBe(obj)
+    expect(obj).toStrictEqual({ a: 1, b: null, c: 3 })
+  })
+})
+
+describe(cleanObjectInPlace, () => {
+  it('should mutate and return the source object', () => {
+    const obj = { a: 1, b: null, c: 3 }
+    const result = cleanObjectInPlace(obj)
     expect(result).toBe(obj)
+    expect(obj).toStrictEqual({ a: 1, c: 3 })
   })
 })
 

@@ -1,12 +1,5 @@
-import { isUndefined } from '../predicate'
-
-export interface ObjectOmitOptions {
-  /**
-   * If true, properties with undefined values will be omitted from the resulting object.
-   * @default false
-   */
-  omitUndefined?: boolean
-}
+import type { ObjectOmitOptions } from './omit'
+import { omit } from './omit'
 
 /**
  * Creates a new object by omitting specified keys from the original object. Optionally, properties with undefined values can also be omitted.
@@ -22,18 +15,13 @@ export interface ObjectOmitOptions {
  * const result = objectOmit(original, ['b'], { omitUndefined: true })
  * console.log(result) // Output: { a: 1 }
  * ```
+ *
+ * @deprecated Use {@link omit} instead.
  */
 export function objectOmit<T extends object, K extends keyof T>(
   obj: T,
-  keys: K[] = [],
+  keys: readonly K[] = [],
   options: ObjectOmitOptions = {},
-) {
-  const { omitUndefined = false } = options
-
-  return Object.fromEntries(
-    Object.entries(obj).filter(
-      ([key, value]) =>
-        !keys.includes(key as K) && !(omitUndefined && isUndefined(value)),
-    ),
-  ) as Omit<T, K>
+): Omit<T, K> {
+  return omit(obj, keys, options)
 }

@@ -7,11 +7,12 @@ outline: deep
 
 Utilities for cloning, sorting, picking, omitting, and cleaning object values.
 
-This section documents 13 exported methods from the object module.
+This section documents 15 exported methods from the object module.
 
 ## Methods
 
 - [cleanObject](#cleanobject)
+- [cleanObjectInPlace](#cleanobjectinplace)
 - [cloneDeep](#clonedeep)
 - [deepMerge](#deepmerge)
 - [deepMergeWithOptions](#deepmergewithoptions)
@@ -21,6 +22,7 @@ This section documents 13 exported methods from the object module.
 - [isPlainObject](#isplainobject)
 - [objectOmit](#objectomit)
 - [omit](#omit)
+- [omitInPlace](#omitinplace)
 - [pick](#pick)
 - [setIn](#setin)
 - [sortObjectKeys](#sortobjectkeys)
@@ -29,9 +31,9 @@ This section documents 13 exported methods from the object module.
 
 ## cleanObject
 
-Cleans selected empty values from an object in place. Empty-object cleaning is
-limited to plain objects without own keys, and recursive cleaning safely
-preserves circular references.
+Creates a deeply cloned object without the selected empty values. Empty-object
+cleaning is limited to plain objects without own keys, and recursive cleaning
+safely preserves circular references.
 
 ### Parameters
 
@@ -40,7 +42,7 @@ preserves circular references.
 
 ### Returns
 
-cleaned object
+a cleaned deep clone; the source object is unchanged
 
 ### Example
 
@@ -54,6 +56,20 @@ const result = cleanObject({
 })
 
 console.log(result) // => { name: 'Alice', meta: { active: true } }
+```
+
+---
+
+## cleanObjectInPlace
+
+Cleans selected empty values from an object in place.
+
+```ts
+import { cleanObjectInPlace } from '@ntnyq/utils'
+
+const value = { name: 'Alice', note: null }
+cleanObjectInPlace(value)
+console.log(value) // => { name: 'Alice' }
 ```
 
 ---
@@ -236,7 +252,7 @@ console.log(result) // => true
 
 ## objectOmit
 
-Creates a new object by omitting specified keys from the original object. Optionally, properties with undefined values can also be omitted.
+Deprecated compatibility name for `omit`.
 
 ### Parameters
 
@@ -260,24 +276,42 @@ console.log(result) // Output: { a: 1 }
 
 ## omit
 
-Removes the specified keys from an object in place.
+Creates a new object without the selected keys. Properties with undefined
+values can also be omitted.
 
 ### Parameters
 
-- **object**: The source object to mutate.
-- **keys**: The keys to remove from the object.
+- **object**: The source object.
+- **keys**: An array of keys to omit.
+- **options**: Optional `omitUndefined` behavior.
 
 ### Returns
 
-The same object instance with the selected keys removed.
+A new object without the selected keys.
 
 ### Example
 
 ```ts
 import { omit } from '@ntnyq/utils'
 
-const result = omit({ a: 1, b: 2, c: 3 }, 'b')
+const original = { a: 1, b: 2, c: 3 }
+const result = omit(original, ['b'])
 console.log(result) // => { a: 1, c: 3 }
+console.log(original) // => { a: 1, b: 2, c: 3 }
+```
+
+---
+
+## omitInPlace
+
+Removes selected keys from an object in place.
+
+```ts
+import { omitInPlace } from '@ntnyq/utils'
+
+const value = { a: 1, b: 2, c: 3 }
+omitInPlace(value, 'b')
+console.log(value) // => { a: 1, c: 3 }
 ```
 
 ---

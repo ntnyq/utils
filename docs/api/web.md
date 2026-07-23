@@ -27,14 +27,16 @@ and utility modules.
 
 ## Animation frame
 
-- `getRoot` returns the browser window or `globalThis`.
-- `rAF` and `cAF` wrap animation-frame scheduling and cancellation.
+- `getGlobalRoot` returns the browser window or `globalThis`.
+- `requestFrame` and `cancelFrame` wrap animation-frame scheduling and
+  cancellation.
+- `getRoot`, `rAF`, and `cAF` remain as deprecated compatibility names.
 
 ```ts
-import { loadImageDimensions, isBrowser, rAF } from '@ntnyq/utils'
+import { isBrowser, loadImageDimensions, requestFrame } from '@ntnyq/utils'
 
 if (isBrowser()) {
-  rAF(() => console.log('next frame'))
+  requestFrame(() => console.log('next frame'))
   const dimensions = await loadImageDimensions('/logo.png')
   console.log(dimensions)
 }

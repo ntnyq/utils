@@ -7,6 +7,7 @@ import {
   isUndefined,
   isZero,
 } from '../predicate'
+import { cloneDeep } from './cloneDeep'
 import { isPlainObject } from './isPlainObject'
 
 export interface CleanObjectOptions {
@@ -84,7 +85,7 @@ function shouldCleanValue(
   )
 }
 
-function cleanObjectInPlace(
+function cleanRecordInPlace(
   object: Record<string, unknown>,
   options: Required<CleanObjectOptions>,
   seen: WeakSet<object>,
@@ -100,7 +101,7 @@ function cleanObjectInPlace(
     if (shouldCleanValue(value, options)) {
       delete object[key]
     } else if (options.recursive && isRecord(value)) {
-      cleanObjectInPlace(value, options, seen)
+      cleanRecordInPlace(value, options, seen)
 
       if (
         options.cleanEmptyObject &&
@@ -114,7 +115,7 @@ function cleanObjectInPlace(
 }
 
 /**
- * Cleans selected empty values from an object in place.
+ * Creates a deep-cloned object without the selected empty values.
  * @param obj - object to be cleaned
  * @param options - clean options
  * @returns cleaned object
@@ -137,6 +138,24 @@ export function cleanObject<T extends object>(
   obj?: T | undefined | null,
   options: CleanObjectOptions = {},
 ): T {
+  if (!isRecord(obj)) {
+    return {} as T
+  }
+
+  // oxlint-disable-next-line unicorn/prefer-structured-clone
+  return cleanObjectInPlace(cloneDeep(obj), options)
+}
+
+/**
+ * Cleans selected empty values from an object in place.
+ * @param obj - Object to mutate.
+ * @param options - Clean options.
+ * @returns The source object after cleaning.
+ */
+export function cleanObjectInPlace<T extends object>(
+  obj?: T | undefined | null,
+  options: CleanObjectOptions = {},
+): T {
   const resolvedOptions: Required<CleanObjectOptions> = {
     cleanUndefined: true,
     cleanNull: true,
@@ -153,7 +172,7 @@ export function cleanObject<T extends object>(
     return {} as T
   }
 
-  cleanObjectInPlace(
+  cleanRecordInPlace(
     obj as Record<string, unknown>,
     resolvedOptions,
     new WeakSet(),

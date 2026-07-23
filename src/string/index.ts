@@ -1,5 +1,5 @@
 export * from './pad'
-export * from './join'
+export * from './joinNonEmptyValues'
 export * from './truncate'
 export * from './escape'
 export * from './random'

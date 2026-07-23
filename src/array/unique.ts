@@ -18,9 +18,9 @@ export function unique<T>(array: T[]): T[] {
 }
 
 /**
- * Returns a new array with unique values.
+ * Returns a new array with unique values selected by key.
  * @param array - The array to process.
- * @param equalFn - The function to compare values.
+ * @param selector - Resolves the uniqueness key for each item.
  * @returns The new array.
  * @example
  *
@@ -34,11 +34,46 @@ export function unique<T>(array: T[]): T[] {
  * ], item => item.id)
  * console.log(result.length) // => 2
  * ```
- *
  */
-export function uniqueBy<T>(array: T[], equalFn: (a: T, b: T) => boolean): T[] {
+export function uniqueBy<T, Key>(
+  array: readonly T[],
+  selector: (item: T, index: number, array: readonly T[]) => Key,
+): T[] {
+  const seen = new Set<Key>()
+
+  return array.filter((item, index) => {
+    const key = selector(item, index, array)
+    if (seen.has(key)) {
+      return false
+    }
+    seen.add(key)
+    return true
+  })
+}
+
+/**
+ * Returns a new array with unique values using a custom equality function.
+ * @param array - The array to process.
+ * @param equals - Returns true when two values should be treated as equal.
+ * @returns The new array.
+ * @example
+ *
+ * ```typescript
+ * import { uniqueWith } from '@ntnyq/utils'
+ *
+ * const result = uniqueWith(
+ *   [{ id: 1 }, { id: 1 }, { id: 2 }],
+ *   (left, right) => left.id === right.id,
+ * )
+ * console.log(result.length) // => 2
+ * ```
+ */
+export function uniqueWith<T>(
+  array: readonly T[],
+  equals: (left: T, right: T) => boolean,
+): T[] {
   return array.reduce<T[]>((acc, cur) => {
-    const idx = acc.findIndex(item => equalFn(item, cur))
+    const idx = acc.findIndex(item => equals(item, cur))
     if (idx === -1) {
       acc.push(cur)
     }

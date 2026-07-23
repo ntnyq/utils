@@ -33,6 +33,22 @@ function equalBytes(left: ArrayBufferView, right: ArrayBufferView): boolean {
   return leftBytes.every((byte, index) => byte === rightBytes[index])
 }
 
+function isSharedArrayBuffer(value: object): value is SharedArrayBuffer {
+  return (
+    typeof SharedArrayBuffer !== 'undefined' &&
+    value instanceof SharedArrayBuffer
+  )
+}
+
+function isStructurallyComparable(value: object): boolean {
+  const tag = Object.prototype.toString.call(value)
+  return (
+    tag === '[object Array]' ||
+    tag === '[object Error]' ||
+    tag === '[object Object]'
+  )
+}
+
 function equalDescriptors(
   left: PropertyDescriptor,
   right: PropertyDescriptor,
@@ -179,8 +195,16 @@ function compare(
     return equalBytes(new Uint8Array(left), new Uint8Array(right))
   }
 
+  if (isSharedArrayBuffer(left) && isSharedArrayBuffer(right)) {
+    return equalBytes(new Uint8Array(left), new Uint8Array(right))
+  }
+
   if (ArrayBuffer.isView(left) && ArrayBuffer.isView(right)) {
     return left.constructor === right.constructor && equalBytes(left, right)
+  }
+
+  if (!isStructurallyComparable(left) || !isStructurallyComparable(right)) {
+    return false
   }
 
   const leftKeys = Reflect.ownKeys(left)
@@ -204,8 +228,10 @@ function compare(
 }
 
 /**
- * Checks whether two values are deeply equal, including built-in collections,
- * property descriptors, symbol keys, and cyclic object graphs.
+ * Checks whether two values are deeply equal, including supported built-in
+ * collections and buffers, property descriptors, symbol keys, and cyclic
+ * object graphs. Opaque built-ins such as Promise and WeakMap are equal only
+ * when they are the same instance.
  * @param value1 - The first value to compare.
  * @param value2 - The second value to compare.
  * @returns Whether the values are deeply equal.

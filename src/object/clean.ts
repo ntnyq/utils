@@ -1,6 +1,5 @@
 import {
   isEmptyArray,
-  isEmptyObject,
   isEmptyString,
   isNaN,
   isNull,
@@ -8,6 +7,7 @@ import {
   isUndefined,
   isZero,
 } from '../predicate'
+import { isPlainObject } from './isPlainObject'
 
 export interface CleanObjectOptions {
   /**
@@ -53,14 +53,14 @@ export interface CleanObjectOptions {
   cleanEmptyArray?: boolean
 
   /**
-   * clean empty object
+   * clean plain objects without own keys
    *
    * @default false
    */
   cleanEmptyObject?: boolean
 
   /**
-   * recursive clean object
+   * recursively clean nested records while preserving circular references
    *
    * @default true
    */
@@ -78,12 +78,43 @@ function shouldCleanValue(
     (options.cleanNaN && isNaN(value)) ||
     (options.cleanEmptyString && isEmptyString(value)) ||
     (options.cleanEmptyArray && isEmptyArray(value)) ||
-    (options.cleanEmptyObject && isEmptyObject(value))
+    (options.cleanEmptyObject &&
+      isPlainObject(value) &&
+      Reflect.ownKeys(value).length === 0)
   )
 }
 
+function cleanObjectInPlace(
+  object: Record<string, unknown>,
+  options: Required<CleanObjectOptions>,
+  seen: WeakSet<object>,
+): void {
+  if (seen.has(object)) {
+    return
+  }
+  seen.add(object)
+
+  for (const key of Object.keys(object)) {
+    const value = object[key]
+
+    if (shouldCleanValue(value, options)) {
+      delete object[key]
+    } else if (options.recursive && isRecord(value)) {
+      cleanObjectInPlace(value, options, seen)
+
+      if (
+        options.cleanEmptyObject &&
+        isPlainObject(value) &&
+        Reflect.ownKeys(value).length === 0
+      ) {
+        delete object[key]
+      }
+    }
+  }
+}
+
 /**
- * clean undefined, null, zero, empty string, empty array, empty object from object
+ * Cleans selected empty values from an object in place.
  * @param obj - object to be cleaned
  * @param options - clean options
  * @returns cleaned object
@@ -122,22 +153,11 @@ export function cleanObject<T extends object>(
     return {} as T
   }
 
-  const result = obj as Record<string, unknown>
-
-  for (const key of Object.keys(result)) {
-    const value = result[key]
-
-    if (shouldCleanValue(value, resolvedOptions)) {
-      delete result[key]
-    } else if (resolvedOptions.recursive && isRecord(value)) {
-      const cleanedValue = cleanObject(value, resolvedOptions)
-      result[key] = cleanedValue
-
-      if (resolvedOptions.cleanEmptyObject && isEmptyObject(cleanedValue)) {
-        delete result[key]
-      }
-    }
-  }
+  cleanObjectInPlace(
+    obj as Record<string, unknown>,
+    resolvedOptions,
+    new WeakSet(),
+  )
 
   return obj as T
 }

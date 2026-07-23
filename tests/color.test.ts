@@ -1,4 +1,4 @@
-import { describe, expect, it } from 'vitest'
+import { describe, expect, it, vi } from 'vitest'
 import {
   Color,
   randomHexColor,
@@ -88,6 +88,21 @@ describe('random color helpers', () => {
   it('randomHexColor should return valid hex color string', () => {
     const color = randomHexColor()
 
-    expect(color).toMatch(/^#[\da-f]{1,6}$/iu)
+    expect(color).toMatch(/^#[\da-f]{6}$/iu)
+  })
+
+  it('should include complete RGB and hexadecimal boundaries', () => {
+    const random = vi.spyOn(Math, 'random')
+
+    random.mockReturnValue(0)
+    expect(randomRGBColor()).toBe('rgb(0, 0, 0)')
+    expect(randomHexColor()).toBe('#000000')
+
+    random.mockReturnValue(0.999_999_999_999_999_9)
+    expect(randomRGBColor()).toBe('rgb(255, 255, 255)')
+    expect(randomRGBAColor()).toBe('rgba(255, 255, 255, 1.0)')
+    expect(randomHexColor()).toBe('#ffffff')
+
+    random.mockRestore()
   })
 })

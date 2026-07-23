@@ -36,11 +36,11 @@ console.log(color.toRGBAString()) // => rgba(51, 102, 153, 0.5)
 
 ## randomHexColor
 
-get a random hex color
+Generates a six-digit random hexadecimal color from `#000000` through `#ffffff`.
 
 ### Returns
 
-a random hex color
+A six-digit random hexadecimal color.
 
 ### Example
 
@@ -55,7 +55,7 @@ console.log(color) // => #a1b2c3
 
 ## randomRGBAColor
 
-get a random RGBA color
+Generates a random RGBA color with RGB channels from 0 through 255.
 
 ### Returns
 
@@ -74,7 +74,7 @@ console.log(color) // => rgba(12, 34, 56, 0.5)
 
 ## randomRGBColor
 
-get a random RGB color
+Generates a random RGB color with channels from 0 through 255.
 
 ### Returns
 

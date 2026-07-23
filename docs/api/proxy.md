@@ -17,7 +17,8 @@ This section documents 1 exported method from the proxy module.
 
 ## createOverlayProxy
 
-Creates a proxy that overlays properties on a target object.
+Creates a reflective proxy view that overlays properties on a target object.
+Overlay values take precedence even when the source target is frozen.
 
 ### Parameters
 
@@ -26,7 +27,8 @@ Creates a proxy that overlays properties on a target object.
 
 ### Returns
 
-A proxy object that reads from the overlay before the target object.
+A proxy object that reads and enumerates overlay properties before target
+properties.
 
 ### Example
 
@@ -36,4 +38,5 @@ import { createOverlayProxy } from '@ntnyq/utils'
 const target = { a: 1 }
 const proxy = createOverlayProxy(target, { b: 2 })
 console.log(proxy.b) // => 2
+console.log(Object.keys(proxy)) // => ['a', 'b']
 ```

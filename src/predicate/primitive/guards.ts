@@ -4,7 +4,7 @@
  * @copyright {@link https://github.com/sindresorhus/is}
  */
 
-export type Whitespace = ' '
+export type Whitespace = string & { readonly __brand: 'Whitespace' }
 export type NonEmptyString = string & { 0: '' }
 
 /**
@@ -149,9 +149,9 @@ export function isNonEmptyString(value: unknown): value is NonEmptyString {
 }
 
 /**
- * Checks whether a value is a string containing only whitespace.
+ * Checks whether a value is an empty string or contains only whitespace.
  * @param value - The value to test.
- * @returns True if the value is a whitespace-only string.
+ * @returns True if the value is empty or contains only whitespace.
  *
  * @example
  *

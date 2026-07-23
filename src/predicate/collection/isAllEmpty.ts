@@ -10,7 +10,7 @@ import { isEmptyArray, isEmptyMap, isEmptyObject, isEmptySet } from './guards'
  * ```typescript
  * import { isAllEmpty } from '@ntnyq/utils'
  *
- * const result = isAllEmpty([undefined, null, ''])
+ * const result = isAllEmpty([])
  * console.log(result) // => true
  * ```
  *

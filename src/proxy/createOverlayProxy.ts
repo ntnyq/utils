@@ -3,7 +3,8 @@
  * @module proxy
  * @param target - The original object to proxy.
  * @param overlay - Properties that take precedence over the target object.
- * @returns A proxy object that reads from the overlay before the target object.
+ * @returns A reflective proxy view that reads and enumerates overlay properties
+ * before target properties.
  *
  * @example
  *
@@ -20,15 +21,41 @@ export function createOverlayProxy<
   Target extends Record<PropertyKey, any>,
   Overlay extends Record<PropertyKey, any>,
 >(target: Target, overlay: Overlay): Omit<Target, keyof Overlay> & Overlay {
-  return new Proxy(target, {
-    get(targetObject, key, receiver) {
+  const proxyTarget = Object.create(Object.getPrototypeOf(target)) as Target
+
+  return new Proxy(proxyTarget, {
+    defineProperty(_proxyTarget, key, descriptor) {
+      return Reflect.defineProperty(target, key, descriptor)
+    },
+    deleteProperty(_proxyTarget, key) {
+      return Reflect.deleteProperty(target, key)
+    },
+    get(_proxyTarget, key, receiver) {
       if (Reflect.has(overlay, key)) {
         return Reflect.get(overlay, key, receiver)
       }
-      return Reflect.get(targetObject, key, receiver)
+      return Reflect.get(target, key, receiver)
     },
-    has(targetObject, key) {
-      return Reflect.has(overlay, key) || Reflect.has(targetObject, key)
+    getOwnPropertyDescriptor(_proxyTarget, key) {
+      const descriptor =
+        Reflect.getOwnPropertyDescriptor(overlay, key) ??
+        Reflect.getOwnPropertyDescriptor(target, key)
+
+      return descriptor ? { ...descriptor, configurable: true } : undefined
+    },
+    has(_proxyTarget, key) {
+      return Reflect.has(overlay, key) || Reflect.has(target, key)
+    },
+    ownKeys() {
+      return [
+        ...new Set([...Reflect.ownKeys(target), ...Reflect.ownKeys(overlay)]),
+      ]
+    },
+    preventExtensions() {
+      return false
+    },
+    set(_proxyTarget, key, value) {
+      return Reflect.set(target, key, value)
     },
   }) as Omit<Target, keyof Overlay> & Overlay
 }

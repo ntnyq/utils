@@ -178,27 +178,71 @@ describe('throttle/debounce', () => {
 
   it('debounce should delay calls', () => {
     vi.useFakeTimers()
+    const spy = vi.fn<(value: string) => void>()
+    const fn = debounce(50, spy)
+
+    fn('first')
+    fn('second')
+    expect(spy).not.toHaveBeenCalled()
+    vi.advanceTimersByTime(49)
+    expect(spy).not.toHaveBeenCalled()
+    vi.advanceTimersByTime(1)
+    expect(spy).toHaveBeenCalledExactlyOnceWith('second')
+    vi.useRealTimers()
+  })
+
+  it('cancel should clear pending execution without disabling future calls', () => {
+    vi.useFakeTimers()
     const spy = vi.fn()
     const fn = debounce(50, spy)
+
     fn()
+    fn.cancel()
+    vi.advanceTimersByTime(60)
+    expect(spy).not.toHaveBeenCalled()
+
     fn()
-    // Leading-edge debounce: first call invokes immediately
-    expect(spy).toHaveBeenCalledOnce()
     vi.advanceTimersByTime(50)
-    // No trailing call in current implementation
     expect(spy).toHaveBeenCalledOnce()
     vi.useRealTimers()
   })
 
-  it('cancel should prevent further execution', () => {
+  it('throttle should support trailing calls with the latest arguments', () => {
     vi.useFakeTimers()
-    const spy = vi.fn()
-    const fn = debounce(50, spy)
-    fn()
-    fn.cancel()
-    vi.advanceTimersByTime(60)
-    // First call already executed; cancel prevents further calls
+    const spy = vi.fn<(value: string) => void>()
+    const fn = throttle(50, spy)
+
+    fn('first')
+    fn('second')
+    fn('third')
     expect(spy).toHaveBeenCalledOnce()
+    expect(spy).toHaveBeenLastCalledWith('first')
+
+    vi.advanceTimersByTime(50)
+    expect(spy).toHaveBeenCalledTimes(2)
+    expect(spy).toHaveBeenLastCalledWith('third')
     vi.useRealTimers()
+  })
+
+  it('debounce should preserve the latest receiver', () => {
+    vi.useFakeTimers()
+    const values: string[] = []
+    const fn = debounce(50, function callback(this: { value: string }) {
+      values.push(this.value)
+    })
+
+    fn.call({ value: 'first' })
+    fn.call({ value: 'second' })
+    vi.advanceTimersByTime(50)
+
+    expect(values).toStrictEqual(['second'])
+    vi.useRealTimers()
+  })
+
+  it('should reject invalid delays', () => {
+    expect(() => throttle(-1, () => {})).toThrow(RangeError)
+    expect(() => debounce(Number.POSITIVE_INFINITY, () => {})).toThrow(
+      RangeError,
+    )
   })
 })

@@ -104,7 +104,7 @@ True if the value is `null`, `undefined`, empty string, empty array, empty objec
 ```ts
 import { isAllEmpty } from '@ntnyq/utils'
 
-const result = isAllEmpty([undefined, null, ''])
+const result = isAllEmpty([])
 console.log(result) // => true
 ```
 
@@ -227,7 +227,9 @@ console.log(result) // => true
 
 ## isDeepEqual
 
-Checks whether two values are deeply equal.
+Checks whether two values are deeply equal. Supported collections and buffers
+are compared by value; opaque built-ins such as `Promise`, `WeakMap`, and
+`WeakSet` are equal only by identity.
 
 ### Parameters
 
@@ -1164,7 +1166,7 @@ console.log(result) // => true
 
 ## isWhitespaceString
 
-Checks whether a value is a string containing only whitespace.
+Checks whether a value is an empty string or contains only whitespace.
 
 ### Parameters
 
@@ -1172,7 +1174,8 @@ Checks whether a value is a string containing only whitespace.
 
 ### Returns
 
-True if the value is a whitespace-only string.
+True if the value is an empty or whitespace-only string. Successful checks
+narrow to the branded `Whitespace` string type.
 
 ### Example
 

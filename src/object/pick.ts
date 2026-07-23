@@ -36,7 +36,12 @@ export function pick<T, K extends keyof T>(
         if (omitUndefined && isUndefined(object[key])) {
           return result
         }
-        result[key] = object[key]
+        Object.defineProperty(result, key, {
+          configurable: true,
+          enumerable: true,
+          value: object[key],
+          writable: true,
+        })
       }
       return result
     },

@@ -1,8 +1,16 @@
 export interface ThrottleDebounceOptions {
   /**
+   * Use debounce behavior when calling {@link throttle}.
+   *
    * @default false
    */
   isDebounce?: boolean
+}
+
+function assertValidDelay(delay: number): void {
+  if (!Number.isFinite(delay) || delay < 0) {
+    throw new RangeError('Delay must be a non-negative finite number')
+  }
 }
 
 /**
@@ -32,59 +40,69 @@ export function throttle<
 ): T & { cancel: () => void } {
   const { isDebounce } = options
 
-  /**
-   * Track the last time `callback` was executed
-   */
-  let lastExec = 0
-  let cancelled = false
+  if (isDebounce) {
+    return debounce(delay, callback)
+  }
+
+  assertValidDelay(delay)
+
+  let lastExec = Number.NEGATIVE_INFINITY
   let timeoutId: ReturnType<typeof setTimeout> | undefined = undefined
+  let pendingArgs: Parameters<Exclude<T, null | undefined>> | undefined =
+    undefined
+  let pendingReceiver: unknown
 
   function clearExistingTimeout() {
-    if (timeoutId) {
+    if (timeoutId !== undefined) {
       clearTimeout(timeoutId)
+      timeoutId = undefined
     }
   }
 
   function cancel() {
     clearExistingTimeout()
-    cancelled = true
+    pendingArgs = undefined
+    pendingReceiver = undefined
+  }
+
+  function setPendingCall(
+    receiver: unknown,
+    args: Parameters<Exclude<T, null | undefined>>,
+  ) {
+    pendingArgs = args
+    pendingReceiver = receiver
+  }
+
+  function exec(timestamp = Date.now()) {
+    const args = pendingArgs
+    if (!args) {
+      return
+    }
+
+    const receiver = pendingReceiver
+    pendingArgs = undefined
+    pendingReceiver = undefined
+    timeoutId = undefined
+    lastExec = timestamp
+    callback.apply(receiver, args)
   }
 
   function wrapper(
     this: unknown,
     ...args: Parameters<Exclude<T, null | undefined>>
   ) {
-    if (cancelled) {
+    const now = Date.now()
+    const remaining = delay - (now - lastExec)
+    setPendingCall(this, args)
+
+    if (remaining <= 0) {
+      clearExistingTimeout()
+      exec(now)
       return
     }
 
-    // oxlint-disable-next-line unicorn/no-this-assignment, typescript/no-this-alias
-    const that = this
-    const now = Date.now()
-    const elapsed = now - lastExec
-
-    function clear() {
-      timeoutId = undefined
-    }
-
-    function exec(cur?: number) {
-      lastExec = cur || Date.now()
-      callback.apply(that, args)
-    }
-
-    if (isDebounce && !timeoutId) {
-      exec(now)
-    }
-
-    clearExistingTimeout()
-
-    if (!isDebounce && elapsed > delay) {
-      exec(now)
-    } else {
-      timeoutId = setTimeout(
-        isDebounce ? clear : exec,
-        isDebounce ? delay : delay - elapsed,
-      )
+    if (timeoutId === undefined) {
+      timeoutId = setTimeout(exec, remaining)
     }
   }
 
@@ -94,10 +112,11 @@ export function throttle<
 }
 
 /**
- * Creates a debounced version of a function.
+ * Creates a trailing-edge debounced version of a function. The latest call is
+ * invoked after no new calls have arrived for the configured delay.
  * @param delay - The debounce delay in milliseconds.
  * @param callback - The function to debounce.
- * @param options - Additional debounce options.
+ * @param options - Compatibility options.
  * @returns A debounced function with a cancel method.
  *
  * @example
@@ -115,10 +134,31 @@ export function debounce<
 >(
   delay: number,
   callback: Exclude<T, undefined | null>,
-  options: ThrottleDebounceOptions = {},
+  _options: ThrottleDebounceOptions = {},
 ): T & { cancel: () => void } {
-  return throttle(delay, callback, {
-    ...options,
-    isDebounce: true,
-  })
+  assertValidDelay(delay)
+
+  let timeoutId: ReturnType<typeof setTimeout> | undefined = undefined
+
+  function cancel() {
+    if (timeoutId !== undefined) {
+      clearTimeout(timeoutId)
+      timeoutId = undefined
+    }
+  }
+
+  function wrapper(
+    this: unknown,
+    ...args: Parameters<Exclude<T, null | undefined>>
+  ) {
+    cancel()
+    timeoutId = setTimeout(() => {
+      timeoutId = undefined
+      callback.apply(this, args)
+    }, delay)
+  }
+
+  wrapper.cancel = cancel
+
+  return wrapper as T & { cancel: () => void }
 }

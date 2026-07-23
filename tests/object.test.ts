@@ -43,6 +43,21 @@ describe(pick, () => {
     const obj = { a: 1, b: 2 }
     expect(pick(obj, ['a', 'b'])).toStrictEqual({ a: 1, b: 2 })
   })
+
+  it('should create an own property when picking __proto__', () => {
+    const obj = JSON.parse('{"__proto__":{"polluted":true}}') as Record<
+      string,
+      unknown
+    >
+    const result = pick(obj, ['__proto__'])
+
+    expect(Object.hasOwn(result, '__proto__')).toBeTruthy()
+    expect(Object.getPrototypeOf(result)).toBe(Object.prototype)
+    expect(
+      Object.getOwnPropertyDescriptor(result, '__proto__')?.value,
+    ).toStrictEqual({ polluted: true })
+    expect((result as { polluted?: boolean }).polluted).toBeUndefined()
+  })
 })
 
 describe(omit, () => {
@@ -96,6 +111,10 @@ describe(hasOwn, () => {
 
   it('should return false for null', () => {
     expect(hasOwn(null, 'key')).toBeFalsy()
+  })
+
+  it('should return false for undefined', () => {
+    expect(hasOwn(undefined, 'key')).toBeFalsy()
   })
 
   it('should handle Symbol keys', () => {
@@ -198,12 +217,12 @@ describe(cleanObject, () => {
     expect(cleanObject(obj)).toStrictEqual({ a: 1, c: 3 })
   })
 
-  it('should not clean NaN by default (bug: cleanNaN uses isZero instead of isNaN)', () => {
+  it('should clean NaN by default', () => {
     const obj = { a: 1, b: Number.NaN, c: 3 }
     expect(cleanObject(obj)).toStrictEqual({ a: 1, c: 3 })
   })
 
-  it('should clean zero by default (bug: cleanNaN removes zero values)', () => {
+  it('should not clean zero by default', () => {
     const obj = { a: 1, b: 0, c: 3 }
     expect(cleanObject(obj)).toStrictEqual({ a: 1, b: 0, c: 3 })
   })
@@ -252,6 +271,28 @@ describe(cleanObject, () => {
     })
   })
 
+  it('should only treat plain objects without own keys as empty objects', () => {
+    const symbol = Symbol('value')
+    const date = new Date(0)
+    const obj = {
+      array: [],
+      date,
+      empty: {},
+      withSymbol: { [symbol]: true },
+    }
+
+    expect(
+      cleanObject(obj, {
+        cleanEmptyArray: false,
+        cleanEmptyObject: true,
+      }),
+    ).toStrictEqual({
+      array: [],
+      date,
+      withSymbol: { [symbol]: true },
+    })
+  })
+
   it('should not clean undefined when cleanUndefined is false', () => {
     const obj = { a: 1, b: undefined, c: 3 }
     expect(cleanObject(obj, { cleanUndefined: false })).toStrictEqual({
@@ -264,6 +305,20 @@ describe(cleanObject, () => {
   it('should recursively clean nested objects by default', () => {
     const obj = { a: 1, b: { c: null, d: 2 }, e: 3 }
     expect(cleanObject(obj)).toStrictEqual({ a: 1, b: { d: 2 }, e: 3 })
+  })
+
+  it('should clean cyclic objects without overflowing the stack', () => {
+    const obj: Record<string, unknown> = {
+      nested: { remove: null, value: 1 },
+      remove: undefined,
+    }
+    obj['self'] = obj
+
+    expect(cleanObject(obj)).toBe(obj)
+    expect(obj).toStrictEqual({
+      nested: { value: 1 },
+      self: obj,
+    })
   })
 
   it('should not recursively clean when recursive is false', () => {
@@ -511,6 +566,21 @@ describe(cloneDeep, () => {
     expect(cloned.map).not.toBe(original.map)
     expect([...cloned.map.keys()][0]).not.toBe(key)
     expect(cloned.set).not.toBe(original.set)
+  })
+
+  it('should clone SharedArrayBuffer values and backed views', () => {
+    const buffer = new SharedArrayBuffer(3)
+    const view = new Uint8Array(buffer)
+    view.set([1, 2, 3])
+
+    const clonedBuffer = cloneDeep(buffer)
+    const clonedView = cloneDeep(view)
+
+    expect(clonedBuffer).not.toBe(buffer)
+    expect([...new Uint8Array(clonedBuffer)]).toStrictEqual([1, 2, 3])
+    expect(clonedView).not.toBe(view)
+    expect(clonedView.buffer).not.toBe(buffer)
+    expect([...clonedView]).toStrictEqual([1, 2, 3])
   })
 
   it('should preserve prototypes and property descriptors without invoking getters', () => {

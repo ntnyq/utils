@@ -19,8 +19,9 @@ import {
   isURLString,
   isWeakMap,
   isWeakSet,
+  isWhitespaceString,
 } from '../src/predicate'
-import type { URLString } from '../src/predicate'
+import type { URLString, Whitespace } from '../src/predicate'
 import { createOverlayProxy } from '../src/proxy'
 import { calculateNGramSimilarity, countGraphemes } from '../src/string'
 import type { CalculateNGramSimilarityOptions } from '../src/string'
@@ -79,6 +80,7 @@ describe('public API types', () => {
     const url: unknown = 'https://example.com'
     const weakMap: unknown = new WeakMap<object, number>()
     const weakSet: unknown = new WeakSet<object>()
+    const whitespace: unknown = '\t'
 
     if (isDate(date)) {
       expectTypeOf(date).toEqualTypeOf<Date>()
@@ -105,6 +107,10 @@ describe('public API types', () => {
     }
     if (isWeakSet<object>(weakSet)) {
       expectTypeOf(weakSet).toEqualTypeOf<WeakSet<object>>()
+    }
+    if (isWhitespaceString(whitespace)) {
+      expectTypeOf(whitespace).toEqualTypeOf<Whitespace>()
+      expectTypeOf(whitespace).toMatchTypeOf<string>()
     }
   })
 

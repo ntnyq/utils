@@ -35,8 +35,8 @@ function cloneArrayBufferView<T extends ArrayBufferView>(
 }
 
 /**
- * Deeply clones a value, preserving built-in collection types, property
- * descriptors, prototypes, symbol keys, and circular references.
+ * Deeply clones a value, preserving built-in collection and buffer types,
+ * property descriptors, prototypes, symbol keys, and circular references.
  * @param value - The value to clone.
  * @param hash - Objects already cloned during this operation.
  * @returns A deep clone of the input value.
@@ -93,6 +93,16 @@ export function cloneDeep<T>(
   }
 
   if (value instanceof ArrayBuffer) {
+    // oxlint-disable-next-line unicorn/prefer-spread
+    const result = value.slice(0)
+    hash.set(value, result)
+    return result as T
+  }
+
+  if (
+    typeof SharedArrayBuffer !== 'undefined' &&
+    value instanceof SharedArrayBuffer
+  ) {
     // oxlint-disable-next-line unicorn/prefer-spread
     const result = value.slice(0)
     hash.set(value, result)

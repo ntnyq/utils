@@ -190,6 +190,36 @@ describe(scrollElementIntoView, () => {
     expect(parent.scrollIntoView).not.toHaveBeenCalled()
   })
 
+  it('should check horizontal and vertical bounds independently', () => {
+    const body = {} as HTMLElement
+    // @ts-expect-error assign
+    globalThis.document = { body }
+
+    const parent = {
+      scrollWidth: 1000,
+      scrollHeight: 2000,
+      getBoundingClientRect: () => ({
+        top: 0,
+        left: 0,
+        bottom: 100,
+        right: 100,
+      }),
+    } as unknown as HTMLElement
+    const element = {
+      scrollIntoView: vi.fn(),
+      getBoundingClientRect: () => ({
+        top: 10,
+        left: 150,
+        bottom: 30,
+        right: 170,
+      }),
+    } as unknown as HTMLElement
+
+    scrollElementIntoView(element, { parent })
+
+    expect(element.scrollIntoView).toHaveBeenCalledOnce()
+  })
+
   it('should not scroll when target element is already visible', () => {
     const body = {
       scrollIntoView: vi.fn(),

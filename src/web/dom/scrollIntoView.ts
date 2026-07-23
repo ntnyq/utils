@@ -34,10 +34,11 @@ export function scrollElementIntoView(
 
   const parentRect = parent.getBoundingClientRect()
   const elementRect = element.getBoundingClientRect()
-  const isHorizontal = parent.scrollWidth > parent.scrollHeight
-  const isOutOfView = isHorizontal
-    ? elementRect.left < parentRect.left || elementRect.right > parentRect.right
-    : elementRect.top < parentRect.top || elementRect.bottom > parentRect.bottom
+  const isOutOfView =
+    elementRect.left < parentRect.left ||
+    elementRect.right > parentRect.right ||
+    elementRect.top < parentRect.top ||
+    elementRect.bottom > parentRect.bottom
 
   if (isOutOfView) {
     element.scrollIntoView(scrollIntoViewOptions)

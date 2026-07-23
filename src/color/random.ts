@@ -4,10 +4,15 @@ import { randomInteger } from '../number'
  * the maximum value of RGB
  */
 const MAX_RGB = 255
+const MAX_HEX_COLOR = 16_777_215
+
+function randomRGBChannel(): number {
+  return randomInteger(0, MAX_RGB, { includeMax: true })
+}
 
 /**
- * get a random RGB color
- * @returns a random RGB color
+ * Gets a random RGB color with channels from 0 through 255.
+ * @returns A random RGB color.
  * @example
  *
  * ```typescript
@@ -19,12 +24,12 @@ const MAX_RGB = 255
  *
  */
 export function randomRGBColor() {
-  return `rgb(${randomInteger(MAX_RGB)}, ${randomInteger(MAX_RGB)}, ${randomInteger(MAX_RGB)})`
+  return `rgb(${randomRGBChannel()}, ${randomRGBChannel()}, ${randomRGBChannel()})`
 }
 
 /**
- * get a random RGBA color
- * @returns a random RGBA color
+ * Gets a random RGBA color with RGB channels from 0 through 255.
+ * @returns A random RGBA color.
  * @example
  *
  * ```typescript
@@ -36,12 +41,12 @@ export function randomRGBColor() {
  *
  */
 export function randomRGBAColor() {
-  return `rgba(${randomInteger(MAX_RGB)}, ${randomInteger(MAX_RGB)}, ${randomInteger(MAX_RGB)}, ${Math.random().toFixed(1)})`
+  return `rgba(${randomRGBChannel()}, ${randomRGBChannel()}, ${randomRGBChannel()}, ${Math.random().toFixed(1)})`
 }
 
 /**
- * get a random hex color
- * @returns a random hex color
+ * Gets a six-digit random hexadecimal color.
+ * @returns A random hexadecimal color from #000000 through #ffffff.
  * @example
  *
  * ```typescript
@@ -53,5 +58,6 @@ export function randomRGBAColor() {
  *
  */
 export function randomHexColor() {
-  return `#${Math.random().toString(16).slice(2, 8)}`
+  const value = randomInteger(0, MAX_HEX_COLOR, { includeMax: true })
+  return `#${value.toString(16).padStart(6, '0')}`
 }

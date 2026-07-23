@@ -16,7 +16,8 @@ and utility modules.
 
 - `isHTMLElement` checks DOM elements and remains safe in non-browser runtimes.
 - `isElementVisibleInViewport` checks viewport intersection.
-- `scrollElementIntoView` reveals an element when necessary.
+- `scrollElementIntoView` reveals an element when it falls outside either the
+  horizontal or vertical bounds of its parent.
 - `openExternalURL` opens a URL with configurable window features.
 
 ## Image

@@ -29,7 +29,9 @@ This section documents 13 exported methods from the object module.
 
 ## cleanObject
 
-clean undefined, null, zero, empty string, empty array, empty object from object
+Cleans selected empty values from an object in place. Empty-object cleaning is
+limited to plain objects without own keys, and recursive cleaning safely
+preserves circular references.
 
 ### Parameters
 
@@ -58,7 +60,9 @@ console.log(result) // => { name: 'Alice', meta: { active: true } }
 
 ## cloneDeep
 
-Deeply clones a value, handling circular references using a WeakMap.
+Deeply clones a value while preserving supported collections, ArrayBuffer and
+SharedArrayBuffer data, property descriptors, prototypes, symbol keys, and
+circular references.
 
 ### Parameters
 
@@ -161,7 +165,7 @@ console.log(result) // => 'A'
 
 ## hasOwn
 
-check object has a property with given key
+Checks whether a non-nullish value has an own property with the given key.
 
 ### Parameters
 
@@ -170,7 +174,7 @@ check object has a property with given key
 
 ### Returns
 
-true if object has a property with given key, false otherwise
+True for an own property, or false for nullish values and missing keys.
 
 ### Example
 

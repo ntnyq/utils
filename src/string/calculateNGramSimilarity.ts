@@ -21,6 +21,7 @@ export interface CalculateNGramSimilarityOptions {
  * @param str2 - The second string to compare.
  * @param options - Options for controlling the comparison behavior.
  * @returns A similarity score between 0 and 1.
+ * @throws {RangeError} When sliceLength is not a positive integer.
  *
  * @example
  *
@@ -37,6 +38,10 @@ export function calculateNGramSimilarity(
   options: CalculateNGramSimilarityOptions = {},
 ): number {
   const { sliceLength = 2, caseSensitive = false } = options
+
+  if (!Number.isInteger(sliceLength) || sliceLength <= 0) {
+    throw new RangeError('N-gram slice length must be a positive integer')
+  }
 
   if (!caseSensitive) {
     str1 = str1.toLowerCase()

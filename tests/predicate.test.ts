@@ -924,6 +924,32 @@ describe(isDeepEqual, () => {
     expect(isDeepEqual(new Set([{ id: 1 }]), new Set([{ id: 2 }]))).toBeFalsy()
   })
 
+  it('should compare SharedArrayBuffer values by bytes', () => {
+    const left = new SharedArrayBuffer(2)
+    const equal = new SharedArrayBuffer(2)
+    const different = new SharedArrayBuffer(2)
+    new Uint8Array(left).set([1, 2])
+    new Uint8Array(equal).set([1, 2])
+    new Uint8Array(different).set([1, 3])
+
+    expect(isDeepEqual(left, equal)).toBeTruthy()
+    expect(isDeepEqual(left, different)).toBeFalsy()
+    expect(isDeepEqual(left, new SharedArrayBuffer(3))).toBeFalsy()
+  })
+
+  it('should only consider opaque built-ins equal by identity', () => {
+    const promise = Promise.resolve(1)
+    const weakMap = new WeakMap()
+    const url = new URL('https://example.com/one')
+
+    expect(isDeepEqual(promise, promise)).toBeTruthy()
+    expect(isDeepEqual(promise, Promise.resolve(1))).toBeFalsy()
+    expect(isDeepEqual(weakMap, weakMap)).toBeTruthy()
+    expect(isDeepEqual(weakMap, new WeakMap())).toBeFalsy()
+    expect(isDeepEqual(url, url)).toBeTruthy()
+    expect(isDeepEqual(url, new URL('https://example.com/two'))).toBeFalsy()
+  })
+
   it('should compare cyclic graphs without overflowing the stack', () => {
     const left: Record<string, unknown> = { value: 1 }
     const right: Record<string, unknown> = { value: 1 }

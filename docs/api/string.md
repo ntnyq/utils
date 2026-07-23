@@ -152,7 +152,8 @@ Calculates the n-gram similarity score between two strings.
 
 - **str1**: The first string to compare.
 - **str2**: The second string to compare.
-- **options**: Options for controlling the comparison behavior.
+- **options**: Options for controlling comparison behavior. `sliceLength` must
+  be a positive integer.
 
 ### Returns
 
@@ -195,16 +196,17 @@ console.log(result) // => 'hello world'
 
 ## randomString
 
-randome a string useing given chars
+Generates a random string using the provided characters.
 
 ### Parameters
 
-- **length**: string length
-- **chars**: string chars
+- **length**: Non-negative integer output length.
+- **chars**: Characters used to generate the output. Must be non-empty when
+  `length` is greater than zero.
 
 ### Returns
 
-random string
+A random string.
 
 ### Example
 

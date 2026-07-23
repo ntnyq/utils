@@ -1,11 +1,12 @@
 import { randomInteger } from '../number'
 
 /**
- * randome a string useing given chars
+ * Generates a random string using the provided characters.
  *
- * @param length - string length
- * @param chars - string chars
- * @returns random string
+ * @param length - Non-negative integer output length.
+ * @param chars - Characters used to generate the output.
+ * @returns A random string.
+ * @throws {RangeError} When length is invalid or chars is empty for non-empty output.
  * @example
  *
  * ```typescript
@@ -20,6 +21,13 @@ export function randomString(
   length = 16,
   chars = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ',
 ): string {
+  if (!Number.isSafeInteger(length) || length < 0) {
+    throw new RangeError('Random string length must be a non-negative integer')
+  }
+  if (length > 0 && chars.length === 0) {
+    throw new RangeError('Random string characters must not be empty')
+  }
+
   const result: string[] = []
   for (let i = length; i > 0; --i) {
     const matchedChar = chars[randomInteger(chars.length)]

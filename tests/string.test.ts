@@ -192,6 +192,14 @@ describe(randomString, () => {
     const result = randomString(100)
     expect(/[0-9a-z]/iu.test(result)).toBeTruthy()
   })
+
+  it('should reject invalid lengths and empty character sets', () => {
+    expect(() => randomString(Number.POSITIVE_INFINITY)).toThrow(RangeError)
+    expect(() => randomString(1.5)).toThrow(RangeError)
+    expect(() => randomString(-1)).toThrow(RangeError)
+    expect(() => randomString(1, '')).toThrow(RangeError)
+    expect(randomString(0, '')).toBe('')
+  })
 })
 
 describe(slugify, () => {
@@ -397,5 +405,22 @@ describe(calculateNGramSimilarity, () => {
 
   it('should return string length if too short for slice length', () => {
     expect(calculateNGramSimilarity('a', 'b', { sliceLength: 3 })).toBe(0)
+  })
+
+  it('should reject invalid slice lengths', () => {
+    expect(() =>
+      calculateNGramSimilarity('abc', 'abc', { sliceLength: 0 }),
+    ).toThrow(RangeError)
+    expect(() =>
+      calculateNGramSimilarity('abc', 'abc', { sliceLength: -1 }),
+    ).toThrow(RangeError)
+    expect(() =>
+      calculateNGramSimilarity('abc', 'abc', { sliceLength: 1.5 }),
+    ).toThrow(RangeError)
+    expect(() =>
+      calculateNGramSimilarity('abc', 'abc', {
+        sliceLength: Number.NaN,
+      }),
+    ).toThrow(RangeError)
   })
 })

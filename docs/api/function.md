@@ -158,14 +158,16 @@ console.log(fn('  hi  ')) // => 'HI'
 
 ## debounce
 
-Creates a debounced function with a `cancel()` method.
+Creates a trailing-edge debounced function with a `cancel()` method. The latest
+call runs after no new calls arrive for the configured delay. Cancelling clears
+pending work without disabling future calls.
 
 ```ts
 import { debounce } from '@ntnyq/utils'
 
 const search = debounce(300, (query: string) => console.log(query))
 search('utils')
-search.cancel()
+search('utils library') // only this value is logged after 300 ms
 ```
 
 ---

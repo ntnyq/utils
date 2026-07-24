@@ -84,11 +84,22 @@ describe(buildTree, () => {
 
   it('should reject invalid keys and identifier values', () => {
     expect(() =>
-      buildTree([{ id: {}, parentId: null }], { idKey: 'id' }),
+      buildTree([{ id: {}, parentId: null }], { idKey: 'id' as never }),
     ).toThrow(TypeError)
     expect(() =>
       buildTree([{ id: 1, parentId: null }], { childrenKey: 'id' }),
     ).toThrow(TypeError)
+  })
+
+  it('should safely define a special children key as an own property', () => {
+    const result = buildTree([{ id: 1, parentId: null }], {
+      childrenKey: '__proto__',
+    })
+    const root = result[0]!
+
+    expect(Object.getPrototypeOf(root)).toBe(Object.prototype)
+    expect(Object.hasOwn(root, '__proto__')).toBeTruthy()
+    expect(Reflect.get(root, '__proto__')).toStrictEqual([])
   })
 })
 
@@ -163,6 +174,40 @@ describe(filterTree, () => {
 
     expect(() => filterTree([node], () => true)).toThrow(RangeError)
   })
+
+  it('should isolate callback paths from traversal state', () => {
+    const observedPaths: string[][] = []
+    const tree: TreeNode[] = [{ id: 'root', children: [{ id: 'child' }] }]
+
+    filterTree(tree, ({ path }) => {
+      observedPaths.push(path.map(node => node.id))
+      path.length = 0
+      return true
+    })
+
+    expect(observedPaths).toStrictEqual([['root'], ['root', 'child']])
+  })
+
+  it('should safely clone inherited special child arrays', () => {
+    const prototype = Object.create(null) as Record<string, unknown>
+    Object.defineProperty(prototype, '__proto__', {
+      enumerable: true,
+      value: [{ id: 'child' }],
+    })
+    const root = Object.assign(Object.create(prototype), {
+      id: 'root',
+    }) as Record<string, unknown>
+
+    const result = filterTree([root], () => true, {
+      childrenKey: '__proto__',
+    })
+
+    expect(Object.getPrototypeOf(result[0]!)).toBe(Object.prototype)
+    expect(Object.hasOwn(result[0]!, '__proto__')).toBeTruthy()
+    expect(
+      (Reflect.get(result[0]!, '__proto__') as { id: string }[])[0]?.id,
+    ).toBe('child')
+  })
 })
 
 describe(findTreePath, () => {
@@ -211,6 +256,16 @@ describe(findTreePath, () => {
     node.children = [node]
 
     expect(() => findTreePath([node], () => false)).toThrow(RangeError)
+  })
+
+  it('should isolate callback paths from the returned path', () => {
+    const tree: TreeNode[] = [{ id: 'root', children: [{ id: 'target' }] }]
+    const path = findTreePath(tree, ({ node, path: contextPath }) => {
+      contextPath.length = 0
+      return node.id === 'target'
+    })
+
+    expect(path?.map(node => node.id)).toStrictEqual(['root', 'target'])
   })
 })
 
@@ -356,5 +411,19 @@ describe(flattenTree, () => {
 
     expect(result).toStrictEqual([])
     expect(map).not.toHaveBeenCalled()
+  })
+
+  it('should isolate mapped paths from traversal state', () => {
+    const tree: TreeNode[] = [{ id: 'root', children: [{ id: 'child' }] }]
+
+    const result = flattenTree(tree, {
+      map: ({ path }) => {
+        const ids = path.map(node => node.id)
+        path.length = 0
+        return ids
+      },
+    })
+
+    expect(result).toStrictEqual([['root'], ['root', 'child']])
   })
 })

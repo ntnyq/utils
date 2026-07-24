@@ -38,6 +38,24 @@ describe(mapAsync, () => {
     ).resolves.toStrictEqual([2, 4, 6])
   })
 
+  it('should snapshot source items before mapping', async () => {
+    const source = [1, 2]
+    const result = mapAsync(
+      source,
+      async (value, index) => {
+        if (index === 0) {
+          source[1] = 99
+          await waitFor(0)
+        }
+        return value
+      },
+      { concurrency: 1 },
+    )
+
+    await expect(result).resolves.toStrictEqual([1, 2])
+    expect(source).toStrictEqual([1, 99])
+  })
+
   it('should reject invalid concurrency values', async () => {
     await expect(
       mapAsync([1], value => value, { concurrency: 0 }),

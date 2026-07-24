@@ -40,6 +40,8 @@ console.log(tree[0]?.children[0]?.name) // => 'Child'
 ```
 
 Custom `idKey`, `parentIdKey`, and `childrenKey` values are supported.
+Generated child properties are defined as own data properties, including for
+special keys such as `__proto__`.
 
 ---
 
@@ -48,6 +50,7 @@ Custom `idKey`, `parentIdKey`, and `childrenKey` values are supported.
 Returns a cloned tree containing matching nodes and their ancestor paths. A
 matching parent does not automatically retain unmatched descendants. The
 predicate receives the node, parent, depth, sibling index, and current path.
+Each callback receives its own path snapshot.
 
 ```ts
 import { filterTree } from '@ntnyq/utils'
@@ -75,7 +78,8 @@ console.log(path?.map(node => node.name))
 ```
 
 The predicate receives the same traversal context as `filterTree`, and
-`childrenKey` is configurable.
+`childrenKey` is configurable. Callback path snapshots cannot alter the
+returned path or later traversal contexts.
 
 ---
 

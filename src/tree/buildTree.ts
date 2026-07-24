@@ -1,5 +1,13 @@
+import { defineTreeChildren } from './defineTreeChildren'
+
 export type TreeIdentifier = string | number | symbol
 export type BuildTreeOrphanStrategy = 'discard' | 'root' | 'throw'
+
+type TreeIdentifierKeyOf<T> = {
+  [Key in keyof T]-?: Exclude<T[Key], null | undefined> extends TreeIdentifier
+    ? Key
+    : never
+}[keyof T]
 
 export type BuiltTreeNode<
   T,
@@ -17,14 +25,14 @@ export interface BuildTreeOptions<
    *
    * @default `id`
    */
-  idKey?: keyof T
+  idKey?: TreeIdentifierKeyOf<T>
 
   /**
    * Property containing the parent identifier.
    *
    * @default `parentId`
    */
-  parentIdKey?: keyof T
+  parentIdKey?: TreeIdentifierKeyOf<T>
 
   /**
    * Property used for generated child arrays.
@@ -64,8 +72,8 @@ function isTreeIdentifier(value: unknown): value is TreeIdentifier {
 
 function validateBuildTreeOptions<T extends object>(
   childrenKey: PropertyKey,
-  idKey: keyof T,
-  parentIdKey: keyof T,
+  idKey: TreeIdentifierKeyOf<T>,
+  parentIdKey: TreeIdentifierKeyOf<T>,
   orphanStrategy: BuildTreeOrphanStrategy,
 ): void {
   if (
@@ -89,8 +97,8 @@ function createBuildTreeEntries<
 >(
   nodes: readonly T[],
   childrenKey: ChildrenKey,
-  idKey: keyof T,
-  parentIdKey: keyof T,
+  idKey: TreeIdentifierKeyOf<T>,
+  parentIdKey: TreeIdentifierKeyOf<T>,
 ): Map<TreeIdentifier, BuildTreeEntry<T, ChildrenKey>> {
   const entries = new Map<TreeIdentifier, BuildTreeEntry<T, ChildrenKey>>()
 
@@ -113,7 +121,7 @@ function createBuildTreeEntries<
     }
 
     const node = { ...sourceNode } as BuiltTreeNode<T, ChildrenKey>
-    Reflect.set(node, childrenKey, [])
+    defineTreeChildren(node, childrenKey, [])
     entries.set(id, { id, node, parentId: parentIdValue })
   }
 
@@ -219,9 +227,9 @@ export function buildTree<
 ): BuiltTreeNode<T, ChildrenKey>[] {
   const {
     childrenKey = 'children' as ChildrenKey,
-    idKey = 'id' as keyof T,
+    idKey = 'id' as TreeIdentifierKeyOf<T>,
     orphanStrategy = 'root',
-    parentIdKey = 'parentId' as keyof T,
+    parentIdKey = 'parentId' as TreeIdentifierKeyOf<T>,
   } = options
 
   validateBuildTreeOptions(childrenKey, idKey, parentIdKey, orphanStrategy)

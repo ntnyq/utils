@@ -1,3 +1,4 @@
+import { defineTreeChildren } from './defineTreeChildren'
 import type { TreeTraversalContext } from './types'
 
 export interface FilterTreeOptions<T extends object, Key extends keyof T> {
@@ -55,7 +56,13 @@ export function filterTree<T extends object>(
       activeNodes.add(node)
       try {
         const path = [...parentPath, node]
-        const isMatch = predicate({ depth, index, node, parent, path })
+        const isMatch = predicate({
+          depth,
+          index,
+          node,
+          parent,
+          path: [...path],
+        })
         const sourceChildren = Reflect.get(node, childrenKey)
         const filteredChildren = Array.isArray(sourceChildren)
           ? visit(sourceChildren as T[], node, depth + 1, path)
@@ -67,7 +74,7 @@ export function filterTree<T extends object>(
 
         const clonedNode = { ...node }
         if (Array.isArray(sourceChildren)) {
-          Reflect.set(clonedNode, childrenKey, filteredChildren)
+          defineTreeChildren(clonedNode, childrenKey, filteredChildren)
         }
         results.push(clonedNode)
       } finally {

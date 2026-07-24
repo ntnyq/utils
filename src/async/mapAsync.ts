@@ -70,8 +70,9 @@ export async function mapAsync<T, Result>(
     return []
   }
 
+  const sourceItems = [...items]
   const results: Result[] = []
-  const workerCount = Math.min(concurrency, items.length)
+  const workerCount = Math.min(concurrency, sourceItems.length)
   let isStopped = false
   let nextIndex = 0
 
@@ -84,14 +85,14 @@ export async function mapAsync<T, Result>(
       signal?.throwIfAborted()
       const index = nextIndex
       nextIndex++
-      if (index >= items.length) {
+      if (index >= sourceItems.length) {
         return
       }
 
       try {
         // Each worker is intentionally sequential; worker count is the limit.
         // oxlint-disable-next-line no-await-in-loop
-        results[index] = await mapper(items[index]!, index, signal)
+        results[index] = await mapper(sourceItems[index]!, index, signal)
       } catch (error) {
         isStopped = true
         throw error

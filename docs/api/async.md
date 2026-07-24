@@ -10,7 +10,8 @@ Small asynchronous control-flow helpers.
 ## mapAsync
 
 Maps array items with an optional positive-integer concurrency limit. Results
-always follow input order, even when mapper calls finish out of order.
+always follow input order, even when mapper calls finish out of order. Source
+items are snapshotted before any mapper work is scheduled.
 
 The default concurrency is `Infinity`. An `AbortSignal` stops new work and
 rejects promptly; the signal is also passed to the mapper so active operations

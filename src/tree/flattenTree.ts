@@ -89,7 +89,7 @@ export function flattenTree<T extends Record<PropertyKey, any>>(
 
       if (includeSelf) {
         out.push(
-          map ? map({ node, parent, depth, index, path: nextPath }) : node,
+          map ? map({ node, parent, depth, index, path: [...nextPath] }) : node,
         )
       }
 

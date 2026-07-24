@@ -51,7 +51,15 @@ export function findTreePath<T extends object>(
       activeNodes.add(node)
       try {
         const path = [...parentPath, node]
-        if (predicate({ depth, index, node, parent, path })) {
+        if (
+          predicate({
+            depth,
+            index,
+            node,
+            parent,
+            path: [...path],
+          })
+        ) {
           return path
         }
 

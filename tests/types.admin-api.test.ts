@@ -79,4 +79,23 @@ describe('admin utility public API types', () => {
     expectTypeOf(mapAsync).toBeFunction()
     expectTypeOf(orderBy).toBeFunction()
   })
+
+  it('should reject non-identifier build keys and non-comparable sort keys', () => {
+    interface InvalidTreeNode {
+      id: { nested: true }
+      parentId: null
+    }
+    interface InvalidSortRow {
+      metadata: object
+    }
+
+    const invalidTreeOptions: BuildTreeOptions<InvalidTreeNode> = {
+      // @ts-expect-error identifiers must resolve to property keys
+      idKey: 'id',
+    }
+
+    // @ts-expect-error property-key selectors must resolve to comparable values
+    orderBy([] as InvalidSortRow[], 'metadata')
+    expectTypeOf(invalidTreeOptions).toBeObject()
+  })
 })

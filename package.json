@@ -54,7 +54,7 @@
     "npm-run-all2": "^9.0.2",
     "oxfmt": "^0.60.0",
     "oxlint": "^1.75.0",
-    "tsdown": "^0.22.13",
+    "tsdown": "^0.22.14",
     "typescript": "^7.0.2",
     "uuid": "^14.0.1",
     "vitest": "^4.1.10"
@@ -66,5 +66,5 @@
   "engines": {
     "node": "^22.19.0 || >=24.11.0"
   },
-  "packageManager": "pnpm@11.15.1"
+  "packageManager": "pnpm@11.17.0"
 }

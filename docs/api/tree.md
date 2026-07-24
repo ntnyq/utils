@@ -5,13 +5,77 @@ outline: deep
 
 # Tree Utilities
 
-Helpers for flattening nested tree-like data structures.
+Helpers for constructing, filtering, searching, and flattening tree-like data.
 
-This section documents 1 exported method from the tree module.
+This section documents 4 exported methods from the tree module.
 
 ## Methods
 
+- [buildTree](#buildtree)
+- [filterTree](#filtertree)
+- [findTreePath](#findtreepath)
 - [flattenTree](#flattentree)
+
+---
+
+## buildTree
+
+Builds cloned tree nodes from a flat list. It uses `id` and `parentId` by
+default, writes generated child arrays to `children`, and preserves source
+order.
+
+Nullish parent identifiers are roots unless `rootParentId` is provided.
+Unresolved parents become roots by default; `orphanStrategy` can instead be
+`discard` or `throw`. Duplicate identifiers and parent cycles always throw.
+
+```ts
+import { buildTree } from '@ntnyq/utils'
+
+const tree = buildTree([
+  { id: 1, parentId: null, name: 'Root' },
+  { id: 2, parentId: 1, name: 'Child' },
+])
+
+console.log(tree[0]?.children[0]?.name) // => 'Child'
+```
+
+Custom `idKey`, `parentIdKey`, and `childrenKey` values are supported.
+
+---
+
+## filterTree
+
+Returns a cloned tree containing matching nodes and their ancestor paths. A
+matching parent does not automatically retain unmatched descendants. The
+predicate receives the node, parent, depth, sibling index, and current path.
+
+```ts
+import { filterTree } from '@ntnyq/utils'
+
+const visible = filterTree(menuTree, ({ node }) =>
+  grantedPermissions.has(node.permission),
+)
+```
+
+Use `childrenKey` for trees whose child property is not `children`. Circular
+child references throw.
+
+---
+
+## findTreePath
+
+Returns the first depth-first root-to-node path whose node matches the
+predicate, or `undefined`. Path entries are the original node references.
+
+```ts
+import { findTreePath } from '@ntnyq/utils'
+
+const path = findTreePath(departments, ({ node }) => node.id === selectedId)
+console.log(path?.map(node => node.name))
+```
+
+The predicate receives the same traversal context as `filterTree`, and
+`childrenKey` is configurable.
 
 ---
 

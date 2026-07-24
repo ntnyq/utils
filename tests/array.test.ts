@@ -7,8 +7,10 @@ import {
   groupBy,
   intersect,
   isArrayEqual,
+  keyBy,
   last,
   mergeArrayable,
+  orderBy,
   partition,
   remove,
   removeArrayItem,
@@ -371,6 +373,132 @@ describe(groupBy, () => {
       a: ['apple', 'apricot'],
       b: ['banana', 'blueberry'],
     })
+  })
+})
+
+describe(keyBy, () => {
+  it('should index items by a property key', () => {
+    const users = [
+      { id: 'a', name: 'Alice' },
+      { id: 'b', name: 'Bob' },
+    ] as const
+
+    expect(keyBy(users, 'id')).toStrictEqual({
+      a: users[0],
+      b: users[1],
+    })
+  })
+
+  it('should pass selector context and keep the last duplicate', () => {
+    const values = ['first', 'second', 'third']
+    const result = keyBy(values, (_value, index, source) =>
+      index === source.length - 1 ? 'last' : 'shared',
+    )
+
+    expect(result).toStrictEqual({
+      last: 'third',
+      shared: 'second',
+    })
+  })
+
+  it('should safely index special and symbol keys', () => {
+    const symbol = Symbol('item')
+    const values = [
+      { key: '__proto__' as PropertyKey, value: 1 },
+      { key: symbol as PropertyKey, value: 2 },
+    ]
+    const result = keyBy(values, item => item.key)
+
+    expect(Object.hasOwn(result, '__proto__')).toBeTruthy()
+    expect(Reflect.get(result, '__proto__')).toBe(values[0])
+    expect(result[symbol]).toBe(values[1])
+  })
+
+  it('should reject selector values that are not property keys', () => {
+    expect(() =>
+      keyBy([{ id: {} }], item => item.id as unknown as PropertyKey),
+    ).toThrow(TypeError)
+  })
+
+  it('should return an empty object for an empty array', () => {
+    expect(keyBy([], 'id')).toStrictEqual({})
+  })
+})
+
+describe(orderBy, () => {
+  it('should stably sort by multiple selectors without mutating the source', () => {
+    const rows = [
+      { id: 1, score: 1, team: 'b' },
+      { id: 2, score: 1, team: 'a' },
+      { id: 3, score: 2, team: 'a' },
+      { id: 4, score: 2, team: 'a' },
+    ]
+
+    const result = orderBy(rows, ['team', 'score'], {
+      directions: ['asc', 'desc'],
+    })
+
+    expect(result.map(row => row.id)).toStrictEqual([3, 4, 2, 1])
+    expect(rows.map(row => row.id)).toStrictEqual([1, 2, 3, 4])
+  })
+
+  it('should keep empty values last regardless of direction', () => {
+    const rows = [
+      { id: 'null', value: null },
+      { id: 'two', value: 2 },
+      { id: 'undefined', value: undefined },
+      { id: 'one', value: 1 },
+      { id: 'nan', value: Number.NaN },
+    ]
+
+    expect(
+      orderBy(rows, 'value', { directions: 'desc' }).map(row => row.id),
+    ).toStrictEqual(['two', 'one', 'null', 'undefined', 'nan'])
+    expect(
+      orderBy(rows, 'value', { nulls: 'first' }).map(row => row.id),
+    ).toStrictEqual(['null', 'undefined', 'nan', 'one', 'two'])
+  })
+
+  it('should use Unicode order by default and an optional collator', () => {
+    const rows = [
+      { id: 1, name: 'ä' },
+      { id: 2, name: 'a' },
+      { id: 3, name: 'z' },
+    ]
+
+    expect(orderBy(rows, 'name').map(row => row.id)).toStrictEqual([2, 3, 1])
+    expect(
+      orderBy(rows, 'name', {
+        collator: new Intl.Collator('de', { sensitivity: 'base' }),
+      }).map(row => row.id),
+    ).toStrictEqual([1, 2, 3])
+  })
+
+  it('should support selector functions and return a copy without selectors', () => {
+    const values = ['aaa', 'b', 'cc']
+    expect(orderBy(values, value => value.length)).toStrictEqual([
+      'b',
+      'cc',
+      'aaa',
+    ])
+
+    const copied = orderBy(values, [])
+    expect(copied).toStrictEqual(values)
+    expect(copied).not.toBe(values)
+  })
+
+  it('should reject invalid directions and incomparable selector values', () => {
+    expect(() =>
+      orderBy([1], value => value, {
+        directions: 'sideways' as 'asc',
+      }),
+    ).toThrow(TypeError)
+    expect(() =>
+      orderBy(
+        [{ value: {} }, { value: {} }],
+        row => row.value as unknown as number,
+      ),
+    ).toThrow(TypeError)
   })
 })
 

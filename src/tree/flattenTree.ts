@@ -1,13 +1,8 @@
-export interface FlattenTreeContext<T> {
-  node: T
-  parent: T | null
-  depth: number
-  /**
-   * index of the current node in the current level, starting from 0
-   */
-  index: number
-  path: T[]
-}
+import type { TreeTraversalContext } from './types'
+
+// Preserve the public interface while sharing traversal fields.
+// oxlint-disable-next-line typescript/no-empty-interface
+export interface FlattenTreeContext<T> extends TreeTraversalContext<T> {}
 
 export interface FlattenTreeOptions<
   T extends Record<PropertyKey, any>,
@@ -94,7 +89,7 @@ export function flattenTree<T extends Record<PropertyKey, any>>(
 
       if (includeSelf) {
         out.push(
-          map ? map({ node, parent, depth, index, path: nextPath }) : node,
+          map ? map({ node, parent, depth, index, path: [...nextPath] }) : node,
         )
       }
 

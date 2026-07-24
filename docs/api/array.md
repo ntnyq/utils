@@ -7,7 +7,7 @@ outline: deep
 
 Helpers for chunking, grouping, normalizing, comparing, and transforming arrays.
 
-This section documents 19 exported methods from the array module.
+This section documents 21 exported methods from the array module.
 
 ## Methods
 
@@ -18,8 +18,10 @@ This section documents 19 exported methods from the array module.
 - [groupBy](#groupby)
 - [intersect](#intersect)
 - [isArrayEqual](#isarrayequal)
+- [keyBy](#keyby)
 - [last](#last)
 - [mergeArrayable](#mergearrayable)
+- [orderBy](#orderby)
 - [partition](#partition)
 - [removeArrayItem](#removearrayitem)
 - [removeArrayItemInPlace](#removearrayiteminplace)
@@ -168,6 +170,25 @@ console.log(groupedByNameLength)
 
 ---
 
+## keyBy
+
+Indexes items by a property key or selector. If a key occurs more than once,
+the last item wins. String, number, and symbol keys are supported safely.
+
+```ts
+import { keyBy } from '@ntnyq/utils'
+
+const users = [
+  { id: 'a', name: 'Alice' },
+  { id: 'b', name: 'Bob' },
+]
+
+const usersById = keyBy(users, 'id')
+console.log(usersById.a?.name) // => 'Alice'
+```
+
+---
+
 ## intersect
 
 Gets the intersection of two arrays.
@@ -258,6 +279,36 @@ import { mergeArrayable } from '@ntnyq/utils'
 
 const result = mergeArrayable(1, [2, 3], null, 4)
 console.log(result) // => [1, 2, 3, 4]
+```
+
+---
+
+## orderBy
+
+Returns a stable, non-mutating sort by one or more property keys or selectors.
+Directions default to ascending. `null`, `undefined`, `NaN`, and invalid dates
+default to the end regardless of direction; set `nulls: 'first'` to reverse
+their position.
+
+Strings use JavaScript UTF-16 lexicographic order by default. Pass an
+`Intl.Collator` for locale-aware comparison. Selectors should return a
+consistent comparable type; mixed comparable types use the fixed order
+boolean, bigint, number, Date, then string.
+
+```ts
+import { orderBy } from '@ntnyq/utils'
+
+const rows = [
+  { team: 'b', score: 1 },
+  { team: 'a', score: 2 },
+  { team: 'a', score: 1 },
+]
+
+const result = orderBy(rows, ['team', 'score'], {
+  directions: ['asc', 'desc'],
+  nulls: 'last',
+  collator: new Intl.Collator('en', { numeric: true }),
+})
 ```
 
 ---

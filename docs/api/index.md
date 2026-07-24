@@ -11,8 +11,8 @@ glance.
 
 | Category                    | Exports | Description                                                    |
 | --------------------------- | ------: | -------------------------------------------------------------- |
-| [Array](/api/array)         |      19 | Array normalization, grouping, comparison, and transformation. |
-| [Async](/api/async)         |       1 | Promise-based timing helpers.                                  |
+| [Array](/api/array)         |      21 | Array normalization, grouping, comparison, and transformation. |
+| [Async](/api/async)         |       2 | Promise-based timing and concurrency helpers.                  |
 | [Color](/api/color)         |       4 | Color manipulation and random color generation.                |
 | [Function](/api/function)   |       8 | Composition, memoization, throttling, and invocation control.  |
 | [HTML](/api/html)           |       2 | HTML text escaping and unescaping.                             |
@@ -24,7 +24,7 @@ glance.
 | [Predicate](/api/predicate) |      50 | Runtime checks grouped by semantic concern.                    |
 | [Proxy](/api/proxy)         |       1 | Proxy-based object overlays.                                   |
 | [String](/api/string)       |      13 | String formatting, matching, and owned character constants.    |
-| [Tree](/api/tree)           |       1 | Tree flattening.                                               |
+| [Tree](/api/tree)           |       4 | Tree construction, filtering, lookup, and flattening.          |
 | [Types](/api/types)         |      22 | Reusable TypeScript types.                                     |
 | [Units](/api/units)         |       6 | Duration and byte-size conversions.                            |
 | [Web](/api/web)             |      12 | Environment, DOM, image, and animation-frame helpers.          |

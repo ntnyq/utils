@@ -1,1 +1,5 @@
+export * from './buildTree'
+export * from './filterTree'
+export * from './findTreePath'
 export * from './flattenTree'
+export * from './types'

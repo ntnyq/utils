@@ -32,6 +32,7 @@ export default defineConfig({
             { text: 'Color', link: '/api/color' },
             { text: 'Function', link: '/api/function' },
             { text: 'HTML', link: '/api/html' },
+            { text: 'JSON', link: '/api/json' },
             { text: 'Logging', link: '/api/logging' },
             { text: 'Module', link: '/api/module' },
             { text: 'Number', link: '/api/number' },

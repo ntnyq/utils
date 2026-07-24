@@ -11,11 +11,12 @@ glance.
 
 | Category                    | Exports | Description                                                    |
 | --------------------------- | ------: | -------------------------------------------------------------- |
-| [Array](/api/array)         |      21 | Array normalization, grouping, comparison, and transformation. |
+| [Array](/api/array)         |      22 | Array normalization, grouping, comparison, and transformation. |
 | [Async](/api/async)         |       2 | Promise-based timing and concurrency helpers.                  |
 | [Color](/api/color)         |       4 | Color manipulation and random color generation.                |
 | [Function](/api/function)   |       8 | Composition, memoization, throttling, and invocation control.  |
 | [HTML](/api/html)           |       2 | HTML text escaping and unescaping.                             |
+| [JSON](/api/json)           |       1 | Defensive JSON serialization.                                  |
 | [Logging](/api/logging)     |       1 | Controlled warning output.                                     |
 | [Module](/api/module)       |       1 | Module interop.                                                |
 | [Number](/api/number)       |       8 | Range, rounding, coercion, and Chinese numeral helpers.        |
@@ -24,10 +25,10 @@ glance.
 | [Predicate](/api/predicate) |      50 | Runtime checks grouped by semantic concern.                    |
 | [Proxy](/api/proxy)         |       1 | Proxy-based object overlays.                                   |
 | [String](/api/string)       |      13 | String formatting, matching, and owned character constants.    |
-| [Tree](/api/tree)           |       4 | Tree construction, filtering, lookup, and flattening.          |
+| [Tree](/api/tree)           |       8 | Tree construction, traversal, filtering, lookup, and mapping.  |
 | [Types](/api/types)         |      22 | Reusable TypeScript types.                                     |
 | [Units](/api/units)         |       6 | Duration and byte-size conversions.                            |
-| [Web](/api/web)             |      12 | Environment, DOM, image, and animation-frame helpers.          |
+| [Web](/api/web)             |      13 | Environment, DOM, file, image, and animation-frame helpers.    |
 
 All utilities are ESM-first and tree-shakable. Import public APIs from
 `@ntnyq/utils`; the source folders describe ownership rather than package

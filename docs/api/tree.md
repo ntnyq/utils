@@ -5,16 +5,21 @@ outline: deep
 
 # Tree Utilities
 
-Helpers for constructing, filtering, searching, and flattening tree-like data.
+Helpers for constructing, traversing, filtering, searching, mapping, and
+flattening tree-like data.
 
-This section documents 4 exported methods from the tree module.
+This section documents 8 exported methods from the tree module.
 
 ## Methods
 
 - [buildTree](#buildtree)
+- [listToTree](#listtotree)
 - [filterTree](#filtertree)
+- [findTreeNode](#findtreenode)
 - [findTreePath](#findtreepath)
 - [flattenTree](#flattentree)
+- [mapTree](#maptree)
+- [walkTree](#walktree)
 
 ---
 
@@ -45,6 +50,29 @@ special keys such as `__proto__`.
 
 ---
 
+## listToTree
+
+Builds cloned tree nodes with selector functions rather than property-key
+options. It supports multiple root parent identifiers and configurable orphan
+and cycle handling.
+
+```ts
+import { listToTree } from '@ntnyq/utils'
+
+const tree = listToTree(departments, {
+  childrenKey: 'nodes',
+  getId: department => department.code,
+  getParentId: department => department.parentCode,
+  rootParentIds: [0],
+})
+```
+
+Unresolved parents become roots by default. Set `orphanStrategy` to `discard`
+or `throw`, and set `cycleStrategy: 'root'` to promote cycle members to roots
+instead of throwing.
+
+---
+
 ## filterTree
 
 Returns a cloned tree containing matching nodes and their ancestor paths. A
@@ -60,8 +88,22 @@ const visible = filterTree(menuTree, ({ node }) =>
 )
 ```
 
-Use `childrenKey` for trees whose child property is not `children`. Circular
-child references throw.
+Use `childrenKey` for trees whose child property is not `children`, or
+`includeDescendants` to retain a matching node's complete subtree. Circular
+child references throw by default and can be skipped with `onCycle: 'skip'`.
+
+---
+
+## findTreeNode
+
+Returns the first node matching a depth-first predicate, or `undefined`. The
+predicate receives the node, parent, depth, sibling index, and path snapshot.
+
+```ts
+import { findTreeNode } from '@ntnyq/utils'
+
+const selected = findTreeNode(departments, ({ node }) => node.id === selectedId)
+```
 
 ---
 
@@ -105,3 +147,43 @@ const tree = [{ id: 1, children: [{ id: 2, children: [] }] }]
 const result = flattenTree(tree)
 console.log(result.map(item => item.id)) // => [1, 2]
 ```
+
+---
+
+## mapTree
+
+Maps a tree from the leaves upward without mutating its source. The mapper
+receives already-mapped children, so the output can use a different node shape
+or child property.
+
+```ts
+import { mapTree } from '@ntnyq/utils'
+
+const options = mapTree(tree, ({ node, children }) => ({
+  label: node.name,
+  value: node.id,
+  options: children,
+}))
+```
+
+---
+
+## walkTree
+
+Walks tree nodes in depth-first preorder. Return `skip` to omit the current
+node's descendants, or `stop` to end the entire traversal.
+
+```ts
+import { walkTree } from '@ntnyq/utils'
+
+const result = walkTree(tree, ({ node }) => {
+  if (node.disabled) {
+    return 'skip'
+  }
+  console.log(node.id)
+})
+
+console.log(result.visitedCount)
+```
+
+Custom child keys and `onCycle: 'skip'` are supported.

@@ -1,5 +1,6 @@
 export * from './at'
 export * from './chunk'
+export * from './moveArrayItem'
 export * from './partition'
 export * from './removeArrayItem'
 export * from './unique'

@@ -1,13 +1,9 @@
-import type { TreeTraversalContext } from './types'
+import type { TreeTraversalContext, TreeTraversalOptions } from './types'
 
-export interface FindTreePathOptions<T extends object, Key extends keyof T> {
-  /**
-   * Property containing child nodes.
-   *
-   * @default `children`
-   */
-  childrenKey?: Key
-}
+export type FindTreePathOptions<
+  T extends object,
+  Key extends keyof T,
+> = TreeTraversalOptions<T, Key>
 
 /**
  * Finds the first depth-first matching node and returns its ancestor path.
@@ -34,48 +30,64 @@ export function findTreePath<T extends object>(
   predicate: (context: TreeTraversalContext<T>) => boolean,
   options: FindTreePathOptions<T, keyof T> = {},
 ): T[] | undefined {
-  const { childrenKey = 'children' as keyof T } = options
+  const { childrenKey = 'children' as keyof T, onCycle = 'throw' } = options
   const activeNodes = new Set<T>()
 
-  const visit = (
+  function visitNode(
+    node: T,
+    index: number,
+    parent: T | null,
+    depth: number,
+    parentPath: T[],
+  ): T[] | undefined {
+    if (activeNodes.has(node)) {
+      if (onCycle === 'throw') {
+        throw new RangeError('Tree contains a circular child reference')
+      }
+      return
+    }
+
+    activeNodes.add(node)
+    try {
+      const path = [...parentPath, node]
+      if (
+        predicate({
+          depth,
+          index,
+          node,
+          parent,
+          path: [...path],
+        })
+      ) {
+        return path
+      }
+
+      const children = Reflect.get(node, childrenKey)
+      let childPath: T[] | undefined
+      if (Array.isArray(children)) {
+        childPath = visit(children as T[], node, depth + 1, path)
+      }
+      return childPath
+    } finally {
+      activeNodes.delete(node)
+    }
+  }
+
+  function visit(
     nodes: readonly T[],
     parent: T | null,
     depth: number,
     parentPath: T[],
-  ): T[] | undefined => {
+  ): T[] | undefined {
+    let matchedPath: T[] | undefined
     for (const [index, node] of nodes.entries()) {
-      if (activeNodes.has(node)) {
-        throw new RangeError('Tree contains a circular child reference')
-      }
-
-      activeNodes.add(node)
-      try {
-        const path = [...parentPath, node]
-        if (
-          predicate({
-            depth,
-            index,
-            node,
-            parent,
-            path: [...path],
-          })
-        ) {
-          return path
-        }
-
-        const children = Reflect.get(node, childrenKey)
-        if (Array.isArray(children)) {
-          const childPath = visit(children as T[], node, depth + 1, path)
-          if (childPath) {
-            return childPath
-          }
-        }
-      } finally {
-        activeNodes.delete(node)
+      matchedPath = visitNode(node, index, parent, depth, parentPath)
+      if (matchedPath) {
+        break
       }
     }
 
-    return undefined
+    return matchedPath
   }
 
   return visit(roots, null, 0, [])

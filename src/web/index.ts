@@ -1,4 +1,5 @@
 export * from './animationFrame'
 export * from './dom'
 export * from './environment'
+export * from './file'
 export * from './image'

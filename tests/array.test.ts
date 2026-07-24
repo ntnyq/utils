@@ -10,6 +10,7 @@ import {
   keyBy,
   last,
   mergeArrayable,
+  moveArrayItem,
   orderBy,
   partition,
   remove,
@@ -22,6 +23,47 @@ import {
   uniqueBy,
   uniqueWith,
 } from '../src/array'
+
+describe(moveArrayItem, () => {
+  it('should move an item without mutating the source array', () => {
+    const source = ['a', 'b', 'c', 'd'] as const
+
+    expect(moveArrayItem(source, 1, 3)).toStrictEqual(['a', 'c', 'd', 'b'])
+    expect(source).toStrictEqual(['a', 'b', 'c', 'd'])
+  })
+
+  it('should support negative indexes', () => {
+    expect(moveArrayItem(['a', 'b', 'c', 'd'], -1, 0)).toStrictEqual([
+      'd',
+      'a',
+      'b',
+      'c',
+    ])
+    expect(moveArrayItem(['a', 'b', 'c', 'd'], 0, -1)).toStrictEqual([
+      'b',
+      'c',
+      'd',
+      'a',
+    ])
+  })
+
+  it('should return a shallow copy when source and target indexes are equal', () => {
+    const source = [{ id: 1 }, { id: 2 }]
+    const moved = moveArrayItem(source, 1, 1)
+
+    expect(moved).toStrictEqual(source)
+    expect(moved).not.toBe(source)
+    expect(moved[0]).toBe(source[0])
+  })
+
+  it('should reject invalid and out-of-bounds indexes', () => {
+    expect(() => moveArrayItem([], 0, 0)).toThrow(RangeError)
+    expect(() => moveArrayItem([1, 2], 2, 0)).toThrow(RangeError)
+    expect(() => moveArrayItem([1, 2], 0, -3)).toThrow(RangeError)
+    expect(() => moveArrayItem([1, 2], 0.5, 1)).toThrow(RangeError)
+    expect(() => moveArrayItem([1, 2], 0, Number.NaN)).toThrow(RangeError)
+  })
+})
 
 describe(toArray, () => {
   it('should convert undefined to empty array', () => {

@@ -25,6 +25,26 @@ and utility modules.
 - `loadImageDimensions` loads a URL, Blob, or File and resolves its natural
   dimensions. It supports timeout, decoding, cross-origin, and cache options.
 
+## File
+
+- `validateFile` checks byte-size, MIME-type, and filename-extension
+  constraints and returns all validation issues without throwing for ordinary
+  invalid files. Custom typed validation rules and early exit are supported.
+
+```ts
+import { validateFile } from '@ntnyq/utils'
+
+const result = validateFile(file, {
+  allowedExtensions: ['pdf'],
+  allowedMimeTypes: ['application/pdf'],
+  maxSize: 10 * 1024 * 1024,
+})
+
+if (!result.isValid) {
+  console.log(result.issues)
+}
+```
+
 ## Animation frame
 
 - `getGlobalRoot` returns the browser window or `globalThis`.

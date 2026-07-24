@@ -1,25 +1,32 @@
 import { defineTreeChildren } from './defineTreeChildren'
-import type { TreeTraversalContext } from './types'
+import type { TreePredicate } from './findTree'
+import { createTreeTraversalContext, resolveChildrenKey } from './internals'
+import type { TreeTraversalOptions } from './types'
 
-export interface FilterTreeOptions<T extends object, Key extends keyof T> {
+export interface FilterTreeOptions<
+  Node,
+  ChildrenKey extends keyof Node = keyof Node,
+> extends TreeTraversalOptions<Node, ChildrenKey> {
   /**
-   * Property containing child nodes.
+   * Keeps every descendant after a node matches.
    *
-   * @default `children`
+   * When false, each descendant must match or contain a match.
+   *
+   * @default false
    */
-  childrenKey?: Key
+  includeDescendants?: boolean
 }
 
 /**
  * Filters a tree without mutating its nodes.
  *
  * A node is retained when it matches the predicate or has a retained
- * descendant. A matching node does not automatically retain unmatched
- * descendants.
+ * descendant. A matching node retains all descendants only when
+ * `includeDescendants` is enabled.
  *
  * @param roots - Source tree roots.
  * @param predicate - Determines which nodes match.
- * @param options - Child-key options.
+ * @param options - Child-key, cycle, and descendant options.
  * @returns A cloned tree containing matches and their ancestor paths.
  *
  * @example
@@ -32,40 +39,52 @@ export interface FilterTreeOptions<T extends object, Key extends keyof T> {
  * console.log(result[0]?.children) // => [{ id: 2 }]
  * ```
  */
-export function filterTree<T extends object>(
-  roots: readonly T[],
-  predicate: (context: TreeTraversalContext<T>) => boolean,
-  options: FilterTreeOptions<T, keyof T> = {},
-): T[] {
-  const { childrenKey = 'children' as keyof T } = options
-  const activeNodes = new Set<T>()
+export function filterTree<
+  Node extends object,
+  ChildrenKey extends keyof Node = keyof Node,
+>(
+  roots: readonly Node[],
+  predicate: TreePredicate<Node>,
+  options: FilterTreeOptions<Node, ChildrenKey> = {},
+): Node[] {
+  const childrenKey = resolveChildrenKey(options.childrenKey)
+  const { includeDescendants = false, onCycle = 'throw' } = options
+  const activeNodes = new Set<Node>()
 
-  const visit = (
-    nodes: readonly T[],
-    parent: T | null,
+  function visit(
+    nodes: readonly Node[],
+    parent: Node | null,
     depth: number,
-    parentPath: T[],
-  ): T[] => {
-    const results: T[] = []
+    parentPath: readonly Node[],
+    includeAll: boolean,
+  ): Node[] {
+    const results: Node[] = []
 
     nodes.forEach((node, index) => {
       if (activeNodes.has(node)) {
-        throw new RangeError('Tree contains a circular child reference')
+        if (onCycle === 'throw') {
+          throw new RangeError('Tree contains a circular child reference')
+        }
+        return
       }
 
       activeNodes.add(node)
       try {
         const path = [...parentPath, node]
-        const isMatch = predicate({
-          depth,
-          index,
-          node,
-          parent,
-          path: [...path],
-        })
+        const isMatch =
+          includeAll ||
+          predicate(
+            createTreeTraversalContext(node, parent, depth, index, path),
+          )
         const sourceChildren = Reflect.get(node, childrenKey)
         const filteredChildren = Array.isArray(sourceChildren)
-          ? visit(sourceChildren as T[], node, depth + 1, path)
+          ? visit(
+              sourceChildren as Node[],
+              node,
+              depth + 1,
+              path,
+              includeAll || (isMatch && includeDescendants),
+            )
           : []
 
         if (!isMatch && filteredChildren.length === 0) {
@@ -85,5 +104,5 @@ export function filterTree<T extends object>(
     return results
   }
 
-  return visit(roots, null, 0, [])
+  return visit(roots, null, 0, [], false)
 }

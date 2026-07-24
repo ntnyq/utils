@@ -7,7 +7,7 @@ outline: deep
 
 Helpers for chunking, grouping, normalizing, comparing, and transforming arrays.
 
-This section documents 21 exported methods from the array module.
+This section documents 22 exported methods from the array module.
 
 ## Methods
 
@@ -22,6 +22,7 @@ This section documents 21 exported methods from the array module.
 - [last](#last)
 - [mergeArrayable](#mergearrayable)
 - [orderBy](#orderby)
+- [moveArrayItem](#movearrayitem)
 - [partition](#partition)
 - [removeArrayItem](#removearrayitem)
 - [removeArrayItemInPlace](#removearrayiteminplace)
@@ -309,6 +310,23 @@ const result = orderBy(rows, ['team', 'score'], {
   nulls: 'last',
   collator: new Intl.Collator('en', { numeric: true }),
 })
+```
+
+---
+
+## moveArrayItem
+
+Moves an item to another index in a copied array. Negative indexes count from
+the end, and invalid or out-of-bounds indexes throw a `RangeError`.
+
+```ts
+import { moveArrayItem } from '@ntnyq/utils'
+
+const source = ['a', 'b', 'c']
+const result = moveArrayItem(source, 0, -1)
+
+console.log(result) // => ['b', 'c', 'a']
+console.log(source) // => ['a', 'b', 'c']
 ```
 
 ---

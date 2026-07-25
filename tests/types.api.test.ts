@@ -16,15 +16,22 @@ import {
 } from '../src/number'
 import type { RandomIntegerOptions } from '../src/number'
 import {
+  cleanObject,
   cleanObjectInPlace,
   deepMerge,
+  deepMergeWithOptions,
   isKeyOf,
   objectOmit,
   omit,
   omitInPlace,
+  setIn,
   sortObjectKeys,
 } from '../src/object'
-import type { ObjectOmitOptions, SortObjectKeysOptions } from '../src/object'
+import type {
+  ObjectOmitOptions,
+  SetInOptions,
+  SortObjectKeysOptions,
+} from '../src/object'
 import {
   getObjectTag,
   isDate,
@@ -179,6 +186,73 @@ describe('public API types', () => {
     )
 
     expectTypeOf(merged.config).toEqualTypeOf<{ readonly b: 3 }>()
+  })
+
+  it('should model object transformations without stale property types', () => {
+    const cleaned = cleanObject({
+      count: Number.NaN,
+      nested: { remove: null, value: 1 },
+    })
+    const updated = setIn({ config: { count: 1 } }, 'config.count', 'one')
+    const updatedWithOptional = setIn(
+      {} as {
+        readonly id: string
+        count: number
+        optional?: boolean
+      },
+      'count',
+      'one',
+    )
+    const created = setIn({ user: {} }, 'user.profile.name', 'Alice')
+    const customSeparator = setIn({ user: {} }, 'user/profile/name', 'Alice', {
+      separator: '/',
+    })
+    const dynamicOptions: SetInOptions = { separator: '/' }
+    const dynamicallySeparated = setIn(
+      { user: {} },
+      'user/profile/name',
+      'Alice',
+      dynamicOptions,
+    )
+    const concatenated = deepMergeWithOptions(
+      { arrayStrategy: 'concat' },
+      { list: [1] as const },
+      { list: [2] as const },
+    )
+
+    expectTypeOf(cleaned).toEqualTypeOf<{
+      count?: number
+      nested?: {
+        remove?: null
+        value?: number
+      }
+    }>()
+    expectTypeOf(updated).toEqualTypeOf<{
+      config: {
+        count: string
+      }
+    }>()
+    expectTypeOf(updatedWithOptional).toEqualTypeOf<{
+      readonly id: string
+      count: string
+      optional?: boolean
+    }>()
+    expectTypeOf(created).toEqualTypeOf<{
+      user: {
+        profile: {
+          name: string
+        }
+      }
+    }>()
+    expectTypeOf(customSeparator).toEqualTypeOf<{
+      user: {
+        profile: {
+          name: string
+        }
+      }
+    }>()
+    expectTypeOf(dynamicallySeparated).toEqualTypeOf<object>()
+    expectTypeOf(concatenated.list).toEqualTypeOf<[1, 2]>()
   })
 
   it('should export public option types and renamed utilities', () => {

@@ -33,8 +33,14 @@ export function sortObjectKeys<T extends Record<string, any>>(
   options: SortObjectKeysOptions = {},
 ) {
   const { compareFn = (a, b) => a.localeCompare(b) } = options
+  const sortedObjects = new WeakMap<object, object>()
 
   function sortKeys<R extends Record<string, any>>(obj: R) {
+    const cached = sortedObjects.get(obj)
+    if (cached) {
+      return cached as R
+    }
+
     const ownKeys = Reflect.ownKeys(obj)
     const sortedKeys = ownKeys
       .filter((key): key is string => typeof key === 'string')
@@ -43,6 +49,7 @@ export function sortObjectKeys<T extends Record<string, any>>(
       (key): key is symbol => typeof key === 'symbol',
     )
     const result = Object.create(Object.getPrototypeOf(obj)) as R
+    sortedObjects.set(obj, result)
 
     for (const key of [...sortedKeys, ...symbolKeys]) {
       const descriptor = Object.getOwnPropertyDescriptor(obj, key)

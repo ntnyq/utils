@@ -195,6 +195,18 @@ describe(randomString, () => {
     expect(/^[ABC]+$/u.test(result)).toBeTruthy()
   })
 
+  it('should sample complete Unicode graphemes', () => {
+    const result = randomString(4, '😀👩‍💻')
+    const graphemes = [...new Intl.Segmenter().segment(result)].map(
+      segment => segment.segment,
+    )
+
+    expect(graphemes).toHaveLength(4)
+    expect(
+      graphemes.every(value => value === '😀' || value === '👩‍💻'),
+    ).toBeTruthy()
+  })
+
   it('should generate different strings', () => {
     const str1 = randomString(20)
     const str2 = randomString(20)

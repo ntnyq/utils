@@ -42,7 +42,9 @@ safely preserves circular references.
 
 ### Returns
 
-a cleaned deep clone; the source object is unchanged
+a cleaned deep clone; the source object is unchanged. Because configured values
+may be removed recursively, the result type exposes object properties as
+optional.
 
 ### Example
 
@@ -78,7 +80,8 @@ console.log(value) // => { name: 'Alice' }
 
 Deeply clones a value while preserving supported collections, ArrayBuffer and
 SharedArrayBuffer data, property descriptors, prototypes, symbol keys, and
-circular references.
+circular references. Own metadata attached to supported built-ins is cloned
+with its descriptors.
 
 ### Parameters
 
@@ -132,7 +135,9 @@ console.log(result.theme) // => { color: 'red', tags: ['brand'] }
 
 Deeply merges objects with explicit merge options. Keeping options in a separate
 function means an ordinary data object containing `arrayStrategy` is never
-misinterpreted as configuration.
+misinterpreted as configuration. The inferred result distinguishes replacement
+arrays from concatenated arrays, and shared or circular references remain
+connected to the final merged graph.
 
 ### Parameters
 
@@ -357,7 +362,8 @@ Sets a nested value by path.
 
 ### Returns
 
-Updated object.
+Updated object. Literal dot paths, custom-separator paths, and tuple paths
+produce an updated result type; dynamic paths return a conservative object type.
 
 ### Example
 
@@ -373,6 +379,7 @@ console.log(result.user.profile.name) // => 'Alice'
 ## sortObjectKeys
 
 Sorts an object's keys and optionally sorts nested plain objects recursively.
+Deep sorting preserves circular and shared references.
 
 ### Parameters
 

@@ -924,6 +924,17 @@ describe(isDeepEqual, () => {
     expect(isDeepEqual(new Set([{ id: 1 }]), new Set([{ id: 2 }]))).toBeFalsy()
   })
 
+  it('should compare attached properties on supported built-ins', () => {
+    const left = new Date(0) as Date & { metadata: { value: number } }
+    const right = new Date(0) as Date & { metadata: { value: number } }
+    left.metadata = { value: 1 }
+    right.metadata = { value: 2 }
+
+    expect(isDeepEqual(left, right)).toBeFalsy()
+    right.metadata.value = 1
+    expect(isDeepEqual(left, right)).toBeTruthy()
+  })
+
   it('should compare SharedArrayBuffer values by bytes', () => {
     const left = new SharedArrayBuffer(2)
     const equal = new SharedArrayBuffer(2)

@@ -9,24 +9,45 @@ export interface DeepMergeOptions {
   arrayStrategy?: 'replace' | 'concat'
 }
 
+export type DeepMergeArrayStrategy = NonNullable<
+  DeepMergeOptions['arrayStrategy']
+>
+
+type ResolveDeepMergeArrayStrategy<Options extends DeepMergeOptions> =
+  Options extends { arrayStrategy: 'concat' }
+    ? 'concat'
+    : Options extends { arrayStrategy?: 'replace' | undefined }
+      ? 'replace'
+      : DeepMergeArrayStrategy
+
 type AnyRecord = Record<PropertyKey, unknown>
 
-type DeepMergeValue<Left, Right> = Left extends readonly unknown[]
+type DeepMergeValue<
+  Left,
+  Right,
+  ArrayStrategy extends DeepMergeArrayStrategy,
+> = Left extends readonly unknown[]
   ? Right extends readonly unknown[]
-    ? Right
+    ? ArrayStrategy extends 'concat'
+      ? [...Left, ...Right]
+      : Right
     : Right
   : Left extends AnyRecord
     ? Right extends AnyRecord
-      ? DeepMergeTwo<Left, Right>
+      ? DeepMergeTwo<Left, Right, ArrayStrategy>
       : Right
     : Right
 
-export type DeepMergeTwo<Left, Right> = Left extends AnyRecord
+export type DeepMergeTwo<
+  Left,
+  Right,
+  ArrayStrategy extends DeepMergeArrayStrategy = 'replace',
+> = Left extends AnyRecord
   ? Right extends AnyRecord
     ? {
         [K in keyof Left | keyof Right]: K extends keyof Right
           ? K extends keyof Left
-            ? DeepMergeValue<Left[K], Right[K]>
+            ? DeepMergeValue<Left[K], Right[K], ArrayStrategy>
             : Right[K]
           : K extends keyof Left
             ? Left[K]
@@ -38,8 +59,13 @@ export type DeepMergeTwo<Left, Right> = Left extends AnyRecord
 export type DeepMergeResult<
   Objects extends readonly unknown[],
   Accumulator = {},
+  ArrayStrategy extends DeepMergeArrayStrategy = 'replace',
 > = Objects extends readonly [infer First, ...infer Rest]
-  ? DeepMergeResult<Rest, DeepMergeTwo<Accumulator, First>>
+  ? DeepMergeResult<
+      Rest,
+      DeepMergeTwo<Accumulator, First, ArrayStrategy>,
+      ArrayStrategy
+    >
   : Accumulator
 
 interface MergeContext {
@@ -64,12 +90,16 @@ function cloneArray(value: unknown[], context: MergeContext): unknown[] {
   for (const key of Reflect.ownKeys(value)) {
     const descriptor = Object.getOwnPropertyDescriptor(value, key)
     if (descriptor) {
+      const clonedDescriptor =
+        'value' in descriptor
+          ? { ...descriptor, value: cloneValue(descriptor.value, context) }
+          : descriptor
       Object.defineProperty(
         output,
         key,
-        'value' in descriptor
-          ? { ...descriptor, value: cloneValue(descriptor.value, context) }
-          : descriptor,
+        key === 'length' && context.options.arrayStrategy === 'concat'
+          ? { ...clonedDescriptor, writable: true }
+          : clonedDescriptor,
       )
     }
   }
@@ -122,10 +152,21 @@ function mergeValue(
   context: MergeContext,
 ): unknown {
   if (Array.isArray(leftValue) && Array.isArray(rightValue)) {
-    const right = cloneArray(rightValue, context)
-    return context.options.arrayStrategy === 'concat'
-      ? [...leftValue, ...right]
-      : right
+    if (context.options.arrayStrategy === 'concat') {
+      const knownRight = context.seen.get(rightValue)
+      if (knownRight) {
+        return knownRight
+      }
+
+      const sourceItems = [...rightValue]
+      context.seen.set(rightValue, leftValue)
+      for (const item of sourceItems) {
+        leftValue.push(cloneValue(item, context))
+      }
+      return leftValue
+    }
+
+    return cloneArray(rightValue, context)
   }
 
   if (isMergeableRecord(leftValue) && isMergeableRecord(rightValue)) {
@@ -139,13 +180,14 @@ function mergeRecords(
   left: AnyRecord,
   right: AnyRecord,
   context: MergeContext,
+  forceTarget = false,
 ): AnyRecord {
   const knownRight = context.seen.get(right)
-  if (knownRight) {
+  if (knownRight && !forceTarget) {
     return knownRight as AnyRecord
   }
 
-  const output = cloneRecord(left, context)
+  const output = left
   context.seen.set(right, output)
 
   for (const key of Reflect.ownKeys(right)) {
@@ -175,12 +217,15 @@ function mergeRecords(
   return output
 }
 
-function mergeAll<const Objects extends readonly AnyRecord[]>(
+function mergeAll<
+  const Objects extends readonly AnyRecord[],
+  ArrayStrategy extends DeepMergeArrayStrategy,
+>(
   objects: Objects,
-  options: Required<DeepMergeOptions>,
-): DeepMergeResult<Objects> {
+  options: { arrayStrategy: ArrayStrategy },
+): DeepMergeResult<Objects, {}, ArrayStrategy> {
   if (objects.length === 0) {
-    return {} as DeepMergeResult<Objects>
+    return {} as DeepMergeResult<Objects, {}, ArrayStrategy>
   }
 
   const context: MergeContext = {
@@ -188,13 +233,13 @@ function mergeAll<const Objects extends readonly AnyRecord[]>(
     seen: new WeakMap(),
   }
   const [first, ...rest] = objects
-  let output = cloneRecord(first!, context)
+  const output = cloneRecord(first!, context)
 
   for (const object of rest) {
-    output = mergeRecords(output, object, context)
+    mergeRecords(output, object, context, true)
   }
 
-  return output as DeepMergeResult<Objects>
+  return output as DeepMergeResult<Objects, {}, ArrayStrategy>
 }
 
 /**
@@ -215,9 +260,13 @@ export function deepMerge<const Objects extends readonly AnyRecord[]>(
  * @returns A new merged object.
  */
 export function deepMergeWithOptions<
+  const Options extends DeepMergeOptions,
   const Objects extends readonly AnyRecord[],
->(options: DeepMergeOptions, ...objects: Objects): DeepMergeResult<Objects> {
+>(
+  options: Options,
+  ...objects: Objects
+): DeepMergeResult<Objects, {}, ResolveDeepMergeArrayStrategy<Options>> {
   return mergeAll(objects, {
     arrayStrategy: options.arrayStrategy ?? 'replace',
-  })
+  }) as DeepMergeResult<Objects, {}, ResolveDeepMergeArrayStrategy<Options>>
 }

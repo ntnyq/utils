@@ -228,8 +228,8 @@ console.log(result) // => true
 ## isDeepEqual
 
 Checks whether two values are deeply equal. Supported collections and buffers
-are compared by value; opaque built-ins such as `Promise`, `WeakMap`, and
-`WeakSet` are equal only by identity.
+are compared by intrinsic value and attached own properties; opaque built-ins
+such as `Promise`, `WeakMap`, and `WeakSet` are equal only by identity.
 
 ### Parameters
 

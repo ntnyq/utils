@@ -208,8 +208,8 @@ Generates a random string using the provided characters.
 
 ### Parameters
 
-- **length**: Non-negative integer output length.
-- **chars**: Characters used to generate the output. Must be non-empty when
+- **length**: Non-negative integer output length measured in graphemes.
+- **chars**: Graphemes used to generate the output. Must be non-empty when
   `length` is greater than zero.
 
 ### Returns

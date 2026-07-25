@@ -31,19 +31,18 @@ export function omit<T extends object, K extends keyof T>(
 ): Omit<T, K> {
   const { omitUndefined = false } = options
   const result = Object.create(Object.getPrototypeOf(object)) as T
-  Object.defineProperties(result, Object.getOwnPropertyDescriptors(object))
+  const omittedKeys = new Set<PropertyKey>(keys)
 
-  omitInPlace(result, ...keys)
-
-  if (omitUndefined) {
-    for (const key of Reflect.ownKeys(result)) {
-      const descriptor = Object.getOwnPropertyDescriptor(result, key)
+  for (const key of Reflect.ownKeys(object)) {
+    if (!omittedKeys.has(key)) {
+      const descriptor = Object.getOwnPropertyDescriptor(object, key)
       if (
         descriptor &&
-        'value' in descriptor &&
-        isUndefined(descriptor.value)
+        (!omitUndefined ||
+          !('value' in descriptor) ||
+          !isUndefined(descriptor.value))
       ) {
-        Reflect.deleteProperty(result, key)
+        Object.defineProperty(result, key, descriptor)
       }
     }
   }

@@ -120,6 +120,13 @@ describe(omit, () => {
     expect(Reflect.ownKeys(result)).toStrictEqual(['visible'])
     expect(object[key]).toBeTruthy()
   })
+
+  it('should omit non-configurable properties from frozen inputs', () => {
+    const object = Object.freeze({ fixed: 1, visible: 2 })
+
+    expect(omit(object, ['fixed'])).toStrictEqual({ visible: 2 })
+    expect(omit(object, [], { omitUndefined: true })).toStrictEqual(object)
+  })
 })
 
 describe(omitInPlace, () => {
@@ -395,6 +402,14 @@ describe(cleanObject, () => {
     expect(result).not.toBe(obj)
     expect(obj).toStrictEqual({ a: 1, b: null, c: 3 })
   })
+
+  it('should clean frozen objects without mutating their descriptors', () => {
+    const obj = Object.freeze({ keep: 1, remove: null })
+    const result = cleanObject(obj)
+
+    expect(result).toStrictEqual({ keep: 1 })
+    expect(obj).toStrictEqual({ keep: 1, remove: null })
+  })
 })
 
 describe(cleanObjectInPlace, () => {
@@ -492,6 +507,21 @@ describe(sortObjectKeys, () => {
     expect(Reflect.ownKeys(result)).toStrictEqual(['a', 'z', symbol])
     expect(Object.getOwnPropertyDescriptor(result, 'a')?.get).toBe(getter)
     expect(result[symbol]).toBe(3)
+  })
+
+  it('should preserve circular and shared references when sorting deeply', () => {
+    const shared = { z: 1, a: 2 }
+    const obj: Record<string, unknown> = {
+      right: shared,
+      left: shared,
+    }
+    obj['self'] = obj
+
+    const result = sortObjectKeys(obj, { deep: true })
+
+    expect(result['self']).toBe(result)
+    expect(result['left']).toBe(result['right'])
+    expect(Object.keys(result['left'] as object)).toStrictEqual(['a', 'z'])
   })
 })
 
@@ -626,6 +656,36 @@ describe(cloneDeep, () => {
     expect(cloned.set).not.toBe(original.set)
   })
 
+  it('should clone built-in prototypes and attached descriptors', () => {
+    class ModelDate extends Date {}
+
+    const symbol = Symbol('metadata')
+    const original = new ModelDate(0) as ModelDate & {
+      metadata: { nested: boolean }
+      [symbol]: string
+    }
+    Object.defineProperty(original, 'metadata', {
+      configurable: false,
+      enumerable: false,
+      value: { nested: true },
+      writable: false,
+    })
+    original[symbol] = 'token'
+
+    const cloned = cloneDeep(original)
+
+    expect(cloned).toBeInstanceOf(ModelDate)
+    expect(cloned).not.toBe(original)
+    expect(cloned.metadata).toStrictEqual({ nested: true })
+    expect(cloned.metadata).not.toBe(original.metadata)
+    expect(cloned[symbol]).toBe('token')
+    expect(Object.getOwnPropertyDescriptor(cloned, 'metadata')).toMatchObject({
+      configurable: false,
+      enumerable: false,
+      writable: false,
+    })
+  })
+
   it('should clone SharedArrayBuffer values and backed views', () => {
     const buffer = new SharedArrayBuffer(3)
     const view = new Uint8Array(buffer)
@@ -639,6 +699,20 @@ describe(cloneDeep, () => {
     expect(clonedView).not.toBe(view)
     expect(clonedView.buffer).not.toBe(buffer)
     expect([...clonedView]).toStrictEqual([1, 2, 3])
+  })
+
+  it('should preserve cycles between views and attached buffer metadata', () => {
+    const buffer = new ArrayBuffer(3) as ArrayBuffer & {
+      view: Uint8Array
+    }
+    const view = new Uint8Array(buffer)
+    buffer.view = view
+
+    const cloned = cloneDeep(view)
+
+    expect(cloned).not.toBe(view)
+    expect(cloned.buffer).not.toBe(buffer)
+    expect((cloned.buffer as typeof buffer).view).toBe(cloned)
   })
 
   it('should preserve prototypes and property descriptors without invoking getters', () => {
@@ -783,6 +857,26 @@ describe(deepMerge, () => {
     expect(cyclic['self']).toBe(cyclic)
     expect(Object.hasOwn(merged, '__proto__')).toBeTruthy()
     expect(({} as { polluted?: boolean }).polluted).toBeUndefined()
+  })
+
+  it('should preserve references to earlier operands in the final graph', () => {
+    const first: Record<string, unknown> = {}
+    first['self'] = first
+
+    const result = deepMerge(first, { reference: first })
+
+    expect(result['self']).toBe(result)
+    expect(result['reference']).toBe(result)
+  })
+
+  it('should concatenate arrays cloned from frozen operands', () => {
+    const result = deepMergeWithOptions(
+      { arrayStrategy: 'concat' },
+      { list: Object.freeze([1]) },
+      { list: [2] },
+    )
+
+    expect(result.list).toStrictEqual([1, 2])
   })
 
   it('should not mutate source objects', () => {

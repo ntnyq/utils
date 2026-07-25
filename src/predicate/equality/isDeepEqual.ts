@@ -138,6 +138,31 @@ function equalSets(
   return true
 }
 
+function equalOwnProperties(
+  left: object,
+  right: object,
+  state: ComparisonState,
+): boolean {
+  const leftKeys = Reflect.ownKeys(left)
+  const rightKeys = Reflect.ownKeys(right)
+  if (
+    leftKeys.length !== rightKeys.length ||
+    leftKeys.some(key => !Object.hasOwn(right, key))
+  ) {
+    return false
+  }
+
+  return leftKeys.every(key => {
+    const leftDescriptor = Object.getOwnPropertyDescriptor(left, key)
+    const rightDescriptor = Object.getOwnPropertyDescriptor(right, key)
+    return (
+      leftDescriptor !== undefined &&
+      rightDescriptor !== undefined &&
+      equalDescriptors(leftDescriptor, rightDescriptor, state)
+    )
+  })
+}
+
 // oxlint-disable-next-line complexity
 function compare(
   left: unknown,
@@ -172,59 +197,60 @@ function compare(
   state.rightToLeft.set(right, left)
 
   if (left instanceof Date && right instanceof Date) {
-    return left.getTime() === right.getTime()
+    return (
+      left.getTime() === right.getTime() &&
+      equalOwnProperties(left, right, state)
+    )
   }
 
   if (left instanceof RegExp && right instanceof RegExp) {
     return (
       left.source === right.source &&
       left.flags === right.flags &&
-      left.lastIndex === right.lastIndex
+      left.lastIndex === right.lastIndex &&
+      equalOwnProperties(left, right, state)
     )
   }
 
   if (left instanceof Map && right instanceof Map) {
-    return equalMaps(left, right, state)
+    return (
+      equalMaps(left, right, state) && equalOwnProperties(left, right, state)
+    )
   }
 
   if (left instanceof Set && right instanceof Set) {
-    return equalSets(left, right, state)
+    return (
+      equalSets(left, right, state) && equalOwnProperties(left, right, state)
+    )
   }
 
   if (left instanceof ArrayBuffer && right instanceof ArrayBuffer) {
-    return equalBytes(new Uint8Array(left), new Uint8Array(right))
+    return (
+      equalBytes(new Uint8Array(left), new Uint8Array(right)) &&
+      equalOwnProperties(left, right, state)
+    )
   }
 
   if (isSharedArrayBuffer(left) && isSharedArrayBuffer(right)) {
-    return equalBytes(new Uint8Array(left), new Uint8Array(right))
+    return (
+      equalBytes(new Uint8Array(left), new Uint8Array(right)) &&
+      equalOwnProperties(left, right, state)
+    )
   }
 
   if (ArrayBuffer.isView(left) && ArrayBuffer.isView(right)) {
-    return left.constructor === right.constructor && equalBytes(left, right)
+    return (
+      left.constructor === right.constructor &&
+      equalBytes(left, right) &&
+      equalOwnProperties(left, right, state)
+    )
   }
 
   if (!isStructurallyComparable(left) || !isStructurallyComparable(right)) {
     return false
   }
 
-  const leftKeys = Reflect.ownKeys(left)
-  const rightKeys = Reflect.ownKeys(right)
-  if (
-    leftKeys.length !== rightKeys.length ||
-    leftKeys.some(key => !Object.hasOwn(right, key))
-  ) {
-    return false
-  }
-
-  return leftKeys.every(key => {
-    const leftDescriptor = Object.getOwnPropertyDescriptor(left, key)
-    const rightDescriptor = Object.getOwnPropertyDescriptor(right, key)
-    return (
-      leftDescriptor !== undefined &&
-      rightDescriptor !== undefined &&
-      equalDescriptors(leftDescriptor, rightDescriptor, state)
-    )
-  })
+  return equalOwnProperties(left, right, state)
 }
 
 /**

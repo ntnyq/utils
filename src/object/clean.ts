@@ -7,8 +7,18 @@ import {
   isUndefined,
   isZero,
 } from '../predicate'
-import { cloneDeep } from './cloneDeep'
+import { cloneDeepInternal } from './cloneDeepInternal'
 import { isPlainObject } from './isPlainObject'
+
+type CleanObjectValue<Value> = Value extends readonly unknown[]
+  ? Value
+  : Value extends object
+    ? CleanObjectResult<Value>
+    : Value
+
+export type CleanObjectResult<T extends object> = {
+  [Key in keyof T]?: CleanObjectValue<T[Key]>
+}
 
 export interface CleanObjectOptions {
   /**
@@ -137,13 +147,15 @@ function cleanRecordInPlace(
 export function cleanObject<T extends object>(
   obj?: T | undefined | null,
   options: CleanObjectOptions = {},
-): T {
+): CleanObjectResult<T> {
   if (!isRecord(obj)) {
-    return {} as T
+    return {} as CleanObjectResult<T>
   }
 
-  // oxlint-disable-next-line unicorn/prefer-structured-clone
-  return cleanObjectInPlace(cloneDeep(obj), options)
+  const cloned = cloneDeepInternal(obj, new WeakMap(), {
+    descriptorsConfigurable: true,
+  })
+  return cleanObjectInPlace(cloned, options)
 }
 
 /**
@@ -155,7 +167,7 @@ export function cleanObject<T extends object>(
 export function cleanObjectInPlace<T extends object>(
   obj?: T | undefined | null,
   options: CleanObjectOptions = {},
-): T {
+): CleanObjectResult<T> {
   const resolvedOptions: Required<CleanObjectOptions> = {
     cleanUndefined: true,
     cleanNull: true,
@@ -169,7 +181,7 @@ export function cleanObjectInPlace<T extends object>(
   }
 
   if (!isRecord(obj)) {
-    return {} as T
+    return {} as CleanObjectResult<T>
   }
 
   cleanRecordInPlace(
@@ -178,5 +190,5 @@ export function cleanObjectInPlace<T extends object>(
     new WeakSet(),
   )
 
-  return obj as T
+  return obj as CleanObjectResult<T>
 }

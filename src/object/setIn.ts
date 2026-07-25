@@ -1,5 +1,125 @@
 import type { PathInput, PathSegment } from './getIn'
 
+type DecimalDigit = '0' | '1' | '2' | '3' | '4' | '5' | '6' | '7' | '8' | '9'
+
+type IsDecimalDigits<Value extends string> = Value extends ''
+  ? false
+  : Value extends `${DecimalDigit}${infer Rest}`
+    ? Rest extends ''
+      ? true
+      : IsDecimalDigits<Rest>
+    : false
+
+type NormalizeStringSegment<Value extends string> =
+  IsDecimalDigits<Value> extends true
+    ? Value extends `${infer NumericValue extends number}`
+      ? NumericValue
+      : number
+    : Value
+
+type SplitStringPath<
+  Path extends string,
+  Separator extends string,
+  Segments extends readonly PathSegment[] = [],
+> = Path extends `${infer Head}${Separator}${infer Tail}`
+  ? SplitStringPath<
+      Tail,
+      Separator,
+      Head extends '' ? Segments : [...Segments, NormalizeStringSegment<Head>]
+    >
+  : Path extends ''
+    ? Segments
+    : [...Segments, NormalizeStringSegment<Path>]
+
+type PathValueAt<T, Key extends PathSegment> = Key extends keyof T
+  ? T[Key]
+  : Key extends number
+    ? T extends readonly (infer Item)[]
+      ? Item
+      : unknown
+    : unknown
+
+type SetArrayItem<
+  Items extends readonly unknown[],
+  Index extends number,
+  Value,
+> = number extends Items['length']
+  ? Items extends unknown[]
+    ? (Items[number] | Value)[]
+    : readonly (Items[number] | Value)[]
+  : {
+      [Key in keyof Items]: Key extends `${Index}` ? Value : Items[Key]
+    }
+
+type SetObjectProperty<
+  T,
+  Key extends PathSegment,
+  Value,
+> = T extends readonly unknown[]
+  ? Key extends number
+    ? SetArrayItem<T, Key, Value>
+    : T & { [Property in Key]: Value }
+  : T extends object
+    ? Simplify<Omit<T, Extract<keyof T, Key>> & { [Property in Key]: Value }>
+    : { [Property in Key]: Value }
+
+type Simplify<T> = { [Key in keyof T]: T[Key] }
+
+type SetPathValue<
+  T,
+  Path extends readonly PathSegment[],
+  Value,
+> = Path extends readonly [
+  infer Head extends PathSegment,
+  ...infer Tail extends readonly PathSegment[],
+]
+  ? SetObjectProperty<
+      T,
+      Head,
+      Tail extends readonly []
+        ? Value
+        : SetPathValue<PathValueAt<T, Head>, Tail, Value>
+    >
+  : T
+
+type ResolveSetInSeparator<Options extends SetInOptions> = Options extends {
+  separator: infer Separator
+}
+  ? Separator extends string
+    ? Separator
+    : '.'
+  : 'separator' extends keyof Options
+    ? string
+    : '.'
+
+export type SetInResult<
+  T extends object,
+  Path extends PathInput,
+  Value,
+  Separator extends string = '.',
+> = Path extends string
+  ? string extends Path
+    ? object
+    : string extends Separator
+      ? object
+      : Separator extends ''
+        ? object
+        : SetPathValue<T, SplitStringPath<Path, Separator>, Value>
+  : Path extends readonly PathSegment[]
+    ? number extends Path['length']
+      ? object
+      : SetPathValue<T, Path, Value>
+    : object
+
+type SetInReturn<
+  T extends object,
+  Path extends PathInput,
+  Value,
+  Options extends SetInOptions,
+> = Options extends { createIntermediate: false }
+  ? T | SetInResult<T, Path, Value, ResolveSetInSeparator<Options>>
+  : SetInResult<T, Path, Value, ResolveSetInSeparator<Options>>
+
 export interface SetInOptions {
   /**
    * String path separator.
@@ -90,12 +210,24 @@ function cloneContainer(
  * console.log(result.user.profile.name) // => 'Alice'
  * ```
  */
-export function setIn<T extends object, V>(
+export function setIn<
+  T extends object,
+  const Path extends PathInput,
+  Value,
+  const Options extends SetInOptions = {},
+>(
+  target: T,
+  path: Path,
+  value: Value,
+  options?: Options,
+): SetInReturn<T, Path, Value, Options>
+
+export function setIn<T extends object, Value>(
   target: T,
   path: PathInput,
-  value: V,
+  value: Value,
   options: SetInOptions = {},
-): T {
+): object {
   const { separator = '.', createIntermediate = true, mutate = false } = options
 
   const segments = normalizePath(path, separator)

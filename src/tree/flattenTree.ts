@@ -1,3 +1,4 @@
+import { traverseTree } from './traverseTree'
 import type { TreeTraversalContext } from './types'
 
 // Preserve the public interface while sharing traversal fields.
@@ -78,29 +79,20 @@ export function flattenTree<T extends Record<PropertyKey, any>>(
 
   const out: any[] = []
 
-  function walk(
-    nodes: readonly T[],
-    parent: T | null,
-    depth: number,
-    path: T[],
-  ) {
-    nodes.forEach((node, index) => {
-      const nextPath = [...path, node]
-
+  traverseTree(
+    roots,
+    context => {
       if (includeSelf) {
-        out.push(
-          map ? map({ node, parent, depth, index, path: [...nextPath] }) : node,
-        )
+        out.push(map ? map(context) : context.node)
       }
+      return 'continue'
+    },
+    {
+      childrenKey,
+      onCycle: 'throw',
+    },
+    () => new TypeError('Tree contains a circular reference'),
+  )
 
-      const children = node[childrenKey] as unknown
-
-      if (Array.isArray(children) && children.length > 0) {
-        walk(children as T[], node, depth + 1, nextPath)
-      }
-    })
-  }
-
-  walk(roots, null, 0, [])
   return out
 }

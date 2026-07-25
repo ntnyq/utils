@@ -1,6 +1,6 @@
 import { defineTreeChildren } from './defineTreeChildren'
 import type { TreePredicate } from './findTree'
-import { createTreeTraversalContext, resolveChildrenKey } from './internals'
+import { foldTree, TREE_FOLD_SKIP } from './traverseTree'
 import type { TreeTraversalOptions } from './types'
 
 export interface FilterTreeOptions<
@@ -15,6 +15,11 @@ export interface FilterTreeOptions<
    * @default false
    */
   includeDescendants?: boolean
+}
+
+interface FilterTreeState {
+  includeAll: boolean
+  isMatch: boolean
 }
 
 /**
@@ -47,62 +52,41 @@ export function filterTree<
   predicate: TreePredicate<Node>,
   options: FilterTreeOptions<Node, ChildrenKey> = {},
 ): Node[] {
-  const childrenKey = resolveChildrenKey(options.childrenKey)
+  const { childrenKey = 'children' as ChildrenKey } = options
   const { includeDescendants = false, onCycle = 'throw' } = options
-  const activeNodes = new Set<Node>()
+  const rootState: FilterTreeState = {
+    includeAll: false,
+    isMatch: false,
+  }
 
-  function visit(
-    nodes: readonly Node[],
-    parent: Node | null,
-    depth: number,
-    parentPath: readonly Node[],
-    includeAll: boolean,
-  ): Node[] {
-    const results: Node[] = []
-
-    nodes.forEach((node, index) => {
-      if (activeNodes.has(node)) {
-        if (onCycle === 'throw') {
-          throw new RangeError('Tree contains a circular child reference')
+  return foldTree(
+    roots,
+    {
+      enter: (context, parentState) => {
+        const isMatch = parentState.includeAll || predicate(context)
+        return {
+          includeAll: parentState.includeAll || (isMatch && includeDescendants),
+          isMatch,
         }
-        return
-      }
-
-      activeNodes.add(node)
-      try {
-        const path = [...parentPath, node]
-        const isMatch =
-          includeAll ||
-          predicate(
-            createTreeTraversalContext(node, parent, depth, index, path),
-          )
-        const sourceChildren = Reflect.get(node, childrenKey)
-        const filteredChildren = Array.isArray(sourceChildren)
-          ? visit(
-              sourceChildren as Node[],
-              node,
-              depth + 1,
-              path,
-              includeAll || (isMatch && includeDescendants),
-            )
-          : []
-
-        if (!isMatch && filteredChildren.length === 0) {
-          return
+      },
+      leave: (context, filteredChildren, state) => {
+        if (!state.isMatch && filteredChildren.length === 0) {
+          return TREE_FOLD_SKIP
         }
 
-        const clonedNode = { ...node }
+        const sourceChildren = Reflect.get(context.node, childrenKey)
+        const clonedNode = { ...context.node }
         if (Array.isArray(sourceChildren)) {
           defineTreeChildren(clonedNode, childrenKey, filteredChildren)
         }
-        results.push(clonedNode)
-      } finally {
-        activeNodes.delete(node)
-      }
-    })
-
-    return results
-  }
-
-  return visit(roots, null, 0, [], false)
+        return clonedNode
+      },
+    },
+    rootState,
+    {
+      childrenKey,
+      onCycle,
+    },
+    () => new RangeError('Tree contains a circular child reference'),
+  )
 }

@@ -1,8 +1,4 @@
-import {
-  createTreeTraversalContext,
-  getTreeChildren,
-  resolveChildrenKey,
-} from './internals'
+import { traverseTree } from './traverseTree'
 import type { TreeTraversalContext, TreeTraversalOptions } from './types'
 
 export type WalkTreeControl = 'continue' | 'skip' | 'stop' | undefined
@@ -46,68 +42,10 @@ export function walkTree<
   visitor: WalkTreeVisitor<Node>,
   options: TreeTraversalOptions<Node, ChildrenKey> = {},
 ): WalkTreeResult<Node> {
-  const childrenKey = resolveChildrenKey(options.childrenKey)
-  const { onCycle = 'throw' } = options
-  const ancestors = new Set<Node>()
-  let isStopped = false
-  let stoppedNode: Node | undefined
-  let visitedCount = 0
-
-  function visitNode(
-    node: Node,
-    index: number,
-    parent: Node | null,
-    depth: number,
-    parentPath: readonly Node[],
-  ): void {
-    if (ancestors.has(node)) {
-      if (onCycle === 'throw') {
-        throw new TypeError('Tree contains a circular reference')
-      }
-      return
-    }
-
-    const path = [...parentPath, node]
-    ancestors.add(node)
-    visitedCount++
-
-    try {
-      const control = visitor(
-        createTreeTraversalContext(node, parent, depth, index, path),
-      )
-      if (control === 'stop') {
-        isStopped = true
-        stoppedNode = node
-        return
-      }
-
-      if (control !== 'skip') {
-        visit(getTreeChildren(node, childrenKey), node, depth + 1, path)
-      }
-    } finally {
-      ancestors.delete(node)
-    }
-  }
-
-  function visit(
-    nodes: readonly Node[],
-    parent: Node | null,
-    depth: number,
-    parentPath: readonly Node[],
-  ): void {
-    for (const [index, node] of nodes.entries()) {
-      visitNode(node, index, parent, depth, parentPath)
-      if (isStopped) {
-        return
-      }
-    }
-  }
-
-  visit(roots, null, 0, [])
-
-  return {
-    isStopped,
-    stoppedNode,
-    visitedCount,
-  }
+  return traverseTree(
+    roots,
+    visitor,
+    options,
+    () => new TypeError('Tree contains a circular reference'),
+  )
 }

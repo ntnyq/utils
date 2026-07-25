@@ -3,6 +3,7 @@ import {
   filterTree,
   findTreeNode,
   findTreePath,
+  flattenTree,
   listToTree,
   mapTree,
   walkTree,
@@ -11,6 +12,31 @@ import {
 interface TreeNode {
   id: string
   children?: TreeNode[]
+}
+
+function createDeepTree(depth: number): TreeNode {
+  const root: TreeNode = { id: '0' }
+  let currentNode = root
+
+  for (let index = 1; index < depth; index++) {
+    const child: TreeNode = { id: String(index) }
+    currentNode.children = [child]
+    currentNode = child
+  }
+
+  return root
+}
+
+function countFirstChildChain(root: TreeNode | undefined): number {
+  let count = 0
+  let currentNode = root
+
+  while (currentNode) {
+    count++
+    currentNode = currentNode.children?.[0]
+  }
+
+  return count
 }
 
 describe(listToTree, () => {
@@ -113,6 +139,32 @@ describe(listToTree, () => {
       { id: 'a', parentId: 'b', children: [] },
       { id: 'b', parentId: 'a', children: [] },
     ])
+  })
+
+  it('should preserve item prototypes and property descriptors', () => {
+    class Item {
+      id: string
+      parentId: string | null
+
+      constructor(id: string, parentId: string | null) {
+        this.id = id
+        this.parentId = parentId
+      }
+    }
+
+    const item = new Item('root', null)
+    Object.defineProperty(item, 'hidden', {
+      enumerable: false,
+      value: 'value',
+    })
+
+    const root = listToTree([item])[0]!
+
+    expect(Object.getPrototypeOf(root)).toBe(Item.prototype)
+    expect(Object.getOwnPropertyDescriptor(root, 'hidden')).toMatchObject({
+      enumerable: false,
+      value: 'value',
+    })
   })
 })
 
@@ -308,6 +360,33 @@ describe(mapTree, () => {
     ])
     expect(tree[0]?.children?.[1]?.children?.[0]?.id).toBe('leaf')
   })
+
+  it('should skip circular child references when configured', () => {
+    const root: TreeNode = { id: 'root' }
+    const child: TreeNode = { id: 'child', children: [root] }
+    root.children = [child]
+
+    const result = mapTree(
+      [root],
+      ({ node, children }) => ({
+        children,
+        id: node.id,
+      }),
+      { onCycle: 'skip' },
+    )
+
+    expect(result).toStrictEqual([
+      {
+        children: [
+          {
+            children: [],
+            id: 'child',
+          },
+        ],
+        id: 'root',
+      },
+    ])
+  })
 })
 
 describe('filterTree extended options', () => {
@@ -373,5 +452,33 @@ describe('filterTree extended options', () => {
         children: [{ id: 'unmatched-descendant' }],
       },
     ])
+  })
+})
+
+describe('deep tree traversal', () => {
+  it('should traverse 10,000 levels without overflowing the call stack', () => {
+    const depth = 10_000
+    const root = createDeepTree(depth)
+
+    expect(walkTree([root], () => undefined).visitedCount).toBe(depth)
+    expect(flattenTree([root])).toHaveLength(depth)
+    expect(
+      findTreePath([root], ({ node }) => node.id === String(depth - 1)),
+    ).toHaveLength(depth)
+
+    const mapped = mapTree<TreeNode, TreeNode>(
+      [root],
+      ({ node, children }) => ({
+        children,
+        id: node.id,
+      }),
+    )
+    const filtered = filterTree(
+      [root],
+      ({ node }) => node.id === String(depth - 1),
+    )
+
+    expect(countFirstChildChain(mapped[0])).toBe(depth)
+    expect(countFirstChildChain(filtered[0])).toBe(depth)
   })
 })

@@ -221,8 +221,12 @@ true if `k` is a key of `T`
 ```ts
 import { isKeyOf } from '@ntnyq/utils'
 
-const result = isKeyOf({ a: 1, b: 2 }, 'a')
-console.log(result) // => true
+const object = { a: 1, b: 2 }
+const key = 'a' as string
+
+if (isKeyOf(object, key)) {
+  console.log(object[key]) // => 1
+}
 ```
 
 ---

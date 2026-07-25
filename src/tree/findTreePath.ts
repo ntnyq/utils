@@ -1,3 +1,4 @@
+import { traverseTree } from './traverseTree'
 import type { TreeTraversalContext, TreeTraversalOptions } from './types'
 
 export type FindTreePathOptions<
@@ -30,65 +31,20 @@ export function findTreePath<T extends object>(
   predicate: (context: TreeTraversalContext<T>) => boolean,
   options: FindTreePathOptions<T, keyof T> = {},
 ): T[] | undefined {
-  const { childrenKey = 'children' as keyof T, onCycle = 'throw' } = options
-  const activeNodes = new Set<T>()
+  let matchedPath: T[] | undefined
 
-  function visitNode(
-    node: T,
-    index: number,
-    parent: T | null,
-    depth: number,
-    parentPath: T[],
-  ): T[] | undefined {
-    if (activeNodes.has(node)) {
-      if (onCycle === 'throw') {
-        throw new RangeError('Tree contains a circular child reference')
+  traverseTree(
+    roots,
+    (context, resolvePath) => {
+      if (!predicate(context)) {
+        return 'continue'
       }
-      return
-    }
+      matchedPath = resolvePath()
+      return 'stop'
+    },
+    options,
+    () => new RangeError('Tree contains a circular child reference'),
+  )
 
-    activeNodes.add(node)
-    try {
-      const path = [...parentPath, node]
-      if (
-        predicate({
-          depth,
-          index,
-          node,
-          parent,
-          path: [...path],
-        })
-      ) {
-        return path
-      }
-
-      const children = Reflect.get(node, childrenKey)
-      let childPath: T[] | undefined
-      if (Array.isArray(children)) {
-        childPath = visit(children as T[], node, depth + 1, path)
-      }
-      return childPath
-    } finally {
-      activeNodes.delete(node)
-    }
-  }
-
-  function visit(
-    nodes: readonly T[],
-    parent: T | null,
-    depth: number,
-    parentPath: T[],
-  ): T[] | undefined {
-    let matchedPath: T[] | undefined
-    for (const [index, node] of nodes.entries()) {
-      matchedPath = visitNode(node, index, parent, depth, parentPath)
-      if (matchedPath) {
-        break
-      }
-    }
-
-    return matchedPath
-  }
-
-  return visit(roots, null, 0, [])
+  return matchedPath
 }

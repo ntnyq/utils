@@ -1,4 +1,5 @@
-import { defineTreeChildren } from './defineTreeChildren'
+import { buildFlatTree } from './buildFlatTree'
+import type { FlatTreeNode } from './buildFlatTree'
 
 export type TreeIdentifier = string | number | symbol
 export type BuildTreeOrphanStrategy = 'discard' | 'root' | 'throw'
@@ -12,9 +13,7 @@ type TreeIdentifierKeyOf<T> = {
 export type BuiltTreeNode<
   T,
   ChildrenKey extends PropertyKey = 'children',
-> = Omit<T, ChildrenKey> & {
-  [Key in ChildrenKey]: BuiltTreeNode<T, ChildrenKey>[]
-}
+> = FlatTreeNode<T, ChildrenKey>
 
 export interface BuildTreeOptions<
   T extends object,
@@ -56,20 +55,6 @@ export interface BuildTreeOptions<
   orphanStrategy?: BuildTreeOrphanStrategy
 }
 
-interface BuildTreeEntry<T, ChildrenKey extends PropertyKey> {
-  id: TreeIdentifier
-  parentId: TreeIdentifier | null | undefined
-  node: BuiltTreeNode<T, ChildrenKey>
-}
-
-function isTreeIdentifier(value: unknown): value is TreeIdentifier {
-  return (
-    typeof value === 'string' ||
-    typeof value === 'number' ||
-    typeof value === 'symbol'
-  )
-}
-
 function validateBuildTreeOptions<T extends object>(
   childrenKey: PropertyKey,
   idKey: TreeIdentifierKeyOf<T>,
@@ -89,111 +74,6 @@ function validateBuildTreeOptions<T extends object>(
   ) {
     throw new TypeError('Invalid orphan strategy')
   }
-}
-
-function createBuildTreeEntries<
-  T extends object,
-  ChildrenKey extends PropertyKey,
->(
-  nodes: readonly T[],
-  childrenKey: ChildrenKey,
-  idKey: TreeIdentifierKeyOf<T>,
-  parentIdKey: TreeIdentifierKeyOf<T>,
-): Map<TreeIdentifier, BuildTreeEntry<T, ChildrenKey>> {
-  const entries = new Map<TreeIdentifier, BuildTreeEntry<T, ChildrenKey>>()
-
-  for (const sourceNode of nodes) {
-    const id: unknown = Reflect.get(sourceNode, idKey)
-    const parentIdValue: unknown = Reflect.get(sourceNode, parentIdKey)
-
-    if (!isTreeIdentifier(id)) {
-      throw new TypeError('Node identifier must be a property key')
-    }
-    if (
-      parentIdValue !== null &&
-      parentIdValue !== undefined &&
-      !isTreeIdentifier(parentIdValue)
-    ) {
-      throw new TypeError('Parent identifier must be a property key or nullish')
-    }
-    if (entries.has(id)) {
-      throw new RangeError(`Duplicate tree identifier: ${String(id)}`)
-    }
-
-    const node = { ...sourceNode } as BuiltTreeNode<T, ChildrenKey>
-    defineTreeChildren(node, childrenKey, [])
-    entries.set(id, { id, node, parentId: parentIdValue })
-  }
-
-  return entries
-}
-
-function assertNoParentCycles<T, ChildrenKey extends PropertyKey>(
-  entries: ReadonlyMap<TreeIdentifier, BuildTreeEntry<T, ChildrenKey>>,
-  isRootParent: (parentId: TreeIdentifier | null | undefined) => boolean,
-): void {
-  const resolved = new Set<TreeIdentifier>()
-
-  for (const entry of entries.values()) {
-    const path = new Set<TreeIdentifier>()
-    let current: BuildTreeEntry<T, ChildrenKey> | undefined = entry
-
-    while (current && !resolved.has(current.id)) {
-      if (path.has(current.id)) {
-        throw new RangeError(
-          `Tree parent cycle detected at identifier: ${String(current.id)}`,
-        )
-      }
-
-      path.add(current.id)
-      if (isRootParent(current.parentId)) {
-        current = undefined
-      } else {
-        current =
-          current.parentId === null || current.parentId === undefined
-            ? undefined
-            : entries.get(current.parentId)
-      }
-    }
-
-    for (const id of path) {
-      resolved.add(id)
-    }
-  }
-}
-
-function linkBuildTreeEntries<T, ChildrenKey extends PropertyKey>(
-  entries: ReadonlyMap<TreeIdentifier, BuildTreeEntry<T, ChildrenKey>>,
-  childrenKey: ChildrenKey,
-  isRootParent: (parentId: TreeIdentifier | null | undefined) => boolean,
-  orphanStrategy: BuildTreeOrphanStrategy,
-): BuiltTreeNode<T, ChildrenKey>[] {
-  const roots: BuiltTreeNode<T, ChildrenKey>[] = []
-
-  for (const entry of entries.values()) {
-    const parent =
-      entry.parentId === null || entry.parentId === undefined
-        ? undefined
-        : entries.get(entry.parentId)
-
-    if (isRootParent(entry.parentId)) {
-      roots.push(entry.node)
-    } else if (parent) {
-      const children = Reflect.get(parent.node, childrenKey) as BuiltTreeNode<
-        T,
-        ChildrenKey
-      >[]
-      children.push(entry.node)
-    } else if (orphanStrategy === 'root') {
-      roots.push(entry.node)
-    } else if (orphanStrategy === 'throw') {
-      throw new RangeError(
-        `Missing parent for tree identifier: ${String(entry.id)}`,
-      )
-    }
-  }
-
-  return roots
 }
 
 /**
@@ -236,20 +116,15 @@ export function buildTree<
 
   const hasExplicitRoot = Object.hasOwn(options, 'rootParentId')
   const rootParentId = options.rootParentId
-  const entries = createBuildTreeEntries(nodes, childrenKey, idKey, parentIdKey)
 
-  const isRootParent = (
-    parentId: TreeIdentifier | null | undefined,
-  ): boolean =>
-    hasExplicitRoot
-      ? Object.is(parentId, rootParentId)
-      : parentId === null || parentId === undefined
-
-  assertNoParentCycles(entries, isRootParent)
-  return linkBuildTreeEntries(
-    entries,
+  return buildFlatTree(nodes, {
     childrenKey,
-    isRootParent,
+    cloneStrategy: 'enumerable',
+    cycleStrategy: 'throw',
+    errorMode: 'buildTree',
+    getId: node => Reflect.get(node, idKey),
+    getParentId: node => Reflect.get(node, parentIdKey),
     orphanStrategy,
-  )
+    rootParentIds: hasExplicitRoot ? [rootParentId] : [null, undefined],
+  })
 }

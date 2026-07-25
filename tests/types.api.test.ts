@@ -18,6 +18,7 @@ import type { RandomIntegerOptions } from '../src/number'
 import {
   cleanObjectInPlace,
   deepMerge,
+  isKeyOf,
   objectOmit,
   omit,
   omitInPlace,
@@ -83,6 +84,8 @@ describe('public API types', () => {
       { value: 'one', extra: true },
     )
     const original = toInteger('bad', { onError: 'returnOriginal' })
+    const object = { known: true }
+    const objectKey = 'known' as string
     const uniqueIds = uniqueBy([{ id: 1 }], item => item.id)
     const uniqueObjects = uniqueWith(
       [{ id: 1 }],
@@ -98,6 +101,11 @@ describe('public API types', () => {
     expectTypeOf(toInteger('1')).toEqualTypeOf<number>()
     expectTypeOf(uniqueIds).toEqualTypeOf<{ id: number }[]>()
     expectTypeOf(uniqueObjects).toEqualTypeOf<{ id: number }[]>()
+
+    if (isKeyOf(object, objectKey)) {
+      expectTypeOf(objectKey).toEqualTypeOf<'known'>()
+      expectTypeOf(object[objectKey]).toEqualTypeOf<boolean>()
+    }
   })
 
   it('should narrow collection and primitive checks', () => {

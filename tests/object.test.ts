@@ -1,6 +1,6 @@
 // oxlint-disable unicorn/prefer-structured-clone
 
-import { describe, expect, it } from 'vitest'
+import { describe, expect, expectTypeOf, it } from 'vitest'
 import {
   cleanObject,
   cleanObjectInPlace,
@@ -184,9 +184,8 @@ describe(isKeyOf, () => {
   it('should work with type narrowing', () => {
     const obj = { a: 1, b: 2 }
     const key = 'a' as string
-    if (isKeyOf(obj, key as keyof typeof obj)) {
-      // Type should be narrowed here
-      // @ts-expect-error types
+    if (isKeyOf(obj, key)) {
+      expectTypeOf(key).toEqualTypeOf<keyof typeof obj>()
       // eslint-disable-next-line vitest/no-conditional-expect
       expect(obj[key]).toBe(1)
     }
@@ -196,8 +195,8 @@ describe(isKeyOf, () => {
     const obj = Object.create({ inherited: 'value' })
     // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
     obj.own = 'value'
-    expect(isKeyOf(obj, 'own' as keyof typeof obj)).toBeTruthy()
-    expect(isKeyOf(obj, 'inherited' as keyof typeof obj)).toBeTruthy()
+    expect(isKeyOf(obj, 'own')).toBeTruthy()
+    expect(isKeyOf(obj, 'inherited')).toBeTruthy()
   })
 })
 

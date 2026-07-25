@@ -8,6 +8,9 @@ outline: deep
 Helpers for constructing, traversing, filtering, searching, mapping, and
 flattening tree-like data.
 
+Traversal helpers use an explicit internal stack, so traversal depth does not
+consume the JavaScript call stack.
+
 This section documents 8 exported methods from the tree module.
 
 ## Methods
@@ -147,6 +150,8 @@ const tree = [{ id: 1, children: [{ id: 2, children: [] }] }]
 const result = flattenTree(tree)
 console.log(result.map(item => item.id)) // => [1, 2]
 ```
+
+Circular child references throw a `TypeError`.
 
 ---
 

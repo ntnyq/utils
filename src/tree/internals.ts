@@ -1,5 +1,12 @@
-import type { TreeTraversalContext } from './types'
-
+/**
+ * Gets array-valued children from a tree node.
+ *
+ * Non-array child properties are treated as empty child collections.
+ *
+ * @param node - Tree node to inspect.
+ * @param childrenKey - Property containing child nodes.
+ * @returns Child nodes or an empty array.
+ */
 export function getTreeChildren<
   Node extends object,
   ChildrenKey extends keyof Node,
@@ -8,24 +15,14 @@ export function getTreeChildren<
   return Array.isArray(children) ? (children as readonly Node[]) : []
 }
 
+/**
+ * Resolves the property used to access child nodes.
+ *
+ * @param childrenKey - Explicit child property.
+ * @returns The explicit property or `children` by default.
+ */
 export function resolveChildrenKey<ChildrenKey extends PropertyKey>(
   childrenKey: ChildrenKey | undefined,
 ): ChildrenKey {
   return childrenKey ?? ('children' as ChildrenKey)
-}
-
-export function createTreeTraversalContext<Node>(
-  node: Node,
-  parent: Node | null,
-  depth: number,
-  index: number,
-  path: readonly Node[],
-): TreeTraversalContext<Node> {
-  return {
-    node,
-    parent,
-    depth,
-    index,
-    path: [...path],
-  }
 }

@@ -1,8 +1,4 @@
-import {
-  createTreeTraversalContext,
-  getTreeChildren,
-  resolveChildrenKey,
-} from './internals'
+import { foldTree } from './traverseTree'
 import type { TreeTraversalContext, TreeTraversalOptions } from './types'
 
 export interface MapTreeContext<
@@ -15,6 +11,25 @@ export interface MapTreeContext<
 export type TreeMapper<Node, Mapped> = (
   context: MapTreeContext<Node, Mapped>,
 ) => Mapped
+
+function createMapTreeContext<Node, Mapped>(
+  context: TreeTraversalContext<Node>,
+  children: Mapped[],
+): MapTreeContext<Node, Mapped> {
+  return {
+    children,
+    depth: context.depth,
+    index: context.index,
+    node: context.node,
+    parent: context.parent,
+    get path(): Node[] {
+      return context.path
+    },
+    set path(nextPath: Node[]) {
+      context.path = nextPath
+    },
+  }
+}
 
 /**
  * Maps a tree to an arbitrary output type without mutating source nodes.
@@ -47,48 +62,14 @@ export function mapTree<
   mapper: TreeMapper<Node, Mapped>,
   options: TreeTraversalOptions<Node, ChildrenKey> = {},
 ): Mapped[] {
-  const childrenKey = resolveChildrenKey(options.childrenKey)
-  const { onCycle = 'throw' } = options
-  const ancestors = new Set<Node>()
-
-  function mapNodes(
-    nodes: readonly Node[],
-    parent: Node | null,
-    depth: number,
-    parentPath: readonly Node[],
-  ): Mapped[] {
-    const mappedNodes: Mapped[] = []
-
-    for (const [index, node] of nodes.entries()) {
-      if (ancestors.has(node)) {
-        if (onCycle === 'throw') {
-          throw new TypeError('Tree contains a circular reference')
-        }
-      } else {
-        const path = [...parentPath, node]
-        ancestors.add(node)
-        try {
-          const children = mapNodes(
-            getTreeChildren(node, childrenKey),
-            node,
-            depth + 1,
-            path,
-          )
-
-          mappedNodes.push(
-            mapper({
-              ...createTreeTraversalContext(node, parent, depth, index, path),
-              children,
-            }),
-          )
-        } finally {
-          ancestors.delete(node)
-        }
-      }
-    }
-
-    return mappedNodes
-  }
-
-  return mapNodes(roots, null, 0, [])
+  return foldTree(
+    roots,
+    {
+      leave: (context, children) =>
+        mapper(createMapTreeContext(context, children)),
+    },
+    undefined,
+    options,
+    () => new TypeError('Tree contains a circular reference'),
+  )
 }

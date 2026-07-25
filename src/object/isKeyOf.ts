@@ -10,11 +10,18 @@
  * ```typescript
  * import { isKeyOf } from '@ntnyq/utils'
  *
- * const result = isKeyOf({ a: 1, b: 2 }, 'a')
- * console.log(result) // => true
+ * const object = { a: 1, b: 2 }
+ * const key = 'a' as string
+ *
+ * if (isKeyOf(object, key)) {
+ *   console.log(object[key]) // => 1
+ * }
  * ```
  *
  */
-export function isKeyOf<T extends object>(obj: T, k: keyof T): k is keyof T {
+export function isKeyOf<T extends object>(
+  obj: T,
+  k: PropertyKey,
+): k is keyof T {
   return k in obj
 }

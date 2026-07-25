@@ -426,4 +426,11 @@ describe(flattenTree, () => {
 
     expect(result).toStrictEqual([['root'], ['root', 'child']])
   })
+
+  it('should reject circular child references', () => {
+    const node: TreeNode = { id: 'loop' }
+    node.children = [node]
+
+    expect(() => flattenTree([node])).toThrow(TypeError)
+  })
 })

@@ -5,6 +5,7 @@ import {
   cleanObject,
   cleanObjectInPlace,
   cloneDeep,
+  deleteIn,
   deepMerge,
   deepMergeWithOptions,
   getIn,
@@ -920,6 +921,90 @@ describe(getIn, () => {
 
   it('should support custom separator', () => {
     expect(getIn(source, 'user/profile/name', { separator: '/' })).toBe('Alice')
+  })
+})
+
+describe(deleteIn, () => {
+  it('should delete a nested property without mutating the source', () => {
+    const source = {
+      settings: { theme: 'dark' },
+      user: { name: 'Alice', role: 'admin' },
+    }
+    const result = deleteIn(source, 'user.role')
+
+    expect(result).toStrictEqual({
+      settings: { theme: 'dark' },
+      user: { name: 'Alice' },
+    })
+    expect(source.user).toStrictEqual({ name: 'Alice', role: 'admin' })
+    expect(result).not.toBe(source)
+    expect(result.settings).toBe(source.settings)
+  })
+
+  it('should mutate the source when requested', () => {
+    const source = { user: { name: 'Alice', role: 'admin' } }
+    const result = deleteIn(source, 'user.role', { mutate: true })
+
+    expect(result).toBe(source)
+    expect(source).toStrictEqual({ user: { name: 'Alice' } })
+  })
+
+  it('should support path arrays, symbols, and custom separators', () => {
+    const secret = Symbol('secret')
+    const source = {
+      user: {
+        profile: {
+          [secret]: true,
+          name: 'Alice',
+          role: 'admin',
+        },
+      },
+    }
+
+    expect(deleteIn(source, ['user', 'profile', secret])).toStrictEqual({
+      user: {
+        profile: {
+          name: 'Alice',
+          role: 'admin',
+        },
+      },
+    })
+    expect(
+      deleteIn(source, 'user/profile/role', { separator: '/' }),
+    ).toStrictEqual({
+      user: {
+        profile: {
+          [secret]: true,
+          name: 'Alice',
+        },
+      },
+    })
+  })
+
+  it('should preserve array length when deleting an index', () => {
+    const source = { values: ['a', 'b', 'c'] }
+    const result = deleteIn(source, ['values', 1])
+
+    expect(result.values).toHaveLength(3)
+    expect(Object.hasOwn(result.values, 1)).toBeFalsy()
+    expect(source.values).toStrictEqual(['a', 'b', 'c'])
+  })
+
+  it('should return the source when the path is absent or empty', () => {
+    const source = { user: { name: 'Alice' } }
+
+    expect(deleteIn(source, 'user.role')).toBe(source)
+    expect(deleteIn(source, 'user.name.first')).toBe(source)
+    expect(deleteIn(source, '')).toBe(source)
+  })
+
+  it('should reject prototype-mutating paths', () => {
+    expect(() => deleteIn({}, '__proto__.polluted')).toThrow(TypeError)
+    expect(() =>
+      deleteIn({}, ['constructor', 'prototype', 'polluted'], {
+        mutate: true,
+      }),
+    ).toThrow(TypeError)
   })
 })
 

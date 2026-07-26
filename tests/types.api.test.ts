@@ -18,6 +18,7 @@ import type { RandomIntegerOptions } from '../src/number'
 import {
   cleanObject,
   cleanObjectInPlace,
+  deleteIn,
   deepMerge,
   deepMergeWithOptions,
   isKeyOf,
@@ -28,6 +29,7 @@ import {
   sortObjectKeys,
 } from '../src/object'
 import type {
+  DeleteInOptions,
   ObjectOmitOptions,
   SetInOptions,
   SortObjectKeysOptions,
@@ -204,6 +206,26 @@ describe('public API types', () => {
       'one',
     )
     const created = setIn({ user: {} }, 'user.profile.name', 'Alice')
+    const deleted = deleteIn(
+      { user: { name: 'Alice', role: 'admin' }, version: 1 },
+      'user.role',
+    )
+    const deletedWithTuple = deleteIn({ users: [{ id: 1, name: 'Alice' }] }, [
+      'users',
+      0,
+      'name',
+    ] as const)
+    const deletedWithCustomSeparator = deleteIn(
+      { user: { name: 'Alice', role: 'admin' } },
+      'user/role',
+      { separator: '/' },
+    )
+    const dynamicDeleteOptions: DeleteInOptions = { separator: '/' }
+    const dynamicallyDeleted = deleteIn(
+      { user: { name: 'Alice', role: 'admin' } },
+      'user/role',
+      dynamicDeleteOptions,
+    )
     const customSeparator = setIn({ user: {} }, 'user/profile/name', 'Alice', {
       separator: '/',
     })
@@ -244,6 +266,23 @@ describe('public API types', () => {
         }
       }
     }>()
+    expectTypeOf(deleted).toEqualTypeOf<{
+      user: {
+        name: string
+      }
+      version: number
+    }>()
+    expectTypeOf(deletedWithTuple).toEqualTypeOf<{
+      users: {
+        id: number
+      }[]
+    }>()
+    expectTypeOf(deletedWithCustomSeparator).toEqualTypeOf<{
+      user: {
+        name: string
+      }
+    }>()
+    expectTypeOf(dynamicallyDeleted).toEqualTypeOf<object>()
     expectTypeOf(customSeparator).toEqualTypeOf<{
       user: {
         profile: {
@@ -261,6 +300,7 @@ describe('public API types', () => {
     }
 
     expectTypeOf<CalculateNGramSimilarityOptions>().toBeObject()
+    expectTypeOf<DeleteInOptions>().toBeObject()
     expectTypeOf<FlattenTreeContext<TreeNode>>().toBeObject()
     expectTypeOf<FlattenTreeOptions<TreeNode, 'children'>>().toBeObject()
     expectTypeOf<LoadImageDimensionsOptions>().toBeObject()

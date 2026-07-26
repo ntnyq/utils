@@ -20,7 +20,7 @@ glance.
 | [Logging](/api/logging)     |       1 | Controlled warning output.                                     |
 | [Module](/api/module)       |       1 | Module interop.                                                |
 | [Number](/api/number)       |       8 | Range, rounding, coercion, and Chinese numeral helpers.        |
-| [Object](/api/object)       |      15 | Object selection, paths, cloning, merging, and cleanup.        |
+| [Object](/api/object)       |      16 | Object selection, paths, cloning, merging, and cleanup.        |
 | [Path](/api/path)           |       3 | Pure path-string and extension helpers.                        |
 | [Predicate](/api/predicate) |      50 | Runtime checks grouped by semantic concern.                    |
 | [Proxy](/api/proxy)         |       1 | Proxy-based object overlays.                                   |

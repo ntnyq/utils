@@ -7,7 +7,7 @@ outline: deep
 
 Utilities for cloning, sorting, picking, omitting, and cleaning object values.
 
-This section documents 15 exported methods from the object module.
+This section documents 16 exported methods from the object module.
 
 ## Methods
 
@@ -16,6 +16,7 @@ This section documents 15 exported methods from the object module.
 - [cloneDeep](#clonedeep)
 - [deepMerge](#deepmerge)
 - [deepMergeWithOptions](#deepmergewithoptions)
+- [deleteIn](#deletein)
 - [getIn](#getin)
 - [hasOwn](#hasown)
 - [isKeyOf](#iskeyof)
@@ -155,6 +156,27 @@ const result = deepMergeWithOptions(
   { tags: ['feature'] },
 )
 console.log(result.tags) // => ['base', 'feature']
+```
+
+---
+
+## deleteIn
+
+Deletes a nested own property by a dot path or path segments. The default
+immutable mode clones only containers along the path; `{ mutate: true }`
+updates and returns the source object. Missing paths return the original object.
+
+Deleting an array index preserves its length and leaves an empty slot, matching
+JavaScript property deletion semantics.
+
+```ts
+import { deleteIn } from '@ntnyq/utils'
+
+const source = { user: { name: 'Alice', role: 'admin' } }
+const result = deleteIn(source, 'user.role')
+
+console.log(result) // => { user: { name: 'Alice' } }
+console.log(source) // => { user: { name: 'Alice', role: 'admin' } }
 ```
 
 ---

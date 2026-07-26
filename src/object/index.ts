@@ -6,6 +6,7 @@
 export * from './omit'
 export * from './pick'
 export * from './clean'
+export * from './deleteIn'
 export * from './getIn'
 export * from './setIn'
 export * from './hasOwn'

@@ -1,6 +1,6 @@
 // oxlint-disable unicorn/prefer-structured-clone
 
-import { describe, expect, expectTypeOf, it } from 'vitest'
+import { describe, expect, expectTypeOf, it, vi } from 'vitest'
 import {
   cleanObject,
   cleanObjectInPlace,
@@ -12,6 +12,7 @@ import {
   hasOwn,
   isKeyOf,
   isPlainObject,
+  mapValues,
   omit,
   omitInPlace,
   setIn,
@@ -60,6 +61,73 @@ describe(pick, () => {
       Object.getOwnPropertyDescriptor(result, '__proto__')?.value,
     ).toStrictEqual({ polluted: true })
     expect((result as { polluted?: boolean }).polluted).toBeUndefined()
+  })
+})
+
+describe(mapValues, () => {
+  it('should map own enumerable values without mutating the source', () => {
+    const source = { first: 1, second: 2 }
+    const mapper = vi.fn(
+      (value: number, key: 'first' | 'second', object: typeof source) =>
+        `${key}:${value}:${object === source}`,
+    )
+
+    expect(mapValues(source, mapper)).toStrictEqual({
+      first: 'first:1:true',
+      second: 'second:2:true',
+    })
+    expect(source).toStrictEqual({ first: 1, second: 2 })
+    expect(mapper).toHaveBeenCalledTimes(2)
+  })
+
+  it('should support symbol keys', () => {
+    const symbol = Symbol('value')
+    const result = mapValues({ [symbol]: 2, visible: 1 }, value => value * 2)
+
+    expect(result).toStrictEqual({
+      [symbol]: 4,
+      visible: 2,
+    })
+  })
+
+  it('should ignore inherited and non-enumerable properties', () => {
+    const source = Object.create({ inherited: 1 }) as {
+      hidden: number
+      visible: number
+    }
+    Object.defineProperties(source, {
+      hidden: {
+        enumerable: false,
+        value: 2,
+      },
+      visible: {
+        enumerable: true,
+        value: 3,
+      },
+    })
+
+    expect(mapValues(source, value => value * 2)).toStrictEqual({
+      visible: 6,
+    })
+  })
+
+  it('should create a safe own property for __proto__', () => {
+    const source = JSON.parse('{"__proto__":{"polluted":true}}') as Record<
+      string,
+      { polluted: boolean }
+    >
+    const result = mapValues(source, value => value.polluted)
+
+    expect(Object.hasOwn(result, '__proto__')).toBeTruthy()
+    expect(Object.getPrototypeOf(result)).toBe(Object.prototype)
+    expect(
+      Object.getOwnPropertyDescriptor(result, '__proto__')?.value,
+    ).toBeTruthy()
+    expect((result as { polluted?: boolean }).polluted).toBeUndefined()
+  })
+
+  it('should map an empty object', () => {
+    expect(mapValues({}, () => true)).toStrictEqual({})
   })
 })
 

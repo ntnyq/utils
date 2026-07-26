@@ -22,6 +22,7 @@ import {
   deepMerge,
   deepMergeWithOptions,
   isKeyOf,
+  mapValues,
   objectOmit,
   omit,
   omitInPlace,
@@ -31,6 +32,8 @@ import {
 import type {
   DeleteInOptions,
   ObjectOmitOptions,
+  MapValuesMapper,
+  MapValuesResult,
   SetInOptions,
   SortObjectKeysOptions,
 } from '../src/object'
@@ -241,6 +244,18 @@ describe('public API types', () => {
       { list: [1] as const },
       { list: [2] as const },
     )
+    const mappedValues = mapValues(
+      { count: 1, label: 'value' } as const,
+      (value, key) => {
+        expectTypeOf(value).toEqualTypeOf<1 | 'value'>()
+        expectTypeOf(key).toEqualTypeOf<'count' | 'label'>()
+        return String(value)
+      },
+    )
+    const mappedOptionalValues = mapValues(
+      {} as { optional?: number; readonly required: string },
+      Boolean,
+    )
 
     expectTypeOf(cleaned).toEqualTypeOf<{
       count?: number
@@ -292,6 +307,14 @@ describe('public API types', () => {
     }>()
     expectTypeOf(dynamicallySeparated).toEqualTypeOf<object>()
     expectTypeOf(concatenated.list).toEqualTypeOf<[1, 2]>()
+    expectTypeOf(mappedValues).toEqualTypeOf<{
+      readonly count: string
+      readonly label: string
+    }>()
+    expectTypeOf(mappedOptionalValues).toEqualTypeOf<{
+      optional?: boolean
+      readonly required: boolean
+    }>()
   })
 
   it('should export public option types and renamed utilities', () => {
@@ -304,6 +327,10 @@ describe('public API types', () => {
     expectTypeOf<FlattenTreeContext<TreeNode>>().toBeObject()
     expectTypeOf<FlattenTreeOptions<TreeNode, 'children'>>().toBeObject()
     expectTypeOf<LoadImageDimensionsOptions>().toBeObject()
+    expectTypeOf<MapValuesMapper<{ count: number }, string>>().toBeFunction()
+    expectTypeOf<MapValuesResult<{ count: number }, string>>().toEqualTypeOf<{
+      count: string
+    }>()
     expectTypeOf<OpenExternalURLOptions>().toBeObject()
     expectTypeOf<RandomIntegerOptions>().toBeObject()
     expectTypeOf<ScrollElementIntoViewOptions>().toBeObject()

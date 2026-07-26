@@ -7,7 +7,7 @@ outline: deep
 
 Utilities for cloning, sorting, picking, omitting, and cleaning object values.
 
-This section documents 16 exported methods from the object module.
+This section documents 17 exported methods from the object module.
 
 ## Methods
 
@@ -21,6 +21,7 @@ This section documents 16 exported methods from the object module.
 - [hasOwn](#hasown)
 - [isKeyOf](#iskeyof)
 - [isPlainObject](#isplainobject)
+- [mapValues](#mapvalues)
 - [objectOmit](#objectomit)
 - [omit](#omit)
 - [omitInPlace](#omitinplace)
@@ -277,6 +278,21 @@ import { isPlainObject } from '@ntnyq/utils'
 
 const result = isPlainObject({ a: 1 })
 console.log(result) // => true
+```
+
+---
+
+## mapValues
+
+Maps an object's own enumerable values into a new object while retaining its
+string and symbol key types. The mapper receives the value, key, and original
+object; inherited and non-enumerable properties are ignored.
+
+```ts
+import { mapValues } from '@ntnyq/utils'
+
+const result = mapValues({ first: 1, second: 2 }, value => value * 2)
+console.log(result) // => { first: 2, second: 4 }
 ```
 
 ---

@@ -5,13 +5,38 @@ outline: deep
 
 # JSON Utilities
 
-Helpers for defensive JSON serialization.
+Helpers for defensive JSON parsing and serialization.
 
-This section documents 1 exported method from the JSON module.
+This section documents 2 exported methods from the JSON module.
 
 ## Methods
 
+- [safeParse](#safeparse)
 - [safeStringify](#safestringify)
+
+---
+
+## safeParse
+
+Parses JSON without throwing for malformed input or reviver failures. The
+returned discriminated union keeps successful JSON values separate from parse
+errors without relying on a potentially ambiguous fallback.
+
+```ts
+import { safeParse } from '@ntnyq/utils'
+
+const result = safeParse('{"name":"Alice"}')
+
+if (result.success) {
+  console.log(result.value)
+} else {
+  console.error(result.error)
+}
+```
+
+Without a reviver, successful values are typed as `JsonValue`. Supplying a
+reviver changes the result value to `unknown` because a reviver may produce any
+JavaScript value.
 
 ---
 

@@ -5,6 +5,7 @@ import {
   listToTree,
   mapTree,
   moveArrayItem,
+  safeParse,
   safeStringify,
   validateFile,
   walkTree,
@@ -14,6 +15,9 @@ import type {
   ListToTreeNode,
   ListToTreeOptions,
   MapTreeContext,
+  JsonValue,
+  SafeParseOptions,
+  SafeParseResult,
   SafeStringifyOptions,
   TreeTraversalOptions,
   ValidateFileOptions,
@@ -94,6 +98,14 @@ describe('general data utility public API types', () => {
   })
 
   it('should expose serialization and file validation contracts', () => {
+    const parsed = safeParse('{"value":1}')
+    const revived = safeParse('{"value":1}', {
+      reviver: (_key, value) => value,
+    })
+
+    expectTypeOf(parsed).toEqualTypeOf<SafeParseResult<JsonValue>>()
+    expectTypeOf(revived).toEqualTypeOf<SafeParseResult<unknown>>()
+    expectTypeOf<SafeParseOptions>().toBeObject()
     expectTypeOf(safeStringify({ value: 1n })).toEqualTypeOf<string>()
     expectTypeOf<SafeStringifyOptions>().toBeObject()
     expectTypeOf<ValidateFileOptions<File, 'blocked-content'>>().toBeObject()

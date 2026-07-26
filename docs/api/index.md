@@ -16,7 +16,7 @@ glance.
 | [Color](/api/color)         |       4 | Color manipulation and random color generation.                |
 | [Function](/api/function)   |       8 | Composition, memoization, throttling, and invocation control.  |
 | [HTML](/api/html)           |       2 | HTML text escaping and unescaping.                             |
-| [JSON](/api/json)           |       1 | Defensive JSON serialization.                                  |
+| [JSON](/api/json)           |       2 | Defensive JSON parsing and serialization.                      |
 | [Logging](/api/logging)     |       1 | Controlled warning output.                                     |
 | [Module](/api/module)       |       1 | Module interop.                                                |
 | [Number](/api/number)       |       8 | Range, rounding, coercion, and Chinese numeral helpers.        |

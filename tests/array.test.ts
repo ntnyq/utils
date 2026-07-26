@@ -137,7 +137,11 @@ describe(toArray, () => {
   })
 
   it('should keep arrays as-is', () => {
-    expect(toArray([1, 2, 3])).toStrictEqual([1, 2, 3])
+    const mutable = [1, 2, 3]
+    const readonly = Object.freeze([1, 2, 3] as const)
+
+    expect(toArray(mutable)).toBe(mutable)
+    expect(toArray(readonly)).toBe(readonly)
     expect(toArray([])).toStrictEqual([])
   })
 

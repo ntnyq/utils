@@ -6,9 +6,11 @@ import {
   removeArrayItem,
   removeArrayItemInPlace,
   shuffleInPlace,
+  toArray,
   uniqueBy,
   uniqueWith,
 } from '../src/array'
+import type { ToArrayResult } from '../src/array'
 import {
   digitsToChinese,
   randomInteger,
@@ -119,6 +121,26 @@ describe('public API types', () => {
       expectTypeOf(objectKey).toEqualTypeOf<'known'>()
       expectTypeOf(object[objectKey]).toEqualTypeOf<boolean>()
     }
+  })
+
+  it('should preserve mutable and readonly array types in toArray', () => {
+    const mutable = [1, 2]
+    const readonlyTuple = [1, 2] as const
+    const readonlyArray: readonly number[] = [1, 2]
+    const scalar = 'value' as string
+    const arrayOrScalar = scalar as string | readonly string[]
+
+    expectTypeOf(toArray(mutable)).toEqualTypeOf<number[]>()
+    expectTypeOf(toArray(readonlyTuple)).toEqualTypeOf<readonly [1, 2]>()
+    expectTypeOf(toArray(readonlyArray)).toEqualTypeOf<readonly number[]>()
+    expectTypeOf(toArray(scalar)).toEqualTypeOf<string[]>()
+    expectTypeOf(toArray()).toEqualTypeOf<[]>()
+    expectTypeOf(toArray(arrayOrScalar)).toEqualTypeOf<
+      string[] | readonly string[]
+    >()
+    expectTypeOf<
+      ToArrayResult<null | readonly [1, 2] | string>
+    >().toEqualTypeOf<[] | readonly [1, 2] | string[]>()
   })
 
   it('should narrow collection and primitive checks', () => {

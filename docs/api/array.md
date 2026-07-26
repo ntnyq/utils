@@ -461,7 +461,9 @@ shuffleInPlace(values)
 
 ## toArray
 
-Converts a value to an array.
+Converts a value to an array. Existing mutable and readonly arrays are returned
+by reference with their input type preserved. Nullish values become an empty
+array, while other values are wrapped in a new mutable array.
 
 ### Parameters
 
@@ -478,6 +480,9 @@ import { toArray } from '@ntnyq/utils'
 
 const result = toArray('hello')
 console.log(result) // => ['hello']
+
+const values = [1, 2] as const
+const preserved = toArray(values) // readonly [1, 2]
 ```
 
 ---

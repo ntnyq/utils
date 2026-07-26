@@ -34,5 +34,5 @@ export function flattenArrayable<T>(array?: Nullable<Arrayable<T | T[]>>): T[] {
  *
  */
 export function mergeArrayable<T>(...args: Nullable<Arrayable<T>>[]): T[] {
-  return args.flatMap(i => toArray(i))
+  return args.flatMap(item => toArray(item) as T[])
 }

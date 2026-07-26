@@ -1,6 +1,7 @@
 import { describe, expectTypeOf, it } from 'vitest'
 import {
   filterFalsy,
+  differenceBy,
   groupBy,
   removeArrayItem,
   removeArrayItemInPlace,
@@ -181,6 +182,24 @@ describe('public API types', () => {
     expectTypeOf(grouped).toMatchTypeOf<
       Partial<Record<'a' | 'b', { kind: 'a' | 'b'; value: number }[]>>
     >()
+  })
+
+  it('should preserve source item types in selected array differences', () => {
+    interface User {
+      id: number
+      name: string
+    }
+
+    const source: User[] = [
+      { id: 1, name: 'Alice' },
+      { id: 2, name: 'Bob' },
+    ]
+    const result = differenceBy(source, [{ id: 2, name: 'Robert' }], item => {
+      expectTypeOf(item).toEqualTypeOf<User>()
+      return item.id
+    })
+
+    expectTypeOf(result).toEqualTypeOf<User[]>()
   })
 
   it('should fold deep merge result types from left to right', () => {

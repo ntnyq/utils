@@ -7,12 +7,13 @@ outline: deep
 
 Helpers for chunking, grouping, normalizing, comparing, and transforming arrays.
 
-This section documents 22 exported methods from the array module.
+This section documents 23 exported methods from the array module.
 
 ## Methods
 
 - [at](#at)
 - [chunk](#chunk)
+- [differenceBy](#differenceby)
 - [filterFalsy](#filterfalsy)
 - [flattenArrayable](#flattenarrayable)
 - [groupBy](#groupby)
@@ -80,6 +81,26 @@ import { chunk } from '@ntnyq/utils'
 
 const result = chunk([1, 2, 3, 4], 2)
 console.log(result) // => [[1, 2], [3, 4]]
+```
+
+---
+
+## differenceBy
+
+Returns source items whose selected keys do not appear in the excluded array.
+It preserves source order and non-excluded duplicates, and compares keys with
+`Set` SameValueZero semantics.
+
+```ts
+import { differenceBy } from '@ntnyq/utils'
+
+const result = differenceBy(
+  [{ id: 1 }, { id: 2 }, { id: 3 }],
+  [{ id: 2 }],
+  item => item.id,
+)
+
+console.log(result) // => [{ id: 1 }, { id: 3 }]
 ```
 
 ---

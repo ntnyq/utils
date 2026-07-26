@@ -1,7 +1,8 @@
-import { describe, expect, it } from 'vitest'
+import { describe, expect, it, vi } from 'vitest'
 import {
   at,
   chunk,
+  differenceBy,
   filterFalsy,
   flattenArrayable,
   groupBy,
@@ -62,6 +63,66 @@ describe(moveArrayItem, () => {
     expect(() => moveArrayItem([1, 2], 0, -3)).toThrow(RangeError)
     expect(() => moveArrayItem([1, 2], 0.5, 1)).toThrow(RangeError)
     expect(() => moveArrayItem([1, 2], 0, Number.NaN)).toThrow(RangeError)
+  })
+})
+
+describe(differenceBy, () => {
+  it('should exclude objects by their selected keys', () => {
+    const source = [
+      { id: 1, name: 'Alice' },
+      { id: 2, name: 'Bob' },
+      { id: 3, name: 'Carol' },
+    ]
+    const excluded = [{ id: 2, name: 'Robert' }]
+
+    expect(differenceBy(source, excluded, item => item.id)).toStrictEqual([
+      { id: 1, name: 'Alice' },
+      { id: 3, name: 'Carol' },
+    ])
+    expect(source).toHaveLength(3)
+    expect(excluded).toHaveLength(1)
+  })
+
+  it('should preserve source order and non-excluded duplicates', () => {
+    expect(
+      differenceBy(
+        ['Apple', 'banana', 'APPLE', 'cherry', 'Apple'],
+        ['BANANA'],
+        item => item.toLowerCase(),
+      ),
+    ).toStrictEqual(['Apple', 'APPLE', 'cherry', 'Apple'])
+  })
+
+  it('should pass each item index and owning array to the selector', () => {
+    const source = ['keep', 'remove']
+    const excluded = ['remove']
+    const calls: [string, number, readonly string[]][] = []
+
+    const result = differenceBy(source, excluded, (item, index, array) => {
+      calls.push([item, index, array])
+      return item
+    })
+
+    expect(result).toStrictEqual(['keep'])
+    expect(calls).toStrictEqual([
+      ['remove', 0, excluded],
+      ['keep', 0, source],
+      ['remove', 1, source],
+    ])
+  })
+
+  it('should use SameValueZero equality for selected keys', () => {
+    expect(
+      differenceBy([Number.NaN, 1, -0, 2], [Number.NaN, 0], value => value),
+    ).toStrictEqual([1, 2])
+  })
+
+  it('should handle empty arrays', () => {
+    const selector = vi.fn((value: number) => value)
+
+    expect(differenceBy([], [1], selector)).toStrictEqual([])
+    expect(differenceBy([1, 2], [], selector)).toStrictEqual([1, 2])
+    expect(differenceBy([], [], selector)).toStrictEqual([])
   })
 })
 

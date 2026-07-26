@@ -6,6 +6,7 @@ import {
   keyBy,
   mapAsync,
   orderBy,
+  retry,
 } from '../src'
 import type {
   BuildTreeOptions,
@@ -17,6 +18,11 @@ import type {
   OrderByOptions,
   OrderBySelector,
   OrderByValue,
+  RetryBackoff,
+  RetryContext,
+  RetryOperation,
+  RetryOptions,
+  RetryPredicate,
   TreeTraversalContext,
 } from '../src'
 
@@ -46,6 +52,7 @@ describe('admin utility public API types', () => {
     )
     const ordered = orderBy(tree, 'id')
     const mapped = mapAsync([1, 2], String)
+    const retried = retry(({ attempt }) => String(attempt))
 
     expectTypeOf(built).toEqualTypeOf<BuiltTreeNode<FlatNode>[]>()
     expectTypeOf(filtered).toEqualTypeOf<TreeNode[]>()
@@ -55,6 +62,7 @@ describe('admin utility public API types', () => {
     >()
     expectTypeOf(ordered).toEqualTypeOf<TreeNode[]>()
     expectTypeOf(mapped).toEqualTypeOf<Promise<string[]>>()
+    expectTypeOf(retried).toEqualTypeOf<Promise<string>>()
   })
 
   it('should export public functions and supporting types', () => {
@@ -72,12 +80,18 @@ describe('admin utility public API types', () => {
       'id' | ((item: { id: number }) => OrderByValue)
     >()
     expectTypeOf<TreeTraversalContext<TreeNode>>().toBeObject()
+    expectTypeOf<RetryBackoff>().toBeFunction()
+    expectTypeOf<RetryContext>().toBeObject()
+    expectTypeOf<RetryOperation<string>>().toBeFunction()
+    expectTypeOf<RetryOptions>().toBeObject()
+    expectTypeOf<RetryPredicate>().toBeFunction()
     expectTypeOf(buildTree).toBeFunction()
     expectTypeOf(filterTree).toBeFunction()
     expectTypeOf(findTreePath).toBeFunction()
     expectTypeOf(keyBy).toBeFunction()
     expectTypeOf(mapAsync).toBeFunction()
     expectTypeOf(orderBy).toBeFunction()
+    expectTypeOf(retry).toBeFunction()
   })
 
   it('should reject non-identifier build keys and non-comparable sort keys', () => {

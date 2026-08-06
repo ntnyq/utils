@@ -1,9 +1,68 @@
-import { describe, expect, it } from 'vitest'
+import { describe, expect, expectTypeOf, it } from 'vitest'
 import {
   getFileExtension,
+  getFileName,
   normalizePathSlashes,
   removeFileExtension,
 } from '../src/path'
+import type { GetFileNameOptions } from '../src/path'
+
+describe(getFileName, () => {
+  it('should expose its public API types', () => {
+    expectTypeOf<GetFileNameOptions>().toBeObject()
+    expectTypeOf(getFileName).toBeFunction()
+  })
+
+  it('should get filenames from POSIX and Windows paths', () => {
+    expect(getFileName('/home/user/document.txt')).toBe('document.txt')
+    expect(getFileName('path/to/archive.tar.gz')).toBe('archive.tar.gz')
+    expect(getFileName(String.raw`C:\Users\user\image.png`)).toBe('image.png')
+  })
+
+  it('should optionally omit the file extension', () => {
+    expect(
+      getFileName('/home/user/document.txt', { includeExtension: false }),
+    ).toBe('document')
+    expect(
+      getFileName('/downloads/archive.tar.gz', { includeExtension: false }),
+    ).toBe('archive.tar')
+    expect(getFileName('/home/user/README', { includeExtension: false })).toBe(
+      'README',
+    )
+  })
+
+  it('should preserve dotfiles when omitting the extension', () => {
+    expect(getFileName('/home/user/.env', { includeExtension: false })).toBe(
+      '.env',
+    )
+    expect(
+      getFileName('/home/user/.config.json', { includeExtension: false }),
+    ).toBe('.config')
+  })
+
+  it('should ignore URL query strings and fragments', () => {
+    expect(getFileName('https://example.com/image.png?width=200')).toBe(
+      'image.png',
+    )
+    expect(getFileName('/document.pdf#preview')).toBe('document.pdf')
+    expect(
+      getFileName('/archive.tar.gz?download=1#latest', {
+        includeExtension: false,
+      }),
+    ).toBe('archive.tar')
+  })
+
+  it('should return an empty string when the path has no filename', () => {
+    expect(getFileName('')).toBe('')
+    expect(getFileName('/home/user/')).toBe('')
+    expect(getFileName('C:\\Users\\user\\')).toBe('')
+  })
+
+  it('should handle spaces and Unicode characters', () => {
+    expect(getFileName('/documents/my file.txt')).toBe('my file.txt')
+    expect(getFileName('/文档/报告.pdf')).toBe('报告.pdf')
+  })
+})
 
 describe(removeFileExtension, () => {
   it('should remove common file extensions', () => {

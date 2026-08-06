@@ -5,13 +5,14 @@ outline: deep
 
 # Path Utilities
 
-Pure string helpers for path separators and file extensions; no file system I/O is performed.
+Pure string helpers for filenames, path separators, and file extensions; no file system I/O is performed.
 
-This section documents 3 exported methods from the path module.
+This section documents 4 exported methods from the path module.
 
 ## Methods
 
 - [getFileExtension](#getfileextension)
+- [getFileName](#getfilename)
 - [normalizePathSlashes](#normalizepathslashes)
 - [removeFileExtension](#removefileextension)
 
@@ -36,6 +37,32 @@ import { getFileExtension } from '@ntnyq/utils'
 
 const result = getFileExtension('photo.jpg')
 console.log(result) // => 'jpg'
+```
+
+---
+
+## getFileName
+
+Gets the filename from a file path or URL. Query strings and URL fragments are
+excluded from the result.
+
+### Parameters
+
+- **filePath**: The file path or URL to get the filename from.
+- **options.includeExtension**: Whether to include the file extension. Defaults
+  to `true`.
+
+### Returns
+
+The filename, or an empty string when the path has no filename.
+
+### Example
+
+```ts
+import { getFileName } from '@ntnyq/utils'
+
+getFileName('/documents/report.pdf') // => 'report.pdf'
+getFileName('/documents/report.pdf', { includeExtension: false }) // => 'report'
 ```
 
 ---

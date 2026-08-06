@@ -47,13 +47,13 @@
   },
   "devDependencies": {
     "@ntnyq/tsconfig": "^3.1.0",
-    "bumpp": "^12.1.1",
+    "bumpp": "^12.2.0",
     "husky": "^9.1.7",
     "nano-staged": "^1.0.2",
-    "nanoid": "^6.0.0",
+    "nanoid": "^6.0.1",
     "npm-run-all2": "^9.0.3",
-    "oxfmt": "^0.61.0",
-    "oxlint": "^1.76.0",
+    "oxfmt": "^0.62.0",
+    "oxlint": "^1.77.0",
     "tsdown": "^0.22.14",
     "typescript": "^7.0.2",
     "uuid": "^14.0.1",
@@ -66,5 +66,5 @@
   "engines": {
     "node": "^22.19.0 || >=24.11.0"
   },
-  "packageManager": "pnpm@11.18.0"
+  "packageManager": "pnpm@11.20.0"
 }

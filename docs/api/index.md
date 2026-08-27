@@ -13,7 +13,7 @@ glance.
 | --------------------------- | ------: | -------------------------------------------------------------- |
 | [Array](/api/array)         |      23 | Array normalization, grouping, comparison, and transformation. |
 | [Async](/api/async)         |       3 | Promise-based timing, retry, and concurrency helpers.          |
-| [Color](/api/color)         |       4 | Color manipulation and random color generation.                |
+| [Color](/api/color)         |      11 | Color conversion, manipulation, and random generation.         |
 | [Function](/api/function)   |       8 | Composition, memoization, throttling, and invocation control.  |
 | [HTML](/api/html)           |       2 | HTML text escaping and unescaping.                             |
 | [JSON](/api/json)           |       2 | Defensive JSON parsing and serialization.                      |

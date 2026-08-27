@@ -65,9 +65,9 @@ type DeleteProperty<T, Key extends PathSegment> = T extends readonly unknown[]
   ? T
   : T extends object
     ? {
-        [Property in keyof T as Property extends Key
-          ? never
-          : Property]: T[Property]
+        [
+          Property in keyof T as Property extends Key ? never : Property
+        ]: T[Property]
       }
     : T
 

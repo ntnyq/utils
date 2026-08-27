@@ -67,8 +67,8 @@ describe(toChineseNumber, () => {
 
 describe(randomInteger, () => {
   it('should return a number within the specified range', () => {
-    const min = 1
     const max = 10
+    const min = 1
     const result = randomInteger(min, max)
 
     expect(result).toBeGreaterThanOrEqual(min)
@@ -86,8 +86,8 @@ describe(randomInteger, () => {
   })
 
   it('should swap min and max when min > max', () => {
-    const min = 10
     const max = 1
+    const min = 10
     const result = randomInteger(min, max)
 
     expect(result).toBeGreaterThanOrEqual(max)
@@ -96,8 +96,8 @@ describe(randomInteger, () => {
   })
 
   it('should include max value when includeMax is true', () => {
-    const min = 1
     const max = 2
+    const min = 1
     const results = new Set()
 
     // Generate many results to test probability
@@ -115,8 +115,8 @@ describe(randomInteger, () => {
   })
 
   it('should not include max value when includeMax is false (default)', () => {
-    const min = 1
     const max = 2
+    const min = 1
     const results = new Set()
 
     // Generate many results to test probability
@@ -168,8 +168,8 @@ describe(randomInteger, () => {
   })
 
   it('should return consistent type (integer)', () => {
-    const min = 1.5
     const max = 5.7
+    const min = 1.5
     const result = randomInteger(min, max)
 
     expect(Number.isInteger(result)).toBeTruthy()
@@ -178,8 +178,8 @@ describe(randomInteger, () => {
   })
 
   it('should work with decimal inputs and truncate to integer', () => {
-    const min = 1.9
     const max = 3.1
+    const min = 1.9
     const result = randomInteger(min, max)
 
     expect(Number.isInteger(result)).toBeTruthy()

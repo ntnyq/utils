@@ -320,8 +320,8 @@ describe(unindent, () => {
   })
 
   it('should include every tagged-template substitution', () => {
-    const subject = 'world'
     const punctuation = '!'
+    const subject = 'world'
     expect(unindent`
       hello ${subject}${punctuation}
       from ${'utils'}

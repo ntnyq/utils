@@ -1,10 +1,17 @@
-import { describe, expect, it, vi } from 'vitest'
+import { describe, expect, expectTypeOf, it, vi } from 'vitest'
 import {
   Color,
+  darkenHexColor,
+  hexToRGB,
+  hexToRGBString,
+  invertHexColor,
+  lightenHexColor,
   randomHexColor,
   randomRGBAColor,
   randomRGBColor,
+  rgbToHex,
 } from '../src/color'
+import type { RGBColor } from '../src/color'
 
 describe('color', () => {
   it('color', () => {
@@ -40,6 +47,56 @@ describe('color', () => {
     expect(Color.fromRGBA(Number.NaN, 0, 0, Number.NaN).toRGBAString()).toBe(
       'rgba(0, 0, 0, 0)',
     )
+  })
+})
+
+describe('color transformers', () => {
+  it('should convert hexadecimal colors to RGB channels', () => {
+    const color = hexToRGB('#369')
+
+    expect(color).toStrictEqual({ red: 51, green: 102, blue: 153 })
+    expect(hexToRGB('#A1b2C3')).toStrictEqual({
+      red: 161,
+      green: 178,
+      blue: 195,
+    })
+    expectTypeOf(color).toEqualTypeOf<RGBColor>()
+    expect(() => hexToRGB('336699')).toThrow('Invalid hex color')
+  })
+
+  it('should convert hexadecimal colors to CSS RGB strings', () => {
+    expect(hexToRGBString('#369')).toBe('rgb(51, 102, 153)')
+    expect(hexToRGBString('#A1b2C3')).toBe('rgb(161, 178, 195)')
+    expect(() => hexToRGBString('336699')).toThrow('Invalid hex color')
+  })
+
+  it('should convert normalized RGB channels to hexadecimal colors', () => {
+    expect(rgbToHex({ red: 51, green: 102, blue: 153 })).toBe('#336699')
+    expect(rgbToHex({ red: 15.5, green: -1, blue: 300 })).toBe('#1000FF')
+    expect(rgbToHex({ red: 161, green: 178, blue: 195 }, false)).toBe('#a1b2c3')
+  })
+
+  it('should lighten and darken hexadecimal colors', () => {
+    expect(lightenHexColor('#336699', 20)).toBe('#6699CC')
+    expect(darkenHexColor('#336699', 20)).toBe('#003366')
+    expect(lightenHexColor('#000', 100, false)).toBe('#ffffff')
+    expect(darkenHexColor('#fff', 100)).toBe('#000000')
+  })
+
+  it('should clamp percentages and reject non-finite percentages', () => {
+    expect(lightenHexColor('#123456', -10)).toBe('#123456')
+    expect(darkenHexColor('#123456', 101)).toBe('#000000')
+    expect(() => lightenHexColor('#123456', Number.NaN)).toThrow(
+      'Color percentage must be finite',
+    )
+    expect(() => darkenHexColor('#123456', Number.POSITIVE_INFINITY)).toThrow(
+      RangeError,
+    )
+  })
+
+  it('should invert hexadecimal colors', () => {
+    expect(invertHexColor('#123456')).toBe('#EDCBA9')
+    expect(invertHexColor('#000', false)).toBe('#ffffff')
   })
 })
 

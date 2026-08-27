@@ -5,8 +5,8 @@ const CHINESE_SMALL_UNITS = ['', '十', '百', '千'] as const
 const CHINESE_SMALL_UNIT_POSITIONS = [...CHINESE_SMALL_UNITS.keys()].reverse()
 
 function convertGroup(value: number): string {
-  let result = ''
   let needsZero = false
+  let result = ''
 
   for (const position of CHINESE_SMALL_UNIT_POSITIONS) {
     const divisor = 10 ** position
@@ -62,8 +62,8 @@ export function toChineseNumber(value: number): string {
     remainingValue = Math.floor(remainingValue / CHINESE_GROUP_BASE)
   }
 
-  let result = ''
   let needsZero = false
+  let result = ''
 
   for (const [index, group] of groups.entries()) {
     const groupPosition = groups.length - index - 1

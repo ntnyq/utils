@@ -1,10 +1,10 @@
 import { randomInteger } from '../number'
 
+const MAX_HEX_COLOR = 16_777_215
 /**
  * the maximum value of RGB
  */
 const MAX_RGB = 255
-const MAX_HEX_COLOR = 16_777_215
 
 function randomRGBChannel(): number {
   return randomInteger(0, MAX_RGB, { includeMax: true })

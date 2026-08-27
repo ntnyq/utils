@@ -1,7 +1,8 @@
 // eslint-disable-next-line no-control-regex
+const rCombining = /[\u0300-\u036F]/gu
+// oxlint-disable-next-line no-control-regex
 const rControl = /[\u0000-\u001F]/gu
 const rSpecial = /[\s~`!@#$%^&*()\-_+=[\]{}|\\;:"'“”‘’<>,.?/]+/gu
-const rCombining = /[\u0300-\u036F]/gu
 
 /**
  * Converts a string into a URL-friendly slug.

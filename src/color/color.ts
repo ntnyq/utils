@@ -1,5 +1,8 @@
 import { createPadString } from '../string'
 
+/**
+ * Hex color
+ */
 const RE_VALID_HEX_COLOR = /^#(?:[0-9a-f]{6}|[0-9a-f]{3})$/iu
 
 function validateHexColor(hex: string) {

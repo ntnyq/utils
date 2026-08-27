@@ -35,8 +35,8 @@ export interface LoadImageDimensionsOptions {
   cache?: boolean
 }
 
-const MAX_STRING_CACHE_SIZE = 100
 const MAX_BLOB_OPTION_CACHE_SIZE = 10
+const MAX_STRING_CACHE_SIZE = 100
 const stringCache = new Map<string, Promise<ImageSize>>()
 const blobCache = new WeakMap<Blob, Map<string, Promise<ImageSize>>>()
 let cacheBustCounter = 0

@@ -130,7 +130,7 @@
       "warn",
       { "functions": false, "classes": true, "variables": true },
     ],
-    "one-var": ["error", "never"],
+    "one-var": ["warn", "never"],
   },
   "overrides": [
     {

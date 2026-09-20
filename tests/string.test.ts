@@ -6,6 +6,7 @@ import {
   escapeStringRegexp,
   countGraphemes,
   calculateNGramSimilarity,
+  getLetterByIndex,
   join,
   joinNonEmptyValues,
   randomString,
@@ -13,6 +14,33 @@ import {
   truncate,
   unindent,
 } from '../src/string'
+
+describe(getLetterByIndex, () => {
+  it.each([
+    { index: 0, upper: 'A', lower: 'a' },
+    { index: 1, upper: 'B', lower: 'b' },
+    { index: 12, upper: 'M', lower: 'm' },
+    { index: 25, upper: 'Z', lower: 'z' },
+  ])('should convert index $index to a letter', ({ index, upper, lower }) => {
+    expect(getLetterByIndex(index)).toBe(upper)
+    expect(getLetterByIndex(index, false)).toBe(upper)
+    expect(getLetterByIndex(index, true)).toBe(lower)
+  })
+
+  it.each([
+    -1,
+    26,
+    -0.5,
+    0.5,
+    25.5,
+    Number.NaN,
+    Number.POSITIVE_INFINITY,
+    Number.NEGATIVE_INFINITY,
+  ])('should reject invalid index %s', index => {
+    expect(() => getLetterByIndex(index)).toThrow(RangeError)
+    expect(() => getLetterByIndex(index, true)).toThrow(RangeError)
+  })
+})
 
 describe(ensurePrefix, () => {
   it('should add prefix if not present', () => {

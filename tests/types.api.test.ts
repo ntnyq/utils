@@ -57,6 +57,7 @@ import { createOverlayProxy } from '../src/proxy'
 import {
   calculateNGramSimilarity,
   countGraphemes,
+  getLetterByIndex,
   joinNonEmptyValues,
 } from '../src/string'
 import type { CalculateNGramSimilarityOptions } from '../src/string'
@@ -78,6 +79,12 @@ import type {
 } from '../src/web'
 
 describe('public API types', () => {
+  it('should accept a letter index and an optional lowercase flag', () => {
+    expectTypeOf(getLetterByIndex).toEqualTypeOf<
+      (index: number, isLowerCase?: boolean) => string
+    >()
+  })
+
   it('should preserve readonly arrays and tuples in DeepRequired', () => {
     interface Input {
       items?: readonly ({ name?: string | null } | null)[] | null

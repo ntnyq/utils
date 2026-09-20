@@ -7,7 +7,7 @@ outline: deep
 
 String formatting, normalization, padding, randomization, and similarity helpers.
 
-This section documents 13 exported values from the string module.
+This section documents 14 exported values from the string module.
 
 ## Exports
 
@@ -19,6 +19,7 @@ This section documents 13 exported values from the string module.
 - [escapeStringRegexp](#escapestringregexp)
 - [countGraphemes](#countgraphemes)
 - [calculateNGramSimilarity](#calculatengramsimilarity)
+- [getLetterByIndex](#getletterbyindex)
 - [joinNonEmptyValues](#joinnonemptyvalues)
 - [join](#join-deprecated)
 - [randomString](#randomstring)
@@ -167,6 +168,37 @@ import { calculateNGramSimilarity } from '@ntnyq/utils'
 
 const result = calculateNGramSimilarity('hello', 'hallo')
 console.log(result > 0.5) // => true
+```
+
+---
+
+## getLetterByIndex
+
+Gets an English letter by its zero-based index, from `0` (`A`) to `25` (`Z`).
+
+### Parameters
+
+- **index**: An integer between `0` and `25`, inclusive.
+- **isLowerCase**: Whether to return a lowercase letter. Defaults to `false`.
+
+### Returns
+
+The corresponding uppercase or lowercase English letter.
+
+### Throws
+
+`RangeError` if the index is outside `0–25`, fractional, `NaN`, or infinite.
+Indices do not wrap or extend to multiple letters such as `AA`.
+
+### Example
+
+```ts
+import { getLetterByIndex } from '@ntnyq/utils'
+
+getLetterByIndex(0) // => 'A'
+getLetterByIndex(25) // => 'Z'
+getLetterByIndex(0, true) // => 'a'
+getLetterByIndex(26) // throws RangeError
 ```
 
 ---

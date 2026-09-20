@@ -230,6 +230,9 @@ console.log(result) // => true
 Checks whether two values are deeply equal. Supported collections and buffers
 are compared by intrinsic value and attached own properties; opaque built-ins
 such as `Promise`, `WeakMap`, and `WeakSet` are equal only by identity.
+Shared references and cycles must correspond across both graphs. Map and Set
+insertion order does not affect equality, including when other properties
+reference their entries.
 
 ### Parameters
 

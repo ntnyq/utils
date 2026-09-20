@@ -153,6 +153,9 @@ console.log(result) // => [1, 2, 3, 4]
 
 Groups the elements of an array based on a specified key or a function that returns a key.
 
+Keys follow object property semantics: numeric `1` and string `'1'` share a
+group, while symbols retain their identity.
+
 ### Parameters
 
 - **array**: The array to be grouped.
@@ -195,6 +198,8 @@ console.log(groupedByNameLength)
 
 Indexes items by a property key or selector. If a key occurs more than once,
 the last item wins. String, number, and symbol keys are supported safely.
+Numeric keys are normalized to strings before indexing, so `1` and `'1'`
+refer to the same result property.
 
 ```ts
 import { keyBy } from '@ntnyq/utils'

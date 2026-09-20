@@ -3,6 +3,7 @@ import type { PropertyKeyOf } from '../types'
 
 /**
  * Groups the elements of an array based on a specified key or a function that returns a key.
+ * Numeric keys are normalized to strings, matching object property semantics.
  * @param array The array to be grouped.
  * @param key A string representing the property name to group by, or a function that takes an item and returns a string key.
  * @returns An object where the keys are the group identifiers and the values are arrays of items that belong to each group.
@@ -64,11 +65,13 @@ export function groupBy<T>(
       throw new TypeError('Group key must be a property key')
     }
 
-    const group = groups.get(groupKey)
+    const propertyKey =
+      typeof groupKey === 'number' ? String(groupKey) : groupKey
+    const group = groups.get(propertyKey)
     if (group) {
       group.push(item)
     } else {
-      groups.set(groupKey, [item])
+      groups.set(propertyKey, [item])
     }
   }
 

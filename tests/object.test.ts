@@ -315,6 +315,39 @@ describe(isPlainObject, () => {
 })
 
 describe(cleanObject, () => {
+  it('should preserve accessors without invoking or cleaning their values', () => {
+    const nested = { note: null, keep: 1 }
+    const getter = vi.fn(() => nested)
+    const source = Object.defineProperty({ remove: null }, 'nested', {
+      enumerable: true,
+      get: getter,
+    })
+
+    const result = cleanObject(source)
+
+    expect(getter).not.toHaveBeenCalled()
+    expect(Object.getOwnPropertyDescriptor(result, 'nested')?.get).toBe(getter)
+    expect(nested).toStrictEqual({ note: null, keep: 1 })
+    expect(Object.hasOwn(result, 'remove')).toBeFalsy()
+  })
+
+  it('should not clean properties of objects retained by identity', () => {
+    const func = Object.assign(() => undefined, { note: null })
+    const promise = Object.assign(Promise.resolve(1), { note: null })
+    const url = Object.assign(new URL('https://example.com'), { note: null })
+
+    const result = cleanObject({ func, promise, url })
+
+    expect(result.func).toBe(func)
+    expect(result.promise).toBe(promise)
+    expect(result.url).toBe(url)
+    expect(func.note).toBeNull()
+    expect(promise.note).toBeNull()
+    expect(url.note).toBeNull()
+    expect(cleanObject(func)).toBe(func)
+    expect(func.note).toBeNull()
+  })
+
   it('should return empty object when input is null', () => {
     expect(cleanObject(null)).toStrictEqual({})
   })
@@ -594,6 +627,32 @@ describe(sortObjectKeys, () => {
 })
 
 describe(cloneDeep, () => {
+  it('should not invoke a custom tag accessor when deciding how to clone', () => {
+    const getter = vi.fn(() => 'URL')
+    const opaque = Object.defineProperty({}, Symbol.toStringTag, {
+      get: getter,
+    })
+
+    expect(cloneDeep({ opaque }).opaque).toBe(opaque)
+    expect(getter).not.toHaveBeenCalled()
+  })
+
+  it('should retain opaque built-ins by identity instead of making invalid instances', () => {
+    const url = new URL('https://example.com/path')
+    // Exercise a boxed primitive's internal slots.
+    // oxlint-disable-next-line no-new-wrappers, unicorn/new-for-builtins
+    const boxed = new Number(42)
+    const source = { url, boxed, nested: { value: 1 } }
+    const result = cloneDeep(source)
+
+    expect(result).not.toBe(source)
+    expect(result.nested).not.toBe(source.nested)
+    expect(result.url).toBe(url)
+    expect(result.url.href).toBe('https://example.com/path')
+    expect(result.boxed).toBe(boxed)
+    expect(result.boxed.valueOf()).toBe(42)
+  })
+
   it('should deeply clone a nested object', () => {
     const original = {
       name: 'John',
@@ -823,6 +882,82 @@ describe(cloneDeep, () => {
 })
 
 describe(deepMerge, () => {
+  it('should merge a shared source into each distinct destination', () => {
+    const shared = { enabled: true }
+    const left = { a: { onlyA: 1 }, b: { onlyB: 2 } }
+
+    expect(deepMerge(left, { a: shared, b: shared })).toStrictEqual({
+      a: { onlyA: 1, enabled: true },
+      b: { onlyB: 2, enabled: true },
+    })
+    expect(left).toStrictEqual({ a: { onlyA: 1 }, b: { onlyB: 2 } })
+  })
+
+  it('should preserve cycles separately when merging into distinct destinations', () => {
+    const shared: Record<string, unknown> = { enabled: true }
+    shared['self'] = shared
+    const result = deepMerge(
+      { a: { onlyA: 1 }, b: { onlyB: 2 } },
+      {
+        a: shared,
+        b: shared,
+      },
+    )
+
+    expect(result.a['self']).toBe(result.a)
+    expect(result.b['self']).toBe(result.b)
+    expect(result.b['onlyB']).toBe(2)
+  })
+
+  it('should concatenate a shared array into each distinct destination', () => {
+    const shared = [3]
+    const result = deepMergeWithOptions(
+      { arrayStrategy: 'concat' },
+      { a: [1], b: [2] },
+      { a: shared, b: shared },
+    )
+    expect(result).toStrictEqual({ a: [1, 3], b: [2, 3] })
+    expect(shared).toStrictEqual([3])
+  })
+
+  it('should merge a shared destination only once per operand', () => {
+    const left = { values: [1] }
+    const right = { values: [2] }
+    const result = deepMergeWithOptions(
+      { arrayStrategy: 'concat' },
+      { a: left, b: left },
+      { a: right, b: right },
+      { a: right, b: right },
+    )
+
+    expect(result.a).toBe(result.b)
+    expect(result.a.values).toStrictEqual([1, 2, 2])
+    expect(left.values).toStrictEqual([1])
+  })
+
+  it('should retain independent circular arrays when concatenating shared inputs', () => {
+    const shared: unknown[] = []
+    shared.push(shared)
+    const result = deepMergeWithOptions(
+      { arrayStrategy: 'concat' },
+      { a: [1], b: [2] },
+      { a: shared, b: shared },
+    )
+
+    expect(result.a[0]).toBe(1)
+    expect(result.b[0]).toBe(2)
+    expect(result.a[1]).toBe(result.a)
+    expect(result.b[1]).toBe(result.b)
+  })
+
+  it('should resolve later references to an operand merged at the root', () => {
+    const source = { value: 1 }
+    const result = deepMerge({ nested: source }, source, { reference: source })
+
+    expect(result.reference).toBe(result)
+    expect(result.nested).toStrictEqual({ value: 1 })
+  })
+
   it('should deep merge plain objects', () => {
     const result = deepMerge(
       { user: { name: 'Alice', tags: ['base'] }, enabled: true },

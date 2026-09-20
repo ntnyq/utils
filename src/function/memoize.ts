@@ -58,6 +58,7 @@ export function memoize<Fn extends (...args: any[]) => any, Key = unknown>(
     ...args: Parameters<Fn>
   ) {
     let key: unknown
+    let newEntry: DefaultCacheEntry | undefined
     if (resolver) {
       key = resolver(...args)
     } else {
@@ -65,7 +66,7 @@ export function memoize<Fn extends (...args: any[]) => any, Key = unknown>(
       if (key === undefined) {
         const newKey = {}
         key = newKey
-        defaultEntries.push({ args: [...args], receiver: this, key: newKey })
+        newEntry = { args: [...args], receiver: this, key: newKey }
       }
     }
 
@@ -75,6 +76,9 @@ export function memoize<Fn extends (...args: any[]) => any, Key = unknown>(
 
     const value = func.apply(this, args) as ReturnType<Fn>
     cache.set(key, value)
+    if (newEntry) {
+      defaultEntries.push(newEntry)
+    }
 
     if (maxSize !== undefined && cache.size > maxSize) {
       const oldestKey = cache.keys().next().value

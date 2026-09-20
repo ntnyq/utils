@@ -361,6 +361,15 @@ describe(toNumber, () => {
 })
 
 describe(toFixed, () => {
+  it('should preserve integer zeros when no fractional digits are requested', () => {
+    expect(toFixed(0, { digits: 0 })).toBe('0')
+    expect(toFixed(100, { digits: 0 })).toBe('100')
+    expect(toFixed(-20, { digits: 0 })).toBe('-20')
+    expect(toFixed(100.01)).toBe('100.01')
+    expect(toFixed(100)).toBe('100')
+    expect(toFixed(1.2e30)).toBe('1.2e+30')
+  })
+
   it('should format with default options (2 digits, omit trailing zeros)', () => {
     expect(toFixed(123.456)).toBe('123.46')
     expect(toFixed(123.4)).toBe('123.4')

@@ -1,5 +1,7 @@
 /**
  * Creates a proxy that overlays properties on a target object.
+ * Property definitions must remain configurable; unsupported definitions
+ * are rejected before changing the target.
  * @module proxy
  * @param target - The original object to proxy.
  * @param overlay - Properties that take precedence over the target object.
@@ -25,6 +27,13 @@ export function createOverlayProxy<
 
   return new Proxy(proxyTarget, {
     defineProperty(_proxyTarget, key, descriptor) {
+      const existingDescriptor = Reflect.getOwnPropertyDescriptor(target, key)
+      if (
+        descriptor.configurable === false ||
+        (descriptor.configurable !== true && !existingDescriptor?.configurable)
+      ) {
+        return false
+      }
       return Reflect.defineProperty(target, key, descriptor)
     },
     deleteProperty(_proxyTarget, key) {

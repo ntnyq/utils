@@ -1,18 +1,28 @@
+interface ValueComparison {
+  kind: 'value'
+  left: unknown
+  right: unknown
+}
+
+interface CollectionComparison {
+  kind: 'collection'
+  left: readonly (readonly unknown[])[]
+  right: readonly (readonly unknown[])[]
+  candidateIndex: number
+}
+
 interface ComparisonState {
   leftToRight: Map<object, object>
   rightToLeft: Map<object, object>
+  pending: (ValueComparison | CollectionComparison)[]
 }
 
 function forkState(state: ComparisonState): ComparisonState {
   return {
     leftToRight: new Map(state.leftToRight),
     rightToLeft: new Map(state.rightToLeft),
+    pending: [...state.pending],
   }
-}
-
-function commitState(target: ComparisonState, source: ComparisonState): void {
-  target.leftToRight = source.leftToRight
-  target.rightToLeft = source.rightToLeft
 }
 
 function equalBytes(left: ArrayBufferView, right: ArrayBufferView): boolean {
@@ -49,32 +59,55 @@ function isStructurallyComparable(value: object): boolean {
   )
 }
 
-function equalDescriptors(
-  left: PropertyDescriptor,
-  right: PropertyDescriptor,
+function queueOwnProperties(
+  left: object,
+  right: object,
   state: ComparisonState,
 ): boolean {
-  if (
-    left.configurable !== right.configurable ||
-    left.enumerable !== right.enumerable ||
-    ('writable' in left && left.writable !== right.writable)
-  ) {
+  const leftKeys = Reflect.ownKeys(left)
+  if (leftKeys.length !== Reflect.ownKeys(right).length) {
     return false
   }
 
-  if ('value' in left && 'value' in right) {
-    return compare(left.value, right.value, state)
+  for (const key of leftKeys.reverse()) {
+    const leftDescriptor = Object.getOwnPropertyDescriptor(left, key)
+    const rightDescriptor = Object.getOwnPropertyDescriptor(right, key)
+    if (
+      !leftDescriptor ||
+      !rightDescriptor ||
+      leftDescriptor.configurable !== rightDescriptor.configurable ||
+      leftDescriptor.enumerable !== rightDescriptor.enumerable
+    ) {
+      return false
+    }
+
+    if ('value' in leftDescriptor && 'value' in rightDescriptor) {
+      if (leftDescriptor.writable !== rightDescriptor.writable) {
+        return false
+      }
+      state.pending.push({
+        kind: 'value',
+        left: leftDescriptor.value,
+        right: rightDescriptor.value,
+      })
+    } else if (
+      'value' in leftDescriptor ||
+      'value' in rightDescriptor ||
+      leftDescriptor.get !== rightDescriptor.get ||
+      leftDescriptor.set !== rightDescriptor.set
+    ) {
+      return false
+    }
   }
 
-  return (
-    !('value' in left) &&
-    !('value' in right) &&
-    left.get === right.get &&
-    left.set === right.set
-  )
+  return true
 }
 
-function equalMaps(
+function isObjectReference(value: unknown): value is object {
+  return typeof value === 'object' && value !== null
+}
+
+function queueMapEntries(
   left: Map<unknown, unknown>,
   right: Map<unknown, unknown>,
   state: ComparisonState,
@@ -83,33 +116,36 @@ function equalMaps(
     return false
   }
 
-  const unmatched = [...right.entries()]
-  for (const [leftKey, leftValue] of left) {
-    let matchIndex = -1
-
-    for (let index = 0; index < unmatched.length; index++) {
-      const [rightKey, rightValue] = unmatched[index]!
-      const candidate = forkState(state)
-      if (
-        compare(leftKey, rightKey, candidate) &&
-        compare(leftValue, rightValue, candidate)
-      ) {
-        matchIndex = index
-        commitState(state, candidate)
-        break
+  const remaining = new Map(right)
+  const entries: unknown[][] = []
+  for (const [key, value] of left) {
+    if (isObjectReference(key)) {
+      entries.push([key, value])
+    } else {
+      if (!remaining.has(key)) {
+        return false
       }
+      state.pending.push({
+        kind: 'value',
+        left: value,
+        right: remaining.get(key),
+      })
+      remaining.delete(key)
     }
-
-    if (matchIndex === -1) {
-      return false
-    }
-    unmatched.splice(matchIndex, 1)
   }
 
+  if (entries.length > 0) {
+    state.pending.push({
+      kind: 'collection',
+      left: entries,
+      right: [...remaining.entries()],
+      candidateIndex: 0,
+    })
+  }
   return true
 }
 
-function equalSets(
+function queueSetEntries(
   left: Set<unknown>,
   right: Set<unknown>,
   state: ComparisonState,
@@ -118,49 +154,61 @@ function equalSets(
     return false
   }
 
-  const unmatched = [...right]
-  for (const leftValue of left) {
-    const matchIndex = unmatched.findIndex(rightValue => {
-      const candidate = forkState(state)
-      if (!compare(leftValue, rightValue, candidate)) {
-        return false
-      }
-      commitState(state, candidate)
-      return true
-    })
-
-    if (matchIndex === -1) {
+  const remaining = new Set(right)
+  const entries: unknown[][] = []
+  for (const value of left) {
+    if (isObjectReference(value)) {
+      entries.push([value])
+    } else if (!remaining.delete(value)) {
       return false
     }
-    unmatched.splice(matchIndex, 1)
   }
 
+  if (entries.length > 0) {
+    state.pending.push({
+      kind: 'collection',
+      left: entries,
+      right: Array.from(remaining, value => [value]),
+      candidateIndex: 0,
+    })
+  }
   return true
 }
 
-function equalOwnProperties(
-  left: object,
-  right: object,
+/**
+ * Retains alternative pairings until every pending comparison succeeds,
+ * including properties outside the collection that constrain its aliases.
+ */
+function queueCollectionCandidate(
+  task: CollectionComparison,
   state: ComparisonState,
-): boolean {
-  const leftKeys = Reflect.ownKeys(left)
-  const rightKeys = Reflect.ownKeys(right)
-  if (
-    leftKeys.length !== rightKeys.length ||
-    leftKeys.some(key => !Object.hasOwn(right, key))
-  ) {
-    return false
+  alternatives: ComparisonState[],
+): void {
+  const { candidateIndex, left, right } = task
+  if (candidateIndex + 1 < right.length) {
+    const alternative = forkState(state)
+    alternative.pending.push({ ...task, candidateIndex: candidateIndex + 1 })
+    alternatives.push(alternative)
   }
 
-  return leftKeys.every(key => {
-    const leftDescriptor = Object.getOwnPropertyDescriptor(left, key)
-    const rightDescriptor = Object.getOwnPropertyDescriptor(right, key)
-    return (
-      leftDescriptor !== undefined &&
-      rightDescriptor !== undefined &&
-      equalDescriptors(leftDescriptor, rightDescriptor, state)
-    )
-  })
+  if (left.length > 1) {
+    state.pending.push({
+      kind: 'collection',
+      left: left.slice(1),
+      right: right.toSpliced(candidateIndex, 1),
+      candidateIndex: 0,
+    })
+  }
+
+  const leftEntry = left[0]!
+  const rightEntry = right[candidateIndex]!
+  for (let index = leftEntry.length - 1; index >= 0; index--) {
+    state.pending.push({
+      kind: 'value',
+      left: leftEntry[index],
+      right: rightEntry[index],
+    })
+  }
 }
 
 // oxlint-disable-next-line complexity
@@ -169,19 +217,8 @@ function compare(
   right: unknown,
   state: ComparisonState,
 ): boolean {
-  if (Object.is(left, right)) {
-    return true
-  }
-
-  if (
-    (typeof left !== 'object' && typeof left !== 'function') ||
-    left === null ||
-    (typeof right !== 'object' && typeof right !== 'function') ||
-    right === null ||
-    typeof left === 'function' ||
-    typeof right === 'function'
-  ) {
-    return false
+  if (!isObjectReference(left) || !isObjectReference(right)) {
+    return Object.is(left, right)
   }
 
   if (Object.getPrototypeOf(left) !== Object.getPrototypeOf(right)) {
@@ -198,8 +235,8 @@ function compare(
 
   if (left instanceof Date && right instanceof Date) {
     return (
-      left.getTime() === right.getTime() &&
-      equalOwnProperties(left, right, state)
+      (left === right || left.getTime() === right.getTime()) &&
+      queueOwnProperties(left, right, state)
     )
   }
 
@@ -208,33 +245,35 @@ function compare(
       left.source === right.source &&
       left.flags === right.flags &&
       left.lastIndex === right.lastIndex &&
-      equalOwnProperties(left, right, state)
+      queueOwnProperties(left, right, state)
     )
   }
 
   if (left instanceof Map && right instanceof Map) {
     return (
-      equalMaps(left, right, state) && equalOwnProperties(left, right, state)
+      queueOwnProperties(left, right, state) &&
+      queueMapEntries(left, right, state)
     )
   }
 
   if (left instanceof Set && right instanceof Set) {
     return (
-      equalSets(left, right, state) && equalOwnProperties(left, right, state)
+      queueOwnProperties(left, right, state) &&
+      queueSetEntries(left, right, state)
     )
   }
 
   if (left instanceof ArrayBuffer && right instanceof ArrayBuffer) {
     return (
       equalBytes(new Uint8Array(left), new Uint8Array(right)) &&
-      equalOwnProperties(left, right, state)
+      queueOwnProperties(left, right, state)
     )
   }
 
   if (isSharedArrayBuffer(left) && isSharedArrayBuffer(right)) {
     return (
       equalBytes(new Uint8Array(left), new Uint8Array(right)) &&
-      equalOwnProperties(left, right, state)
+      queueOwnProperties(left, right, state)
     )
   }
 
@@ -242,15 +281,15 @@ function compare(
     return (
       left.constructor === right.constructor &&
       equalBytes(left, right) &&
-      equalOwnProperties(left, right, state)
+      queueOwnProperties(left, right, state)
     )
   }
 
   if (!isStructurallyComparable(left) || !isStructurallyComparable(right)) {
-    return false
+    return Object.is(left, right)
   }
 
-  return equalOwnProperties(left, right, state)
+  return queueOwnProperties(left, right, state)
 }
 
 /**
@@ -263,8 +302,23 @@ function compare(
  * @returns Whether the values are deeply equal.
  */
 export function isDeepEqual(value1: unknown, value2: unknown): boolean {
-  return compare(value1, value2, {
+  let state: ComparisonState | undefined = {
     leftToRight: new Map(),
     rightToLeft: new Map(),
-  })
+    pending: [{ kind: 'value', left: value1, right: value2 }],
+  }
+  const alternatives: ComparisonState[] = []
+
+  while (state) {
+    const task = state.pending.pop()
+    if (!task) {
+      return true
+    }
+    if (task.kind === 'collection') {
+      queueCollectionCandidate(task, state, alternatives)
+    } else if (!compare(task.left, task.right, state)) {
+      state = alternatives.pop()
+    }
+  }
+  return false
 }

@@ -58,6 +58,34 @@ describe(once, () => {
 })
 
 describe(memoize, () => {
+  it('should retry failed calls without retaining failed argument identities', () => {
+    const operation = vi.fn((input: { fail: boolean }) => {
+      if (input.fail) {
+        throw new Error('failed')
+      }
+      return input
+    })
+    const memoized = memoize(operation, { maxSize: 1 })
+    for (let index = 0; index < 100; index++) {
+      expect(() => memoized({ fail: true })).toThrow('failed')
+    }
+    expect(memoized.cache.size).toBe(0)
+
+    // Failed inputs must not accumulate in subsequent identity lookups.
+    const identityChecks = vi.spyOn(Object, 'is')
+    const input = { fail: false }
+    let comparisonCount: number
+    try {
+      memoized(input)
+      comparisonCount = identityChecks.mock.calls.length
+    } finally {
+      identityChecks.mockRestore()
+    }
+    expect(comparisonCount).toBeLessThan(10)
+    expect(memoized(input)).toBe(input)
+    expect(operation).toHaveBeenCalledTimes(101)
+  })
+
   it('should cache computed results', () => {
     const spy = vi.fn((value: number) => value * 2)
     const memoized = memoize(spy)

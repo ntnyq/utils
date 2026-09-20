@@ -243,11 +243,12 @@ function cloneDeepValue<T>(value: T, context: CloneDeepContext): T {
     return cloneView(value, context) as T
   }
 
-  if (
-    value instanceof Promise ||
-    value instanceof WeakMap ||
-    value instanceof WeakSet
-  ) {
+  // Descriptor copies cannot recreate internal slots of opaque built-ins.
+  const tag =
+    Symbol.toStringTag in value
+      ? undefined
+      : Object.prototype.toString.call(value)
+  if (tag !== '[object Object]' && tag !== '[object Error]') {
     return value
   }
 

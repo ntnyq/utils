@@ -61,12 +61,17 @@ export interface ToIntegerOptions {
  * console.log(result) // => 42
  * ```
  */
+export function toInteger(
+  value: unknown,
+  options?: ToIntegerOptions & {
+    onError?: 'useDefault' | 'throwError'
+  },
+): number
+
 export function toInteger<T>(
   value: T,
-  options: ToIntegerOptions & { onError: 'returnOriginal' },
+  options: ToIntegerOptions | undefined,
 ): number | T
-
-export function toInteger(value: unknown, options?: ToIntegerOptions): number
 
 // oxlint-disable-next-line complexity
 export function toInteger(

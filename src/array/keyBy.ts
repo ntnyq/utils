@@ -5,6 +5,7 @@ import type { PropertyKeyOf } from '../types'
  * Indexes array items by a property key or selector.
  *
  * When multiple items resolve to the same key, the last item wins.
+ * Numeric keys are normalized to strings, matching object property semantics.
  *
  * @param array - Source array.
  * @param key - Property key or selector used to resolve each result key.
@@ -56,7 +57,9 @@ export function keyBy<T>(
       throw new TypeError('Index key must be a property key')
     }
 
-    entries.set(entryKey, item)
+    const propertyKey =
+      typeof entryKey === 'number' ? String(entryKey) : entryKey
+    entries.set(propertyKey, item)
   })
 
   return Object.fromEntries(entries)

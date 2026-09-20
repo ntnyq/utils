@@ -99,26 +99,38 @@ function cleanRecordInPlace(
   object: Record<string, unknown>,
   options: Required<CleanObjectOptions>,
   seen: WeakSet<object>,
+  source?: Record<string, unknown>,
 ): void {
-  if (seen.has(object)) {
+  if (object === source || seen.has(object)) {
     return
   }
   seen.add(object)
 
   for (const key of Object.keys(object)) {
-    const value = object[key]
+    const descriptor = Object.getOwnPropertyDescriptor(object, key)
+    if (descriptor && 'value' in descriptor) {
+      const value: unknown = descriptor.value
 
-    if (shouldCleanValue(value, options)) {
-      delete object[key]
-    } else if (options.recursive && isRecord(value)) {
-      cleanRecordInPlace(value, options, seen)
-
-      if (
-        options.cleanEmptyObject &&
-        isPlainObject(value) &&
-        Reflect.ownKeys(value).length === 0
-      ) {
+      if (shouldCleanValue(value, options)) {
         delete object[key]
+      } else if (options.recursive && isRecord(value)) {
+        const sourceValue: unknown = source
+          ? Object.getOwnPropertyDescriptor(source, key)?.value
+          : undefined
+        cleanRecordInPlace(
+          value,
+          options,
+          seen,
+          isRecord(sourceValue) ? sourceValue : undefined,
+        )
+
+        if (
+          options.cleanEmptyObject &&
+          isPlainObject(value) &&
+          Reflect.ownKeys(value).length === 0
+        ) {
+          delete object[key]
+        }
       }
     }
   }
@@ -126,6 +138,8 @@ function cleanRecordInPlace(
 
 /**
  * Creates a deep-cloned object without the selected empty values.
+ * Accessors are preserved without invocation. Values retained by identity
+ * during cloning are not recursively cleaned.
  * @param obj - object to be cleaned
  * @param options - clean options
  * @returns cleaned object
@@ -155,7 +169,7 @@ export function cleanObject<T extends object>(
   const cloned = cloneDeepInternal(obj, new WeakMap(), {
     descriptorsConfigurable: true,
   })
-  return cleanObjectInPlace(cloned, options)
+  return cleanObjectWithOptions(cloned, options, obj)
 }
 
 /**
@@ -167,6 +181,14 @@ export function cleanObject<T extends object>(
 export function cleanObjectInPlace<T extends object>(
   obj?: T | undefined | null,
   options: CleanObjectOptions = {},
+): CleanObjectResult<T> {
+  return cleanObjectWithOptions(obj, options)
+}
+
+function cleanObjectWithOptions<T extends object>(
+  obj: T | undefined | null,
+  options: CleanObjectOptions,
+  source?: Record<string, unknown>,
 ): CleanObjectResult<T> {
   const resolvedOptions: Required<CleanObjectOptions> = {
     cleanUndefined: true,
@@ -188,6 +210,7 @@ export function cleanObjectInPlace<T extends object>(
     obj as Record<string, unknown>,
     resolvedOptions,
     new WeakSet(),
+    source,
   )
 
   return obj as CleanObjectResult<T>

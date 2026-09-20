@@ -24,7 +24,7 @@ export interface ObjectOmitOptions {
  * console.log(result) // => { a: 1, c: 3 }
  * ```
  */
-export function omit<T extends object, K extends keyof T>(
+export function omit<T extends object, K extends keyof T = never>(
   object: T,
   keys: readonly K[] = [],
   options: ObjectOmitOptions = {},

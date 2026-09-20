@@ -53,6 +53,8 @@ console.log(fn(2)) // => 'v:6'
 ## memoize
 
 Memoizes a function with optional custom key resolver and cache size limit.
+Synchronous failures are not cached and do not retain argument identities;
+later calls can retry. Returned promises are cached as values.
 
 ### Parameters
 

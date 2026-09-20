@@ -823,6 +823,69 @@ describe(isURLString, () => {
 })
 
 describe(isDeepEqual, () => {
+  it('should reconsider Set pairings when later properties constrain shared references', () => {
+    const first = {}
+    const second = {}
+    const third = {}
+    const fourth = {}
+    const left = { set: new Set([first, second]), ref: first }
+    const right = { set: new Set([third, fourth]), ref: fourth }
+
+    expect(isDeepEqual(left, right)).toBeTruthy()
+    expect(isDeepEqual(right, left)).toBeTruthy()
+    expect(
+      isDeepEqual(left, { ...right, set: new Set([fourth, third]) }),
+    ).toBeTruthy()
+    expect(isDeepEqual(left, { ...right, ref: {} })).toBeFalsy()
+  })
+
+  it('should reconsider Map pairings across entries and surrounding properties', () => {
+    const first = {}
+    const second = {}
+    const third = {}
+    const fourth = {}
+    const left = {
+      map: new Map([
+        [first, second],
+        [second, first],
+      ]),
+      ref: first,
+    }
+    const right = {
+      map: new Map([
+        [third, fourth],
+        [fourth, third],
+      ]),
+      ref: fourth,
+    }
+
+    expect(isDeepEqual(left, right)).toBeTruthy()
+    expect(isDeepEqual(right, left)).toBeTruthy()
+    expect(isDeepEqual(left, { ...right, ref: {} })).toBeFalsy()
+  })
+
+  it('should enforce shared-reference correspondence even for identical objects', () => {
+    const shared = {}
+    expect(
+      isDeepEqual(
+        { first: shared, second: shared },
+        {
+          first: shared,
+          second: {},
+        },
+      ),
+    ).toBeFalsy()
+  })
+
+  it('should compare large primitive collections without recursive matching', () => {
+    const values = Array.from({ length: 10_000 }, (_value, index) => index)
+    const reversedValues = values.toReversed()
+    const leftMap = new Map(values.map(value => [value, value]))
+    const rightMap = new Map(reversedValues.map(value => [value, value]))
+    expect(isDeepEqual(new Set(values), new Set(reversedValues))).toBeTruthy()
+    expect(isDeepEqual(leftMap, rightMap)).toBeTruthy()
+  })
+
   it('should return true for equal primitives', () => {
     expect(isDeepEqual(1, 1)).toBeTruthy()
     expect(isDeepEqual('test', 'test')).toBeTruthy()

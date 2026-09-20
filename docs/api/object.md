@@ -35,6 +35,8 @@ This section documents 17 exported methods from the object module.
 Creates a deeply cloned object without the selected empty values. Empty-object
 cleaning is limited to plain objects without own keys, and recursive cleaning
 safely preserves circular references.
+Accessors are preserved without being invoked. Functions and opaque built-ins
+retained by identity are not recursively cleaned, keeping source data unchanged.
 
 ### Parameters
 
@@ -66,6 +68,7 @@ console.log(result) // => { name: 'Alice', meta: { active: true } }
 ## cleanObjectInPlace
 
 Cleans selected empty values from an object in place.
+Accessor properties are preserved without invoking their getters.
 
 ```ts
 import { cleanObjectInPlace } from '@ntnyq/utils'
@@ -83,6 +86,8 @@ Deeply clones a value while preserving supported collections, ArrayBuffer and
 SharedArrayBuffer data, property descriptors, prototypes, symbol keys, and
 circular references. Own metadata attached to supported built-ins is cloned
 with its descriptors.
+Opaque built-ins without supported cloning behavior, such as `URL`, boxed
+primitives, promises, and weak collections, are retained by identity.
 
 ### Parameters
 
@@ -108,6 +113,9 @@ console.log(cloned.user === original.user) // => false
 ## deepMerge
 
 Deeply merges objects into a new object.
+When a shared source is merged into distinct existing destinations, each
+destination keeps its own fields and resolves source cycles to itself.
+Shared values copied without an existing destination remain shared.
 
 ### Parameters
 
@@ -139,6 +147,8 @@ function means an ordinary data object containing `arrayStrategy` is never
 misinterpreted as configuration. The inferred result distinguishes replacement
 arrays from concatenated arrays, and shared or circular references remain
 connected to the final merged graph.
+Shared arrays concatenated into distinct destinations are merged independently.
+An already-shared destination is merged once per source operand.
 
 ### Parameters
 

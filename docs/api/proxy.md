@@ -19,6 +19,10 @@ This section documents 1 exported method from the proxy module.
 
 Creates a reflective proxy view that overlays properties on a target object.
 Overlay values take precedence even when the source target is frozen.
+Writes and deletions are forwarded to the source target. Property definitions
+must remain configurable: specify `configurable: true` for new properties.
+Non-configurable definitions are rejected before the target changes
+(`Reflect.defineProperty` returns `false`; `Object.defineProperty` throws).
 
 ### Parameters
 

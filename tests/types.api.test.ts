@@ -17,7 +17,7 @@ import {
   toChineseNumber,
   toInteger,
 } from '../src/number'
-import type { RandomIntegerOptions } from '../src/number'
+import type { RandomIntegerOptions, ToIntegerOptions } from '../src/number'
 import {
   cleanObject,
   cleanObjectInPlace,
@@ -78,6 +78,26 @@ import type {
 } from '../src/web'
 
 describe('public API types', () => {
+  it('should preserve object keys when omit receives no keys', () => {
+    expectTypeOf(omit({ a: 1 })).toEqualTypeOf<{ a: number }>()
+    expectTypeOf(omit({ a: 1 }, undefined)).toEqualTypeOf<{ a: number }>()
+    expectTypeOf(omit({ a: 1, b: 'value' }, ['a'])).toEqualTypeOf<{
+      b: string
+    }>()
+  })
+
+  it('should account for returnOriginal in widened integer options', () => {
+    const options: ToIntegerOptions = { onError: 'returnOriginal' }
+    expectTypeOf(toInteger('invalid', options)).toEqualTypeOf<number | string>()
+    expectTypeOf(
+      toInteger('invalid', { onError: 'useDefault' }),
+    ).toEqualTypeOf<number>()
+    expectTypeOf(
+      toInteger('12', { onError: 'throwError' }),
+    ).toEqualTypeOf<number>()
+    expectTypeOf(toInteger('12', { min: 0 })).toEqualTypeOf<number>()
+  })
+
   it('should accept a letter index and an optional lowercase flag', () => {
     expectTypeOf(getLetterByIndex).toEqualTypeOf<
       (index: number, isLowerCase?: boolean) => string

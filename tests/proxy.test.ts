@@ -2,6 +2,45 @@ import { describe, expect, it } from 'vitest'
 import { createOverlayProxy } from '../src/proxy'
 
 describe(createOverlayProxy, () => {
+  it('should reject non-configurable definitions without mutating the target', () => {
+    const target = { existing: 1 }
+    const proxy = createOverlayProxy(target, {})
+
+    expect(() =>
+      Object.defineProperty(proxy, 'newKey', {
+        configurable: false,
+        value: 2,
+      }),
+    ).toThrow(TypeError)
+    expect(
+      Reflect.defineProperty(proxy, 'existing', {
+        configurable: false,
+        value: 3,
+      }),
+    ).toBeFalsy()
+    expect(Reflect.defineProperty(proxy, 'implicit', { value: 4 })).toBeFalsy()
+    expect(target).toStrictEqual({ existing: 1 })
+    expect(
+      Object.getOwnPropertyDescriptor(target, 'existing')?.configurable,
+    ).toBeTruthy()
+  })
+
+  it('should forward configurable definitions and updates', () => {
+    const target = { existing: 1 }
+    const proxy = createOverlayProxy(target, {})
+
+    expect(
+      Reflect.defineProperty(proxy, 'newKey', {
+        configurable: true,
+        enumerable: true,
+        value: 2,
+      }),
+    ).toBeTruthy()
+    expect(Reflect.defineProperty(proxy, 'existing', { value: 3 })).toBeTruthy()
+    expect({ ...proxy }).toStrictEqual({ existing: 3, newKey: 2 })
+    expect(target).toStrictEqual({ existing: 3, newKey: 2 })
+  })
+
   it('should overlay properties and preserve the target', () => {
     const target = { a: 1, b: 2 }
     const overlay = { b: 3, c: 4 }

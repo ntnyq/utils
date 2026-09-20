@@ -69,8 +69,46 @@ export type DeepMergeResult<
   : Accumulator
 
 interface MergeContext {
+  active: WeakSet<object>
+  merged: WeakMap<object, WeakSet<object>>
   options: Required<DeepMergeOptions>
   seen: WeakMap<object, unknown>
+}
+
+/**
+ * Resolves cycles against the active destination while allowing a shared
+ * source to contribute to other destinations independently.
+ */
+function mergeInto<Output extends object>(
+  output: Output,
+  source: object,
+  context: MergeContext,
+  merge: () => void,
+): Output {
+  const cached = context.seen.get(source)
+  if (context.active.has(source)) {
+    return cached as Output
+  }
+
+  const mergedSources = context.merged.get(output) ?? new WeakSet<object>()
+  if (mergedSources.has(source)) {
+    return output
+  }
+  mergedSources.add(source)
+  context.merged.set(output, mergedSources)
+  context.active.add(source)
+  context.seen.set(source, output)
+
+  try {
+    merge()
+  } finally {
+    context.active.delete(source)
+    if (cached) {
+      context.seen.set(source, cached)
+    }
+  }
+
+  return output
 }
 
 function isMergeableRecord(value: unknown): value is AnyRecord {
@@ -153,17 +191,12 @@ function mergeValue(
 ): unknown {
   if (Array.isArray(leftValue) && Array.isArray(rightValue)) {
     if (context.options.arrayStrategy === 'concat') {
-      const knownRight = context.seen.get(rightValue)
-      if (knownRight) {
-        return knownRight
-      }
-
-      const sourceItems = [...rightValue]
-      context.seen.set(rightValue, leftValue)
-      for (const item of sourceItems) {
-        leftValue.push(cloneValue(item, context))
-      }
-      return leftValue
+      return mergeInto(leftValue, rightValue, context, () => {
+        const sourceItems = [...rightValue]
+        for (const item of sourceItems) {
+          leftValue.push(cloneValue(item, context))
+        }
+      })
     }
 
     return cloneArray(rightValue, context)
@@ -180,41 +213,33 @@ function mergeRecords(
   left: AnyRecord,
   right: AnyRecord,
   context: MergeContext,
-  forceTarget = false,
 ): AnyRecord {
-  const knownRight = context.seen.get(right)
-  if (knownRight && !forceTarget) {
-    return knownRight as AnyRecord
-  }
-
   const output = left
-  context.seen.set(right, output)
+  return mergeInto(output, right, context, () => {
+    for (const key of Reflect.ownKeys(right)) {
+      const rightDescriptor = Object.getOwnPropertyDescriptor(right, key)
+      if (rightDescriptor) {
+        if ('value' in rightDescriptor) {
+          const leftDescriptor = Object.getOwnPropertyDescriptor(output, key)
+          const nextValue =
+            leftDescriptor && 'value' in leftDescriptor
+              ? mergeValue(leftDescriptor.value, rightDescriptor.value, context)
+              : cloneValue(rightDescriptor.value, context)
 
-  for (const key of Reflect.ownKeys(right)) {
-    const rightDescriptor = Object.getOwnPropertyDescriptor(right, key)
-    if (rightDescriptor) {
-      if ('value' in rightDescriptor) {
-        const leftDescriptor = Object.getOwnPropertyDescriptor(output, key)
-        const nextValue =
-          leftDescriptor && 'value' in leftDescriptor
-            ? mergeValue(leftDescriptor.value, rightDescriptor.value, context)
-            : cloneValue(rightDescriptor.value, context)
-
-        Object.defineProperty(output, key, {
-          ...rightDescriptor,
-          configurable: true,
-          value: nextValue,
-        })
-      } else {
-        Object.defineProperty(output, key, {
-          ...rightDescriptor,
-          configurable: true,
-        })
+          Object.defineProperty(output, key, {
+            ...rightDescriptor,
+            configurable: true,
+            value: nextValue,
+          })
+        } else {
+          Object.defineProperty(output, key, {
+            ...rightDescriptor,
+            configurable: true,
+          })
+        }
       }
     }
-  }
-
-  return output
+  })
 }
 
 function mergeAll<
@@ -229,6 +254,8 @@ function mergeAll<
   }
 
   const context: MergeContext = {
+    active: new WeakSet(),
+    merged: new WeakMap(),
     options,
     seen: new WeakMap(),
   }
@@ -236,7 +263,9 @@ function mergeAll<
   const output = cloneRecord(first!, context)
 
   for (const object of rest) {
-    mergeRecords(output, object, context, true)
+    context.merged = new WeakMap()
+    mergeRecords(output, object, context)
+    context.seen.set(object, output)
   }
 
   return output as DeepMergeResult<Objects, {}, ArrayStrategy>

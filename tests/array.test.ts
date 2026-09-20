@@ -399,6 +399,14 @@ describe(filterFalsy, () => {
 })
 
 describe(groupBy, () => {
+  it('should group numeric and string keys using object property semantics', () => {
+    const symbol = Symbol('1')
+    expect(groupBy([1, '1', 1, symbol], value => value)).toStrictEqual({
+      1: [1, '1', 1],
+      [symbol]: [symbol],
+    })
+  })
+
   it('should group by the value of a property key', () => {
     const data = [
       { kind: 'fruit', name: 'apple' },
@@ -483,6 +491,15 @@ describe(groupBy, () => {
 })
 
 describe(keyBy, () => {
+  it('should keep the last item when numeric and string keys collide', () => {
+    const rows = [
+      { key: 1, label: 'first' },
+      { key: '1', label: 'middle' },
+      { key: 1, label: 'last' },
+    ]
+    expect(keyBy(rows, 'key')).toStrictEqual({ 1: rows[2] })
+  })
+
   it('should index items by a property key', () => {
     const users = [
       { id: 'a', name: 'Alice' },

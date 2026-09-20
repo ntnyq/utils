@@ -152,6 +152,8 @@ toFixed(123.4, { omitTrailingZeros: false }) // => '123.40'
 toFixed(123.4, { digits: 3, omitTrailingZeros: false }) // => '123.400'
 toFixed(123.4, { digits: 3 }) // => '123.4'
 toFixed(123.0) // => '123'
+toFixed(100, { digits: 0 }) // => '100'
+toFixed(0, { digits: 0 }) // => '0'
 ```
 
 ---
@@ -167,7 +169,10 @@ Converts a value to an integer using the provided conversion options.
 
 ### Returns
 
-The converted integer result.
+The converted integer result. With `onError: 'returnOriginal'`, failed
+conversions return the original input. The return type includes the input type
+whenever the supplied options may select that behavior, including options
+stored in a `ToIntegerOptions` variable.
 
 ### Example
 

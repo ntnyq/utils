@@ -26,7 +26,6 @@ import {
   deepMergeWithOptions,
   isKeyOf,
   mapValues,
-  objectOmit,
   omit,
   omitInPlace,
   setIn,
@@ -398,7 +397,6 @@ describe('public API types', () => {
     expectTypeOf(omitInPlace).toBeFunction()
     expectTypeOf(openExternalURL).toBeFunction()
     expectTypeOf(scrollElementIntoView).toBeFunction()
-    expectTypeOf(objectOmit).toBeFunction()
     expectTypeOf(randomInteger).toBeFunction()
     expectTypeOf(removeArrayItem).toBeFunction()
     expectTypeOf(removeArrayItemInPlace).toBeFunction()

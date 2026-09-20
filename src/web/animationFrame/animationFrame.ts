@@ -62,27 +62,3 @@ export function cancelFrame(id: number): void {
   const caf = root.cancelAnimationFrame
   return caf.call(root, id)
 }
-
-/**
- * Gets the active global root object.
- * @deprecated Use {@link getGlobalRoot} instead.
- */
-export function getRoot(): Window | typeof globalThis {
-  return getGlobalRoot()
-}
-
-/**
- * Requests an animation frame.
- * @deprecated Use {@link requestFrame} instead.
- */
-export function rAF(fn: FrameRequestCallback): number {
-  return requestFrame(fn)
-}
-
-/**
- * Cancels an animation frame.
- * @deprecated Use {@link cancelFrame} instead.
- */
-export function cAF(id: number): void {
-  return cancelFrame(id)
-}

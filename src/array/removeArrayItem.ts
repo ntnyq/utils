@@ -40,11 +40,3 @@ export function removeArrayItemInPlace<T>(array: T[], value: T): boolean {
 
   return false
 }
-
-/**
- * Removes the first matching item from an array in place.
- * @deprecated Use {@link removeArrayItemInPlace} instead.
- */
-export function remove<T>(array: T[], value: T): boolean {
-  return removeArrayItemInPlace(array, value)
-}

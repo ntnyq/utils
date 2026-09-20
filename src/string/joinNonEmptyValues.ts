@@ -34,14 +34,3 @@ export function joinNonEmptyValues(
   }
   return array.filter(i => Boolean(i) || i === 0).join(separator)
 }
-
-/**
- * Joins non-empty strings and numbers into a single string.
- * @deprecated Use {@link joinNonEmptyValues} instead.
- */
-export function join(
-  array: readonly JoinableValue[],
-  options: JoinNonEmptyValuesOptions = {},
-): string {
-  return joinNonEmptyValues(array, options)
-}

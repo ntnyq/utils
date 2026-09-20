@@ -18,7 +18,6 @@ import {
   setIn,
   pick,
   sortObjectKeys,
-  objectOmit,
 } from '../src/object'
 
 describe(pick, () => {
@@ -820,52 +819,6 @@ describe(cloneDeep, () => {
     expect(cloned.level1.level2.level3.value).toBe('deep')
     expect(cloned).not.toBe(original)
     expect(cloned.level1).not.toBe(original.level1)
-  })
-})
-
-describe(objectOmit, () => {
-  it('should omit specified keys from object and return new object', () => {
-    const obj = { a: 1, b: 2, c: 3, d: 4, e: undefined }
-    expect(objectOmit(obj, ['a', 'c'])).toStrictEqual({
-      b: 2,
-      d: 4,
-      e: undefined,
-    })
-    // original object should not be mutated
-    expect(obj).toStrictEqual({ a: 1, b: 2, c: 3, d: 4, e: undefined })
-  })
-
-  it('should return same object when omitting no keys', () => {
-    const obj = { a: 1, b: 2, c: 3 }
-    expect(objectOmit(obj)).toStrictEqual({ a: 1, b: 2, c: 3 })
-    // original object should not be mutated
-    expect(obj).toStrictEqual({ a: 1, b: 2, c: 3 })
-  })
-
-  it('should handle omitting non-existent keys', () => {
-    const obj = { a: 1, b: 2 }
-    // @ts-expect-error test non-existent key
-    expect(objectOmit(obj, ['c'])).toStrictEqual({
-      a: 1,
-      b: 2,
-    })
-    // original object should not be mutated
-    expect(obj).toStrictEqual({ a: 1, b: 2 })
-  })
-
-  it('should option omitUndefined work', () => {
-    const obj = { a: 1, b: undefined, c: 3 }
-    expect(objectOmit(obj, ['b'], { omitUndefined: true })).toStrictEqual({
-      a: 1,
-      c: 3,
-    })
-  })
-
-  it('should handle omitting all keys', () => {
-    const obj = { a: 1, b: 2 }
-    expect(objectOmit(obj, ['a', 'b'])).toStrictEqual({})
-    // original object should not be mutated
-    expect(obj).toStrictEqual({ a: 1, b: 2 })
   })
 })
 

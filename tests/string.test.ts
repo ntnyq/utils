@@ -7,7 +7,6 @@ import {
   countGraphemes,
   calculateNGramSimilarity,
   getLetterByIndex,
-  join,
   joinNonEmptyValues,
   randomString,
   slugify,
@@ -173,12 +172,6 @@ describe(joinNonEmptyValues, () => {
   it('should handle single element', () => {
     expect(joinNonEmptyValues(['a'])).toBe('a')
     expect(joinNonEmptyValues([0])).toBe('0')
-  })
-})
-
-describe(join, () => {
-  it('should preserve the deprecated join behavior', () => {
-    expect(join(['a', null, '', 'b'], { separator: '-' })).toBe('a-b')
   })
 })
 

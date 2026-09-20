@@ -22,7 +22,6 @@ This section documents 17 exported methods from the object module.
 - [isKeyOf](#iskeyof)
 - [isPlainObject](#isplainobject)
 - [mapValues](#mapvalues)
-- [objectOmit](#objectomit)
 - [omit](#omit)
 - [omitInPlace](#omitinplace)
 - [pick](#pick)
@@ -293,30 +292,6 @@ import { mapValues } from '@ntnyq/utils'
 
 const result = mapValues({ first: 1, second: 2 }, value => value * 2)
 console.log(result) // => { first: 2, second: 4 }
-```
-
----
-
-## objectOmit
-
-Deprecated compatibility name for `omit`.
-
-### Parameters
-
-- **obj**: The original object from which properties will be omitted.
-- **keys**: An array of keys that should be omitted from the resulting object.
-- **options**: An optional object that can contain the `omitUndefined` property to specify whether properties with undefined values should also be omitted.
-
-### Returns
-
-A new object that includes all properties from the original object except those specified in the `keys` array and, if `omitUndefined` is true, those with undefined values.
-
-### Example
-
-```ts
-const original = { a: 1, b: 2, c: undefined }
-const result = objectOmit(original, ['b'], { omitUndefined: true })
-console.log(result) // Output: { a: 1 }
 ```
 
 ---

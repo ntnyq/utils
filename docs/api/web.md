@@ -50,7 +50,6 @@ if (!result.isValid) {
 - `getGlobalRoot` returns the browser window or `globalThis`.
 - `requestFrame` and `cancelFrame` wrap animation-frame scheduling and
   cancellation.
-- `getRoot`, `rAF`, and `cAF` remain as deprecated compatibility names.
 
 ```ts
 import { isBrowser, loadImageDimensions, requestFrame } from '@ntnyq/utils'

@@ -27,7 +27,6 @@ This section documents 23 exported methods from the array module.
 - [partition](#partition)
 - [removeArrayItem](#removearrayitem)
 - [removeArrayItemInPlace](#removearrayiteminplace)
-- [remove](#remove-deprecated)
 - [shuffle](#shuffle)
 - [shuffleInPlace](#shuffleinplace)
 - [toArray](#toarray)
@@ -414,12 +413,6 @@ const list = [1, 2, 3]
 const removed = removeArrayItemInPlace(list, 2)
 console.log(removed, list) // => true, [1, 3]
 ```
-
----
-
-## remove (deprecated)
-
-Deprecated compatibility name for `removeArrayItemInPlace`.
 
 ---
 

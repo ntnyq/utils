@@ -21,7 +21,6 @@ This section documents 14 exported values from the string module.
 - [calculateNGramSimilarity](#calculatengramsimilarity)
 - [getLetterByIndex](#getletterbyindex)
 - [joinNonEmptyValues](#joinnonemptyvalues)
-- [join](#join-deprecated)
 - [randomString](#randomstring)
 - [slugify](#slugify)
 - [truncate](#truncate)
@@ -225,12 +224,6 @@ import { joinNonEmptyValues } from '@ntnyq/utils'
 const result = joinNonEmptyValues(['hello', '', 'world'], { separator: ' ' })
 console.log(result) // => 'hello world'
 ```
-
----
-
-## join (deprecated)
-
-Deprecated compatibility name for `joinNonEmptyValues`.
 
 ---
 

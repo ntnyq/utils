@@ -14,7 +14,6 @@ import {
   moveArrayItem,
   orderBy,
   partition,
-  remove,
   removeArrayItem,
   removeArrayItemInPlace,
   shuffle,
@@ -678,14 +677,6 @@ describe(removeArrayItemInPlace, () => {
   it('should return false for null array', () => {
     // @ts-expect-error testing edge case
     expect(removeArrayItemInPlace(null, 1)).toBeFalsy()
-  })
-})
-
-describe(remove, () => {
-  it('should preserve the deprecated in-place behavior', () => {
-    const arr = ['a', 'b', 'c']
-    expect(remove(arr, 'b')).toBeTruthy()
-    expect(arr).toStrictEqual(['a', 'c'])
   })
 })
 

@@ -21,6 +21,39 @@ yarn add @ntnyq/utils
 pnpm add @ntnyq/utils
 ```
 
+## Agent Skills
+
+This repository provides the [ntnyq-utils skill](./skills/ntnyq-utils/SKILL.md)
+for AI coding agents, with API guidance, examples, and compatibility notes
+across 18 utility categories.
+
+Install it from your project directory using the
+[`skills` CLI](https://github.com/vercel-labs/skills):
+
+```shell
+npx skills add ntnyq/utils --skill ntnyq-utils
+```
+
+To install it specifically for Codex:
+
+```shell
+npx skills add ntnyq/utils --skill ntnyq-utils --agent codex
+```
+
+Add `--global` to make it available across projects:
+
+```shell
+npx skills add ntnyq/utils --skill ntnyq-utils --global
+```
+
+Use this skill when the target project declares `@ntnyq/utils` as a dependency,
+or when you explicitly ask the agent to install, use, or migrate to it. In a
+monorepo, this applies to the target workspace package. Installing the skill
+does not install the `@ntnyq/utils` package itself.
+
+See [skills/GENERATION.md](./skills/GENERATION.md) for the skill's sources and
+maintenance workflow.
+
 ## Credits
 
 - [antfu/utils](https://github.com/antfu/utils)

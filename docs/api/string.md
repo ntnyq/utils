@@ -7,7 +7,7 @@ outline: deep
 
 String formatting, normalization, padding, randomization, and similarity helpers.
 
-This section documents 14 exported values from the string module.
+This section documents 15 exported values from the string module.
 
 ## Exports
 
@@ -17,6 +17,7 @@ This section documents 14 exported values from the string module.
 - [ensurePrefix](#ensureprefix)
 - [ensureSuffix](#ensuresuffix)
 - [escapeStringRegexp](#escapestringregexp)
+- [countCodePoints](#countcodepoints)
 - [countGraphemes](#countgraphemes)
 - [calculateNGramSimilarity](#calculatengramsimilarity)
 - [getLetterByIndex](#getletterbyindex)
@@ -119,6 +120,51 @@ import { escapeStringRegexp } from '@ntnyq/utils'
 const result = escapeStringRegexp('hello.world?')
 console.log(result) // => 'hello\\.world\\?'
 ```
+
+---
+
+## countCodePoints
+
+Counts Unicode code points using JavaScript string iteration. Whitespace is
+preserved and no Unicode normalization is applied. Each unpaired UTF-16
+surrogate counts as one.
+
+### Parameters
+
+- **value**: The string to count code points in. Accepts a `string`, with no
+  implicit conversion of other values.
+
+### Returns
+
+The number of code points in `value`. An empty string returns `0`.
+
+### Example
+
+```ts
+import { countCodePoints, countGraphemes } from '@ntnyq/utils'
+
+countCodePoints('') // => 0
+countCodePoints('你好😀') // => 3
+countCodePoints(' a\n') // => 3
+countCodePoints('e\u0301') // => 2
+countCodePoints('🇨🇳') // => 2
+countCodePoints('👨‍👩‍👧‍👦') // => 7
+
+// Use countGraphemes to count user-perceived characters instead.
+countGraphemes('e\u0301') // => 1
+countGraphemes('🇨🇳') // => 1
+countGraphemes('👨‍👩‍👧‍👦') // => 1
+```
+
+JavaScript's `string.length` counts UTF-16 code units. These measurements can
+differ:
+
+| String      | `string.length` | `countCodePoints` | `countGraphemes` |
+| ----------- | --------------: | ----------------: | ---------------: |
+| `'😀'`      |               2 |                 1 |                1 |
+| `'e\u0301'` |               2 |                 2 |                1 |
+| `'🇨🇳'`      |               4 |                 2 |                1 |
+| `'👨‍👩‍👧‍👦'`      |              11 |                 7 |                1 |
 
 ---
 

@@ -24,7 +24,7 @@ glance.
 | [Path](/api/path)           |       4 | Pure filename, path-string, and extension helpers.             |
 | [Predicate](/api/predicate) |      50 | Runtime checks grouped by semantic concern.                    |
 | [Proxy](/api/proxy)         |       1 | Proxy-based object overlays.                                   |
-| [String](/api/string)       |      13 | String formatting, matching, and owned character constants.    |
+| [String](/api/string)       |      15 | String formatting, matching, and owned character constants.    |
 | [Tree](/api/tree)           |       8 | Tree construction, traversal, filtering, lookup, and mapping.  |
 | [Types](/api/types)         |      22 | Reusable TypeScript types.                                     |
 | [Units](/api/units)         |       6 | Duration and byte-size conversions.                            |

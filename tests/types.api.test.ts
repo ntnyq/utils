@@ -55,6 +55,7 @@ import type { URLString, Whitespace } from '../src/predicate'
 import { createOverlayProxy } from '../src/proxy'
 import {
   calculateNGramSimilarity,
+  countCodePoints,
   countGraphemes,
   getLetterByIndex,
   joinNonEmptyValues,
@@ -102,6 +103,10 @@ describe('public API types', () => {
     expectTypeOf(getLetterByIndex).toEqualTypeOf<
       (index: number, isLowerCase?: boolean) => string
     >()
+  })
+
+  it('should accept only a string and return a code point count', () => {
+    expectTypeOf(countCodePoints).toEqualTypeOf<(value: string) => number>()
   })
 
   it('should preserve readonly arrays and tuples in DeepRequired', () => {

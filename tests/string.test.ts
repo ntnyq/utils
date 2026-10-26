@@ -4,6 +4,7 @@ import {
   ensurePrefix,
   ensureSuffix,
   escapeStringRegexp,
+  countCodePoints,
   countGraphemes,
   calculateNGramSimilarity,
   getLetterByIndex,
@@ -113,6 +114,45 @@ describe(escapeStringRegexp, () => {
   it('should handle empty string', () => {
     expect(escapeStringRegexp('')).toBe('')
   })
+})
+
+describe(countCodePoints, () => {
+  it.each([
+    { value: '', expected: 0 },
+    { value: 'hello', expected: 5 },
+    { value: '中文', expected: 2 },
+    { value: '😀', expected: 1 },
+    { value: '𠮷', expected: 1 },
+    { value: 'A中😀𠮷', expected: 4 },
+    { value: ' a\n\t', expected: 4 },
+    { value: '\r\n', expected: 2 },
+    { value: '\u0000', expected: 1 },
+    { value: 'é', expected: 1 },
+    { value: 'e\u0301', expected: 2 },
+    { value: '🇨🇳', expected: 2 },
+    { value: '👍🏽', expected: 2 },
+    { value: '👨‍👩‍👧‍👦', expected: 7 },
+    { value: '\uD800', expected: 1 },
+    { value: '\uDC00', expected: 1 },
+    { value: '\uD800A\uDC00', expected: 3 },
+  ])(
+    'should count code points in $value as $expected',
+    ({ value, expected }) => {
+      expect(countCodePoints(value)).toBe(expected)
+    },
+  )
+
+  it.each([
+    { value: 'e\u0301', expected: 2 },
+    { value: '🇨🇳', expected: 2 },
+    { value: '👨‍👩‍👧‍👦', expected: 7 },
+  ])(
+    'should distinguish code points from graphemes in $value',
+    ({ value, expected }) => {
+      expect(countCodePoints(value)).toBe(expected)
+      expect(countGraphemes(value)).toBe(1)
+    },
+  )
 })
 
 describe(countGraphemes, () => {

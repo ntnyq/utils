@@ -3,6 +3,10 @@ import { describe, expect, expectTypeOf, it } from 'vitest'
 import * as utils from '../src'
 
 describe('public API exports', () => {
+  it('should expose code point counting from the package entry', () => {
+    expect(utils.countCodePoints('A😀')).toBe(2)
+  })
+
   it('should remove deprecated aliases from runtime and type exports', () => {
     const removedNames = [
       'objectOmit',

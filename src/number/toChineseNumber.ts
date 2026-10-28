@@ -2,7 +2,8 @@ const CHINESE_DIGITS = '零一二三四五六七八九'
 const CHINESE_GROUP_BASE = 10_000
 const CHINESE_GROUP_UNITS = ['', '万', '亿', '万亿'] as const
 const CHINESE_SMALL_UNITS = ['', '十', '百', '千'] as const
-const CHINESE_SMALL_UNIT_POSITIONS = [...CHINESE_SMALL_UNITS.keys()].reverse()
+// oxlint-disable-next-line no-magic-numbers -- Decimal positions from thousands to units.
+const CHINESE_SMALL_UNIT_POSITIONS = [3, 2, 1, 0] as const
 
 function convertGroup(value: number): string {
   let needsZero = false

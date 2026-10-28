@@ -23,7 +23,7 @@ const htmlEscapeRegexp = /[&<>'"]/gu
  * ```
  */
 export function escapeHTML(str: string): string {
-  return str.replace(
+  return str.replaceAll(
     htmlEscapeRegexp,
     char => htmlEscapeMap[char as keyof typeof htmlEscapeMap],
   )
@@ -59,7 +59,7 @@ const htmlUnescapeRegexp = /&(?:amp|#38|lt|#60|gt|#62|apos|#39|quot|#34);/gu
  * ```
  */
 export function unescapeHTML(str: string): string {
-  return str.replace(
+  return str.replaceAll(
     htmlUnescapeRegexp,
     char => htmlUnescapeMap[char as keyof typeof htmlUnescapeMap],
   )

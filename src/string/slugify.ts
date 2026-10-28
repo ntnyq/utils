@@ -23,11 +23,11 @@ export function slugify(str: string): string {
     str
       .normalize('NFKD')
       // Remove accents
-      .replace(rCombining, '')
+      .replaceAll(rCombining, '')
       // Remove control characters
-      .replace(rControl, '')
+      .replaceAll(rControl, '')
       // Replace special characters
-      .replace(rSpecial, '-')
+      .replaceAll(rSpecial, '-')
       // Remove continuos separators
       .replaceAll(/-{2,}/gu, '-')
       // Remove prefixing and trailing separators

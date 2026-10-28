@@ -9,16 +9,19 @@ documentation, public exports, implementation, and tests.
 
 ## Source Snapshot
 
-| Field               | Value                                      |
-| ------------------- | ------------------------------------------ |
-| Package             | `@ntnyq/utils`                             |
-| Package version     | `0.23.0`                                   |
-| Source commit       | `b07a60eca1179f2647a0bdcc578cc32df98205ba` |
-| Short SHA           | `b07a60e`                                  |
-| Commit date         | `2026-09-20 10:40:15 +0800`                |
-| Commit subject      | `chore: release v0.23.0`                   |
-| Generation date     | `2026-09-22`                               |
-| Source working tree | Clean before skill generation              |
+| Field               | Value                                               |
+| ------------------- | --------------------------------------------------- |
+| Package             | `@ntnyq/utils`                                      |
+| Package version     | `0.23.0`                                            |
+| Source commit       | `afdf47cef7326095bdf200fc30d4575ec2bc14dc`          |
+| Short SHA           | `afdf47c`                                           |
+| Commit date         | `2026-10-29 04:19:28 +0800`                         |
+| Commit subject      | `fix: use replaceAll for global regex replacements` |
+| Generation date     | `2026-10-29`                                        |
+| Source working tree | Clean before skill update                           |
+
+The snapshot includes the unreleased `countCodePoints` API added after v0.23.0.
+The `replaceAll` lint fixes preserve the documented string and HTML behavior.
 
 The SHA identifies the source that was reviewed, not the later commit that
 adds or updates the generated skill. There is no automatic generation script;
@@ -96,9 +99,9 @@ for public exports and inferred contracts.
 From the repository root, compare against the recorded source commit:
 
 ```bash
-git diff --name-only b07a60eca1179f2647a0bdcc578cc32df98205ba..HEAD -- README.md package.json src/ docs/ tests/
-git diff b07a60eca1179f2647a0bdcc578cc32df98205ba..HEAD -- package.json src/ docs/ tests/
-git log --oneline b07a60eca1179f2647a0bdcc578cc32df98205ba..HEAD -- src/ docs/ tests/
+git diff --name-only afdf47cef7326095bdf200fc30d4575ec2bc14dc..HEAD -- README.md package.json src/ docs/ tests/
+git diff afdf47cef7326095bdf200fc30d4575ec2bc14dc..HEAD -- package.json src/ docs/ tests/
+git log --oneline afdf47cef7326095bdf200fc30d4575ec2bc14dc..HEAD -- src/ docs/ tests/
 ```
 
 Also inspect uncommitted changes when generating from a working tree:
@@ -152,6 +155,7 @@ required for that change, such as `pnpm run release:check` or `pnpm docs:build`.
 
 ## History
 
-| Date       | Source SHA | Package version | Change                                                                      |
-| ---------- | ---------- | --------------- | --------------------------------------------------------------------------- |
-| 2026-09-22 | `b07a60e`  | `0.23.0`        | Initial skill with a task index, compatibility rules, and 18 API references |
+| Date       | Source SHA | Package version       | Change                                                                                 |
+| ---------- | ---------- | --------------------- | -------------------------------------------------------------------------------------- |
+| 2026-09-22 | `b07a60e`  | `0.23.0`              | Initial skill with a task index, compatibility rules, and 18 API references            |
+| 2026-10-29 | `afdf47c`  | `0.23.0` + unreleased | Add `countCodePoints`, distinguish unreleased APIs, and fix strict TypeScript examples |

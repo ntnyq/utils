@@ -44,8 +44,12 @@ Source: `docs/api/predicate.md`, `src/predicate/`, `tests/predicate.test.ts`.
 import { isRecord, isString, safeParse } from '@ntnyq/utils'
 
 const parsed = safeParse('{"name":"Alice"}')
-if (parsed.success && isRecord(parsed.value) && isString(parsed.value.name)) {
-  console.log(parsed.value.name.toUpperCase())
+if (
+  parsed.success &&
+  isRecord(parsed.value) &&
+  isString(parsed.value['name'])
+) {
+  console.log(parsed.value['name'].toUpperCase())
 }
 ```
 

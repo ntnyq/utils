@@ -24,12 +24,15 @@ Already running work must observe the supplied signal to stop cooperatively.
 import { retry } from '@ntnyq/utils'
 
 const controller = new AbortController()
-const response = await retry(({ signal }) => fetch('/api/data', { signal }), {
-  maxAttempts: 3,
-  backoff: (_error, { attempt }) => 100 * 2 ** (attempt - 1),
-  shouldRetry: error => error instanceof TypeError,
-  signal: controller.signal,
-})
+const response = await retry(
+  ({ signal }) => fetch('/api/data', { signal: signal ?? null }),
+  {
+    maxAttempts: 3,
+    backoff: (_error, { attempt }) => 100 * 2 ** (attempt - 1),
+    shouldRetry: error => error instanceof TypeError,
+    signal: controller.signal,
+  },
+)
 ```
 
 The operation receives `{ attempt, maxAttempts, signal }`; attempts start at 1.

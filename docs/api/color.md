@@ -8,11 +8,12 @@ outline: deep
 Color value manipulation, conversion, and random RGB, RGBA, and HEX
 generation.
 
-This section documents 11 exports from the color module.
+This section documents 12 exports from the color module.
 
 ## Methods
 
 - [Color](#color)
+- [HexToRGBStringOptions](#hextorgbstringoptions)
 - [RGBColor](#rgbcolor)
 - [darkenHexColor](#darkenhexcolor)
 - [hexToRGB](#hextorgb)
@@ -38,6 +39,23 @@ import { Color } from '@ntnyq/utils'
 
 const color = Color.fromHex('#336699').withAlpha(0.5)
 console.log(color.toRGBAString()) // => rgba(51, 102, 153, 0.5)
+```
+
+---
+
+## HexToRGBStringOptions
+
+Controls how `hexToRGBString` formats its output.
+
+```ts
+interface HexToRGBStringOptions {
+  /**
+   * Whether to omit the `rgb(...)` wrapper.
+   * Commonly used to compute CSS custom property values for RGB channels.
+   * @default false
+   */
+  omitWrapper?: boolean
+}
 ```
 
 ---
@@ -87,10 +105,26 @@ hexToRGB('#369') // => { red: 51, green: 102, blue: 153 }
 Converts a `#RGB` or `#RRGGBB` hexadecimal color to a CSS RGB color string.
 Invalid hexadecimal colors throw an error.
 
+Set `omitWrapper` to `true` to return only the comma-separated RGB channels.
+This is commonly used to compute CSS custom property values.
+
 ```ts
 import { hexToRGBString } from '@ntnyq/utils'
 
 hexToRGBString('#369') // => 'rgb(51, 102, 153)'
+hexToRGBString('#369', { omitWrapper: true }) // => '51, 102, 153'
+```
+
+For example, set `--brand-rgb` to the unwrapped result and use it in CSS:
+
+```css
+:root {
+  --brand-rgb: 51, 102, 153;
+}
+
+.brand {
+  color: rgba(var(--brand-rgb), 0.5);
+}
 ```
 
 ---

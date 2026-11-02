@@ -3,6 +3,15 @@ import { Color } from './color'
 const MAX_COLOR_CHANNEL = 255
 const MAX_PERCENTAGE = 100
 
+export interface HexToRGBStringOptions {
+  /**
+   * Whether to omit the `rgb(...)` wrapper.
+   * Commonly used to compute CSS custom property values for RGB channels.
+   * @default false
+   */
+  omitWrapper?: boolean
+}
+
 export interface RGBColor {
   /**
    * Red channel from 0 through 255.
@@ -51,7 +60,8 @@ export function hexToRGB(hex: string): RGBColor {
  * Converts a hexadecimal color to a CSS RGB color string.
  *
  * @param hex - A `#RGB` or `#RRGGBB` hexadecimal color.
- * @returns The color in `rgb(red, green, blue)` format.
+ * @param options - RGB string formatting options.
+ * @returns The color in `rgb(red, green, blue)` format, or `red, green, blue` when the wrapper is omitted.
  * @throws {Error} If the hexadecimal color is invalid.
  *
  * @example
@@ -60,11 +70,17 @@ export function hexToRGB(hex: string): RGBColor {
  * import { hexToRGBString } from '@ntnyq/utils'
  *
  * hexToRGBString('#369') // => 'rgb(51, 102, 153)'
+ * hexToRGBString('#369', { omitWrapper: true }) // => '51, 102, 153'
  * ```
  */
-export function hexToRGBString(hex: string): string {
+export function hexToRGBString(
+  hex: string,
+  options: HexToRGBStringOptions = {},
+): string {
+  const { omitWrapper = false } = options
   const { red, green, blue } = hexToRGB(hex)
-  return `rgb(${red}, ${green}, ${blue})`
+  const channels = `${red}, ${green}, ${blue}`
+  return omitWrapper ? channels : `rgb(${channels})`
 }
 
 /**

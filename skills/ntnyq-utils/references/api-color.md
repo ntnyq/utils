@@ -14,6 +14,9 @@ Color.fromHex('#336699').withAlpha(0.5).toRGBAString()
 
 - `hexToRGB` and `hexToRGBString` accept `#RGB` and `#RRGGBB`; invalid input
   throws. They are not general CSS color parsers.
+- `hexToRGBString` accepts `{ omitWrapper: true }` to return comma-separated
+  channels without `rgb(...)`, commonly used to compute CSS custom property
+  values. The wrapper is included by default.
 - `RGBColor` is a type with numeric `red`, `green`, and `blue` properties.
   `rgbToHex` takes that object, rounds channels, and clamps them to 0–255.
 - `lightenHexColor` and `darkenHexColor` add/subtract a percentage of the full

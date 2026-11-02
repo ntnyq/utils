@@ -67,7 +67,21 @@ describe('color transformers', () => {
   it('should convert hexadecimal colors to CSS RGB strings', () => {
     expect(hexToRGBString('#369')).toBe('rgb(51, 102, 153)')
     expect(hexToRGBString('#A1b2C3')).toBe('rgb(161, 178, 195)')
+    expect(hexToRGBString('#369', {})).toBe('rgb(51, 102, 153)')
+    expect(hexToRGBString('#369', { omitWrapper: false })).toBe(
+      'rgb(51, 102, 153)',
+    )
     expect(() => hexToRGBString('336699')).toThrow('Invalid hex color')
+  })
+
+  it('should omit the RGB wrapper for CSS custom property values', () => {
+    expect(hexToRGBString('#369', { omitWrapper: true })).toBe('51, 102, 153')
+    expect(hexToRGBString('#A1b2C3', { omitWrapper: true })).toBe(
+      '161, 178, 195',
+    )
+    expect(() => hexToRGBString('336699', { omitWrapper: true })).toThrow(
+      'Invalid hex color',
+    )
   })
 
   it('should convert normalized RGB channels to hexadecimal colors', () => {

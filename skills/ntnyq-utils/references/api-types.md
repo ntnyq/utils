@@ -26,7 +26,7 @@ Import these using `import type { ... } from '@ntnyq/utils'`.
 | `LiteralUnion<Union, Base>`                             | Keeps literal completion while allowing other base values                              |
 | `NonEmptyObject<T>`                                     | Resolves empty record types to `never`; no runtime validation                          |
 | `ValueOf<T>`                                            | Union of property value types                                                          |
-| `ElementOf<T>`                                          | Extracts mutable-array elements; input constraint also permits nullish values          |
+| `ElementOf<T>`                                          | Extracts mutable or readonly array/tuple elements; nullish inputs resolve to `never`   |
 
 ```ts
 import type {

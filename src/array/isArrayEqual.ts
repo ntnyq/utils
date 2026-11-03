@@ -13,7 +13,10 @@
  * ```
  *
  */
-export function isArrayEqual(array1: unknown[], array2: unknown[]): boolean {
+export function isArrayEqual(
+  array1: readonly unknown[],
+  array2: readonly unknown[],
+): boolean {
   if (array1.length !== array2.length) {
     return false
   }

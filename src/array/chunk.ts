@@ -13,7 +13,7 @@
  * ```
  *
  */
-export function chunk<T>(array: T[], size: number): T[][] {
+export function chunk<T>(array: readonly T[], size: number): T[][] {
   if (!Number.isInteger(size) || size <= 0) {
     throw new RangeError('Chunk size must be a positive integer')
   }

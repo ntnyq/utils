@@ -20,5 +20,5 @@ export type ValueOf<T> = T[keyof T]
 /**
  * A type that represents the elements of an array type.
  */
-export type ElementOf<T extends unknown[] | null | undefined> =
-  T extends (infer U)[] ? U : never
+export type ElementOf<T extends readonly unknown[] | null | undefined> =
+  T extends readonly (infer U)[] ? U : never

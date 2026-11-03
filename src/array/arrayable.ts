@@ -1,8 +1,8 @@
-import type { Arrayable, Nullable } from '../types'
+import type { Nullable } from '../types'
 import { toArray } from './toArray'
 
 /**
- * Convert `Arrayable<T>` to `Array<T>` and flatten the result
+ * Normalize a scalar or readonly array and flatten one level into a new array.
  * @param array - given array
  * @returns Array<T>
  * @example
@@ -15,12 +15,14 @@ import { toArray } from './toArray'
  * ```
  *
  */
-export function flattenArrayable<T>(array?: Nullable<Arrayable<T | T[]>>): T[] {
+export function flattenArrayable<T>(
+  array?: Nullable<T | readonly (T | readonly T[])[]>,
+): T[] {
   return toArray(array).flat() as T[]
 }
 
 /**
- * Use rest arguments to merge arrays
+ * Merge scalars and readonly arrays into a new array, skipping nullish arguments.
  * @param args - rest arguments
  * @returns Array<T>
  * @example
@@ -33,6 +35,8 @@ export function flattenArrayable<T>(array?: Nullable<Arrayable<T | T[]>>): T[] {
  * ```
  *
  */
-export function mergeArrayable<T>(...args: Nullable<Arrayable<T>>[]): T[] {
-  return args.flatMap(item => toArray(item) as T[])
+export function mergeArrayable<T>(
+  ...args: (Nullable<T | readonly T[]> | undefined)[]
+): T[] {
+  return args.flatMap(item => item ?? [])
 }

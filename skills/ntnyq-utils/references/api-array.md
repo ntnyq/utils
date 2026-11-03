@@ -2,6 +2,11 @@
 
 Source: `docs/api/array.md`, `src/array/`, `tests/array.test.ts`.
 
+Array inputs accept mutable and readonly arrays, including `as const` tuples.
+Transformations return new mutable arrays; `toArray` preserves existing array
+references and readonly types. `shuffleInPlace` and `removeArrayItemInPlace`
+require mutable inputs.
+
 ## Select the Operation
 
 | Need                                | API                                        | Contract                                                                        |

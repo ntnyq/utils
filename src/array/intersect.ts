@@ -13,6 +13,6 @@
  * console.log(result) // => [2, 3]
  * ```
  */
-export function intersect<T>(a: T[], b: T[]): T[] {
+export function intersect<T>(a: readonly T[], b: readonly T[]): T[] {
   return a.filter(item => b.includes(item))
 }

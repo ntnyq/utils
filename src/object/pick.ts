@@ -26,7 +26,7 @@ export interface ObjectPickOptions {
  */
 export function pick<T, K extends keyof T>(
   object: T,
-  keys: K[],
+  keys: readonly K[],
   options: ObjectPickOptions = {},
 ): Pick<T, K> {
   const { omitUndefined = false } = options

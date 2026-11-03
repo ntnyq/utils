@@ -21,6 +21,13 @@ import {
 } from '../src/object'
 
 describe(pick, () => {
+  it('should accept frozen property keys without mutating them', () => {
+    const keys = Object.freeze(['a', 'c'] as const)
+
+    expect(pick({ a: 1, b: 2, c: 3 }, keys)).toStrictEqual({ a: 1, c: 3 })
+    expect(keys).toStrictEqual(['a', 'c'])
+  })
+
   it('should pick specified keys from object', () => {
     const obj = { a: 1, b: 2, c: 3, d: 4 }
     expect(pick(obj, ['a', 'c'])).toStrictEqual({ a: 1, c: 3 })

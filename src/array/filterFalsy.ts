@@ -13,7 +13,7 @@
  * ```
  */
 export function filterFalsy<T>(
-  array: T[],
+  array: readonly T[],
 ): Exclude<T, false | 0 | 0n | '' | null | undefined>[] {
   return array.filter(Boolean) as Exclude<
     T,

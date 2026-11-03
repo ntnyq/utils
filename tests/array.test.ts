@@ -24,6 +24,48 @@ import {
   uniqueWith,
 } from '../src/array'
 
+describe('readonly array inputs', () => {
+  it('should transform frozen arrays into new mutable arrays', () => {
+    const source = Object.freeze([1, 2, 2, 3])
+    const other = Object.freeze([2, 3])
+    const deduplicated = unique(source)
+    const chunks = chunk(source, 2)
+    const intersection = intersect(source, other)
+    const filtered = filterFalsy(Object.freeze([0, 1, false, 2, null]))
+
+    expect(deduplicated).toStrictEqual([1, 2, 3])
+    expect(chunks).toStrictEqual([
+      [1, 2],
+      [2, 3],
+    ])
+    expect(intersection).toStrictEqual([2, 2, 3])
+    expect(filtered).toStrictEqual([1, 2])
+    expect(isArrayEqual(source, Object.freeze([1, 2, 2, 3]))).toBeTruthy()
+    expect(isArrayEqual(source, other)).toBeFalsy()
+
+    deduplicated.push(4)
+    chunks[0]?.push(4)
+    intersection.push(4)
+    filtered.push(4)
+    expect(source).toStrictEqual([1, 2, 2, 3])
+    expect(other).toStrictEqual([2, 3])
+  })
+
+  it('should flatten and merge frozen arrays without changing their contents', () => {
+    const nested = Object.freeze([1, Object.freeze([2, 3])])
+    const values = Object.freeze([4, 5])
+    const flattened = flattenArrayable(nested)
+    const merged = mergeArrayable(values, 6, null, undefined)
+
+    expect(flattened).toStrictEqual([1, 2, 3])
+    expect(merged).toStrictEqual([4, 5, 6])
+    flattened.push(7)
+    merged.push(7)
+    expect(nested).toStrictEqual([1, [2, 3]])
+    expect(values).toStrictEqual([4, 5])
+  })
+})
+
 describe(moveArrayItem, () => {
   it('should move an item without mutating the source array', () => {
     const source = ['a', 'b', 'c', 'd'] as const

@@ -7,6 +7,12 @@ outline: deep
 
 Helpers for chunking, grouping, normalizing, comparing, and transforming arrays.
 
+All array inputs accept mutable arrays, `ReadonlyArray<T>`, and readonly tuples
+such as `as const`. Transformations return new mutable arrays while preserving
+element types. `toArray` preserves an existing array's reference and readonly
+type. `shuffleInPlace` and `removeArrayItemInPlace` require mutable arrays because
+they modify the input.
+
 This section documents 23 exported methods from the array module.
 
 ## Methods
@@ -128,7 +134,7 @@ console.log(truthyArray) // Output: [1, 2, 3, 4, 5]
 
 ## flattenArrayable
 
-Convert `Arrayable&lt;T&gt;` to `Array&lt;T&gt;` and flatten the result
+Normalize a scalar or readonly array and flatten one level into a new array.
 
 ### Parameters
 
@@ -487,7 +493,7 @@ const preserved = toArray(values) // readonly [1, 2]
 
 ## unique
 
-Returns a new array with unique values selected by key.
+Returns a new array with unique values.
 
 ### Parameters
 
@@ -502,7 +508,8 @@ The new array.
 ```ts
 import { unique } from '@ntnyq/utils'
 
-const result = unique([1, 1, 2, 3, 3])
+const values = [1, 1, 2, 3, 3] as const
+const result = unique(values) // (1 | 2 | 3)[]
 console.log(result) // => [1, 2, 3]
 ```
 
@@ -510,7 +517,7 @@ console.log(result) // => [1, 2, 3]
 
 ## uniqueBy
 
-Returns a new array with unique values.
+Returns a new array with unique values selected by key.
 
 ### Parameters
 

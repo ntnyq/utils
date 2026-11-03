@@ -30,6 +30,10 @@ and `Primitive` describe frequently used value shapes.
 `LiteralUnion`, `NonEmptyObject`, `ValueOf`, and `ElementOf` provide common
 inference and extraction patterns.
 
+`ElementOf<T>` extracts elements from mutable or readonly arrays and tuples;
+nullish and empty-array inputs resolve to `never`. `Arrayable<T>` remains
+`T | T[]`; array normalization helpers also accept readonly arrays directly.
+
 ```ts
 import type { Arrayable, DeepRequired } from '@ntnyq/utils'
 

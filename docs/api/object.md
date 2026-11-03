@@ -351,6 +351,7 @@ console.log(value) // => { a: 1, c: 3 }
 ## pick
 
 Creates an object composed of the picked object properties.
+The keys may be a mutable array, a readonly array, or an `as const` tuple.
 
 ### Parameters
 

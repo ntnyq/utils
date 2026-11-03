@@ -12,7 +12,7 @@
  * ```
  *
  */
-export function unique<T>(array: T[]): T[] {
+export function unique<T>(array: readonly T[]): T[] {
   // oxlint-disable-next-line unicorn/prefer-spread
   return Array.from(new Set(array))
 }

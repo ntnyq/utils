@@ -6,9 +6,10 @@ description: Use @ntnyq/utils in TypeScript and JavaScript projects for data tra
 # @ntnyq/utils
 
 An ESM-only, tree-shakable utility library with TypeScript declarations.
-This skill covers v0.23.0 and the unreleased `countCodePoints` addition,
-reviewed at source commit `afdf47c`. Check the installed package's exports and
-declarations before using unreleased or version-specific APIs.
+This skill covers v0.24.0 and subsequent source changes through `acf1695`.
+`countCodePoints` is included in v0.24.0; the `hexToRGBString` formatting option
+and expanded readonly input support were added afterward. Check the installed
+package's exports and declarations before using these post-v0.24.0 contracts.
 
 ## When to Use
 
@@ -88,6 +89,10 @@ and tests when working in the library repository.
 - Tree predicates receive a context object: use `({ node }) => ...`.
 - Choose `countCodePoints` for Unicode code points and `countGraphemes` for
   user-perceived characters. JavaScript `.length` counts UTF-16 code units.
+- Readonly array inputs are supported by non-mutating array helpers; `toArray`
+  preserves the input reference and readonly type, while transformations return
+  mutable arrays. The expanded support after v0.24.0 also covers `pick` keys
+  and `ElementOf`; verify installed declarations before relying on it.
 - Browser imports do not imply browser globals exist. Guard browser work with
   `isBrowser()`; animation-frame wrappers do not provide a timer fallback.
 

@@ -26,17 +26,20 @@ Import these using `import type { ... } from '@ntnyq/utils'`.
 | `LiteralUnion<Union, Base>`                             | Keeps literal completion while allowing other base values                              |
 | `NonEmptyObject<T>`                                     | Resolves empty record types to `never`; no runtime validation                          |
 | `ValueOf<T>`                                            | Union of property value types                                                          |
-| `ElementOf<T>`                                          | Extracts mutable or readonly array/tuple elements; nullish inputs resolve to `never`   |
+| `ElementOf<T>`                                          | Mutable/readonly array and tuple elements; nullish and empty inputs yield `never`      |
 
 ```ts
 import type {
   Arrayable,
   DeepRequired,
+  ElementOf,
   Exclusive,
   Overwrite,
 } from '@ntnyq/utils'
 
 type Tags = Arrayable<string>
+type Item = ElementOf<readonly [1, 'a']> // 1 | 'a'
+type Empty = ElementOf<readonly [] | null | undefined> // never
 type Config = DeepRequired<{ nested?: { enabled?: boolean | null } }>
 type Saved = Overwrite<{ id: number; name: string }, { id: string }>
 type Locator = Exclusive<{ id: string }, { slug: string }>
@@ -44,6 +47,11 @@ type Locator = Exclusive<{ id: string }, { slug: string }>
 
 The `Primitive` alias differs from the runtime `isPrimitive` predicate, which
 excludes functions. Type helpers do not validate values at runtime.
+
+Readonly support in `ElementOf` was added after v0.24.0; check installed
+declarations before using readonly arrays or tuples with this type. The
+`Arrayable<T>` alias remains mutable even though normalization helpers accept
+readonly inputs directly.
 
 Options and result types are exported alongside their corresponding utility,
 through the same flat package entry. Examples include `MapAsyncOptions`,

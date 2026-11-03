@@ -3,9 +3,17 @@
 Source: `docs/api/color.md`, `src/color/`, `tests/color.test.ts`.
 
 ```ts
-import { Color, hexToRGB, lightenHexColor, rgbToHex } from '@ntnyq/utils'
+import {
+  Color,
+  hexToRGB,
+  hexToRGBString,
+  lightenHexColor,
+  rgbToHex,
+} from '@ntnyq/utils'
 
 hexToRGB('#369') // { red: 51, green: 102, blue: 153 }
+hexToRGBString('#369') // 'rgb(51, 102, 153)'
+hexToRGBString('#369', { omitWrapper: true }) // '51, 102, 153'
 rgbToHex({ red: 51, green: 102, blue: 153 }) // '#336699'
 lightenHexColor('#336699', 20) // '#6699CC'
 Color.fromHex('#336699').withAlpha(0.5).toRGBAString()
@@ -16,7 +24,9 @@ Color.fromHex('#336699').withAlpha(0.5).toRGBAString()
   throws. They are not general CSS color parsers.
 - `hexToRGBString` accepts `{ omitWrapper: true }` to return comma-separated
   channels without `rgb(...)`, commonly used to compute CSS custom property
-  values. The wrapper is included by default.
+  values. The wrapper is included by default. This option and its exported
+  `HexToRGBStringOptions` type were added after v0.24.0; check installed
+  declarations before passing the second argument.
 - `RGBColor` is a type with numeric `red`, `green`, and `blue` properties.
   `rgbToHex` takes that object, rounds channels, and clamps them to 0–255.
 - `lightenHexColor` and `darkenHexColor` add/subtract a percentage of the full

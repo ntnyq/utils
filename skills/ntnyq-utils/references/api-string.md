@@ -12,7 +12,7 @@ Source: `docs/api/string.md`, `src/string/`, `tests/string.test.ts`.
 | `unindent`                                | Plain string or tagged template; removes common indentation and outer empty lines                    |
 | `createPadString({ length, char })`       | Returns a left-padding function; long inputs are sliced to their final `length` code units           |
 | `getLetterByIndex(index, isLowerCase?)`   | Index 0–25 maps to A–Z; invalid indexes throw `RangeError`; no AA or wraparound                      |
-| `countCodePoints(text)`                   | Counts Unicode code points using string iteration; added after v0.23.0, so check installed exports   |
+| `countCodePoints(text)`                   | Counts Unicode code points using string iteration; available since v0.24.0                           |
 | `countGraphemes(text)`                    | Counts user-perceived characters using `Intl.Segmenter` for non-ASCII input                          |
 | `randomString(length?, chars?)`           | Defaults to 16 alphanumeric graphemes; uses `Math.random`                                            |
 | `calculateNGramSimilarity(a, b, options)` | Score 0–1; defaults to bigrams and case-insensitive comparison                                       |

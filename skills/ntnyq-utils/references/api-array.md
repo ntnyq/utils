@@ -1,11 +1,16 @@
 # Array
 
-Source: `docs/api/array.md`, `src/array/`, `tests/array.test.ts`.
+Source: `docs/api/array.md`, `src/array/`, `tests/array.test.ts`, and
+`tests/types.readonly-array.test.ts`.
 
 Array inputs accept mutable and readonly arrays, including `as const` tuples.
 Transformations return new mutable arrays; `toArray` preserves existing array
 references and readonly types. `shuffleInPlace` and `removeArrayItemInPlace`
 require mutable inputs.
+
+Readonly support for `chunk`, `filterFalsy`, `flattenArrayable`, `intersect`,
+`isArrayEqual`, `mergeArrayable`, and `unique` was added after v0.24.0.
+Check installed declarations when targeting that release or earlier.
 
 ## Select the Operation
 
@@ -30,6 +35,23 @@ require mutable inputs.
 `unique` and `uniqueBy` keep the first occurrence. `groupBy` and `keyBy` use
 object property keys: numeric `1` and string `'1'` coincide, while symbols remain
 distinct. They handle special keys such as `__proto__` as data properties.
+
+## Readonly Normalization
+
+```ts
+import { flattenArrayable, mergeArrayable, toArray, unique } from '@ntnyq/utils'
+
+const values = [1, 2, 2] as const
+const preserved = toArray(values) // readonly [1, 2, 2]; same reference
+const deduplicated = unique(values) // (1 | 2)[]; new mutable array
+const flattened = flattenArrayable([1, [2, 3]] as const) // (1 | 2 | 3)[]
+const merged = mergeArrayable<number>(values, 3, null, undefined) // number[]
+// deduplicated: [1, 2]; flattened: [1, 2, 3]; merged: [1, 2, 2, 3]
+```
+
+`mergeArrayable` skips nullish scalar arguments, while nullish elements inside
+an array remain. `Arrayable<T>` itself still means `T | T[]`; the normalization
+helpers accept readonly arrays directly without widening that alias.
 
 ## Stable Sorting
 

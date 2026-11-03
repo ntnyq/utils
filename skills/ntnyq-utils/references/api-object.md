@@ -1,12 +1,14 @@
 # Object
 
-Source: `docs/api/object.md`, `src/object/`, `tests/object.test.ts`, and
-`tests/types.api.test.ts`.
+Source: `docs/api/object.md`, `src/object/`, `tests/object.test.ts`,
+`tests/types.api.test.ts`, and `tests/types.readonly-array.test.ts`.
 
 ## Selection and Mapping
 
 - `pick(object, keys, { omitUndefined })` selects own properties into a new
-  object. `omitUndefined` defaults to false.
+  object. `omitUndefined` defaults to false. Keys accept readonly arrays and
+  `as const` tuples in source versions after v0.24.0; check installed
+  declarations before relying on that support.
 - `omit(object, keys, { omitUndefined })` returns a new object, preserving its
   prototype and retained property descriptors, including symbols.
 - `omitInPlace(object, ...keys)` deletes properties from the source. Its keys
@@ -17,6 +19,14 @@ Source: `docs/api/object.md`, `src/object/`, `tests/object.test.ts`, and
   the key type. `isPlainObject(value)` excludes custom class instances.
 - `sortObjectKeys(object, options)` creates a sorted object; recursive sorting
   preserves shared and circular references.
+
+```ts
+import { pick } from '@ntnyq/utils'
+
+const keys = ['id', 'name'] as const
+const selected = pick({ id: 1, name: 'Alice', active: true }, keys)
+// { id: number; name: string }; keys and the source are unchanged
+```
 
 ## Cleaning and Cloning
 

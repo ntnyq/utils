@@ -9,19 +9,23 @@ documentation, public exports, implementation, and tests.
 
 ## Source Snapshot
 
-| Field               | Value                                               |
-| ------------------- | --------------------------------------------------- |
-| Package             | `@ntnyq/utils`                                      |
-| Package version     | `0.23.0`                                            |
-| Source commit       | `afdf47cef7326095bdf200fc30d4575ec2bc14dc`          |
-| Short SHA           | `afdf47c`                                           |
-| Commit date         | `2026-10-29 04:19:28 +0800`                         |
-| Commit subject      | `fix: use replaceAll for global regex replacements` |
-| Generation date     | `2026-10-29`                                        |
-| Source working tree | Clean before skill update                           |
+| Field               | Value                                      |
+| ------------------- | ------------------------------------------ |
+| Package             | `@ntnyq/utils`                             |
+| Package version     | `0.24.0`                                   |
+| Source commit       | `acf16956960877b99232cff7d972a12324aa4299` |
+| Short SHA           | `acf1695`                                  |
+| Commit date         | `2026-11-03 09:53:31 +0800`                |
+| Commit subject      | `fix: support readonly array inputs`       |
+| Generation date     | `2026-11-03`                               |
+| Source working tree | Clean before skill update                  |
 
-The snapshot includes the unreleased `countCodePoints` API added after v0.23.0.
-The `replaceAll` lint fixes preserve the documented string and HTML behavior.
+`countCodePoints` is included in v0.24.0. The snapshot also covers the
+post-v0.24.0 `hexToRGBString` option and exported `HexToRGBStringOptions` type,
+expanded readonly inputs for array helpers and `pick` keys, and readonly
+`ElementOf` inference. These newer contracts require checking the installed
+package's declarations. The number module's tree-shaking fix preserves its
+documented runtime behavior.
 
 The SHA identifies the source that was reviewed, not the later commit that
 adds or updates the generated skill. There is no automatic generation script;
@@ -53,7 +57,7 @@ the repository root.
 
 | Reference                                                | Category    | Primary tests                                                                  |
 | -------------------------------------------------------- | ----------- | ------------------------------------------------------------------------------ |
-| [api-array](ntnyq-utils/references/api-array.md)         | `array`     | `tests/array.test.ts`                                                          |
+| [api-array](ntnyq-utils/references/api-array.md)         | `array`     | `tests/array.test.ts`, `tests/types.readonly-array.test.ts`                    |
 | [api-async](ntnyq-utils/references/api-async.md)         | `async`     | `tests/async.test.ts`                                                          |
 | [api-color](ntnyq-utils/references/api-color.md)         | `color`     | `tests/color.test.ts`                                                          |
 | [api-function](ntnyq-utils/references/api-function.md)   | `function`  | `tests/function.test.ts`                                                       |
@@ -62,19 +66,21 @@ the repository root.
 | [api-logging](ntnyq-utils/references/api-logging.md)     | `logging`   | `tests/logging.test.ts`                                                        |
 | [api-module](ntnyq-utils/references/api-module.md)       | `module`    | `tests/module.test.ts`                                                         |
 | [api-number](ntnyq-utils/references/api-number.md)       | `number`    | `tests/number.test.ts`                                                         |
-| [api-object](ntnyq-utils/references/api-object.md)       | `object`    | `tests/object.test.ts`                                                         |
+| [api-object](ntnyq-utils/references/api-object.md)       | `object`    | `tests/object.test.ts`, `tests/types.readonly-array.test.ts`                   |
 | [api-path](ntnyq-utils/references/api-path.md)           | `path`      | `tests/path.test.ts`                                                           |
 | [api-predicate](ntnyq-utils/references/api-predicate.md) | `predicate` | `tests/predicate.test.ts`                                                      |
 | [api-proxy](ntnyq-utils/references/api-proxy.md)         | `proxy`     | `tests/proxy.test.ts`                                                          |
 | [api-string](ntnyq-utils/references/api-string.md)       | `string`    | `tests/string.test.ts`                                                         |
 | [api-tree](ntnyq-utils/references/api-tree.md)           | `tree`      | `tests/tree.test.ts`, `tests/tree-extended.test.ts`                            |
-| [api-types](ntnyq-utils/references/api-types.md)         | `types`     | `tests/types.utils.test.ts`                                                    |
+| [api-types](ntnyq-utils/references/api-types.md)         | `types`     | `tests/types.utils.test.ts`, `tests/types.readonly-array.test.ts`              |
 | [api-units](ntnyq-utils/references/api-units.md)         | `units`     | `tests/units.test.ts`                                                          |
 | [api-web](ntnyq-utils/references/api-web.md)             | `web`       | `tests/web.test.ts`, `tests/web-environment.test.ts`, `tests/web-file.test.ts` |
 
 Also review `tests/api.test.ts`, `tests/types.api.test.ts`,
 `tests/types.admin-api.test.ts`, and `tests/types.general-data-api.test.ts`
 for public exports and inferred contracts.
+`tests/treeshake.test.ts` verifies that importing unrelated utilities does not
+retain the number module's top-level initialization.
 
 ## Generation Decisions
 
@@ -99,9 +105,9 @@ for public exports and inferred contracts.
 From the repository root, compare against the recorded source commit:
 
 ```bash
-git diff --name-only afdf47cef7326095bdf200fc30d4575ec2bc14dc..HEAD -- README.md package.json src/ docs/ tests/
-git diff afdf47cef7326095bdf200fc30d4575ec2bc14dc..HEAD -- package.json src/ docs/ tests/
-git log --oneline afdf47cef7326095bdf200fc30d4575ec2bc14dc..HEAD -- src/ docs/ tests/
+git diff --name-only acf16956960877b99232cff7d972a12324aa4299..HEAD -- README.md package.json src/ docs/ tests/
+git diff acf16956960877b99232cff7d972a12324aa4299..HEAD -- package.json src/ docs/ tests/
+git log --oneline acf16956960877b99232cff7d972a12324aa4299..HEAD -- src/ docs/ tests/
 ```
 
 Also inspect uncommitted changes when generating from a working tree:
@@ -155,7 +161,8 @@ required for that change, such as `pnpm run release:check` or `pnpm docs:build`.
 
 ## History
 
-| Date       | Source SHA | Package version       | Change                                                                                 |
-| ---------- | ---------- | --------------------- | -------------------------------------------------------------------------------------- |
-| 2026-09-22 | `b07a60e`  | `0.23.0`              | Initial skill with a task index, compatibility rules, and 18 API references            |
-| 2026-10-29 | `afdf47c`  | `0.23.0` + unreleased | Add `countCodePoints`, distinguish unreleased APIs, and fix strict TypeScript examples |
+| Date       | Source SHA | Package version                 | Change                                                                                                                     |
+| ---------- | ---------- | ------------------------------- | -------------------------------------------------------------------------------------------------------------------------- |
+| 2026-09-22 | `b07a60e`  | `0.23.0`                        | Initial skill with a task index, compatibility rules, and 18 API references                                                |
+| 2026-10-29 | `afdf47c`  | `0.23.0` + unreleased           | Add `countCodePoints`, distinguish unreleased APIs, and fix strict TypeScript examples                                     |
+| 2026-11-03 | `acf1695`  | `0.24.0` + post-release changes | Mark `countCodePoints` as released; clarify newer RGB formatting and readonly contracts, with examples and source mappings |

@@ -1,5 +1,102 @@
 import { afterEach, describe, expect, it, vi } from 'vitest'
-import { mapAsync, retry, waitFor } from '../src/async'
+import { createDeferred, mapAsync, retry, waitFor } from '../src/async'
+
+describe(createDeferred, () => {
+  it('should remain pending until resolved externally', async () => {
+    const { promise, resolve } = createDeferred<string>()
+    const onFulfilled = vi.fn()
+    const onRejected = vi.fn()
+    // oxlint-disable-next-line promise/prefer-await-to-then -- Observe settlement without blocking the pending-state assertion.
+    const observed = promise.then(onFulfilled, onRejected)
+
+    await Promise.resolve()
+    expect(onFulfilled).not.toHaveBeenCalled()
+    expect(onRejected).not.toHaveBeenCalled()
+
+    resolve('ready')
+
+    await observed
+    expect(onFulfilled).toHaveBeenCalledExactlyOnceWith('ready')
+    expect(onRejected).not.toHaveBeenCalled()
+  })
+
+  it('should create independent deferred promises', async () => {
+    const first = createDeferred<number>()
+    const second = createDeferred<number>()
+
+    first.resolve(1)
+    second.resolve(2)
+
+    expect(first.promise).not.toBe(second.promise)
+    await expect(first.promise).resolves.toBe(1)
+    await expect(second.promise).resolves.toBe(2)
+  })
+
+  it('should resolve void promises without a value', async () => {
+    // oxlint-disable-next-line typescript/no-invalid-void-type -- A void result permits resolve() without an argument.
+    const { promise, resolve } = createDeferred<void>()
+    resolve()
+
+    await expect(promise).resolves.toBeUndefined()
+  })
+
+  it.each([new Error('failed'), 'failed', null, undefined])(
+    'should reject with the original reason: %s',
+    async reason => {
+      const { promise, reject, resolve } = createDeferred<number>()
+      reject(reason)
+      resolve(1)
+      reject(new Error('ignored'))
+
+      await expect(promise).rejects.toBe(reason)
+    },
+  )
+
+  it('should ignore subsequent calls after resolving', async () => {
+    const { promise, resolve, reject } = createDeferred<number>()
+
+    resolve(1)
+    resolve(2)
+    reject(new Error('ignored'))
+
+    await expect(promise).resolves.toBe(1)
+  })
+
+  it('should adopt a pending promise and ignore subsequent calls', async () => {
+    const source = createDeferred<number>()
+    const { promise, resolve, reject } = createDeferred<number>()
+
+    resolve(source.promise)
+    resolve(2)
+    reject(new Error('ignored'))
+    source.resolve(1)
+
+    await expect(promise).resolves.toBe(1)
+  })
+
+  it('should adopt a promise rejection', async () => {
+    const source = createDeferred<number>()
+    const { promise, resolve } = createDeferred<number>()
+    const reason = new Error('source failed')
+    resolve(source.promise)
+    source.reject(reason)
+
+    await expect(promise).rejects.toBe(reason)
+  })
+
+  it('should adopt a custom promise-like value', async () => {
+    const thenable: PromiseLike<number> = {
+      // oxlint-disable-next-line unicorn/no-thenable -- Exercise adoption of a non-Promise thenable.
+      then(onFulfilled, onRejected) {
+        return Promise.resolve(42).then(onFulfilled, onRejected)
+      },
+    }
+    const { promise, resolve } = createDeferred<number>()
+    resolve(thenable)
+
+    await expect(promise).resolves.toBe(42)
+  })
+})
 
 describe(waitFor, () => {
   it('should resolve after specified ms', async () => {

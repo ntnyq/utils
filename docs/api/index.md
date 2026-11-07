@@ -12,7 +12,7 @@ glance.
 | Category                    | Exports | Description                                                    |
 | --------------------------- | ------: | -------------------------------------------------------------- |
 | [Array](/api/array)         |      22 | Array normalization, grouping, comparison, and transformation. |
-| [Async](/api/async)         |       3 | Promise-based timing, retry, and concurrency helpers.          |
+| [Async](/api/async)         |       4 | Deferred promises, timing, retry, and concurrency helpers.     |
 | [Color](/api/color)         |      11 | Color conversion, manipulation, and random generation.         |
 | [Function](/api/function)   |       8 | Composition, memoization, throttling, and invocation control.  |
 | [HTML](/api/html)           |       2 | HTML text escaping and unescaping.                             |

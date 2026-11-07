@@ -7,6 +7,46 @@ outline: deep
 
 Small asynchronous control-flow helpers.
 
+## createDeferred
+
+Creates a pending promise with externally accessible `resolve` and `reject`
+functions. Use it to connect event callbacks or request/response handlers to
+code that consumes a promise.
+
+```ts
+import { createDeferred } from '@ntnyq/utils'
+import type { Deferred } from '@ntnyq/utils'
+
+const deferred: Deferred<string> = createDeferred<string>()
+
+// An event callback can provide the result later.
+setTimeout(() => deferred.resolve('ready'), 100)
+
+console.log(await deferred.promise) // => 'ready'
+```
+
+`createDeferred<Value>()` returns `Deferred<Value>` with these members:
+
+| Member    | Type                                           | Behavior                                               |
+| --------- | ---------------------------------------------- | ------------------------------------------------------ |
+| `promise` | `Promise<Value>`                               | Waits for the externally supplied result.              |
+| `resolve` | `(value: Value \| PromiseLike<Value>) => void` | Resolves with a value or adopts a promise-like result. |
+| `reject`  | `(reason: unknown) => void`                    | Rejects with the original reason.                      |
+
+The value type defaults to `unknown`. Use `createDeferred<void>()` for a
+notification with no result; its `resolve()` requires no argument.
+
+The first `resolve` or `reject` call locks the result. Resolving with a pending
+promise-like value adopts its eventual fulfillment or rejection; subsequent
+calls are ignored even while that value is still pending.
+
+This helper uses the Promise constructor and does not require
+`Promise.withResolvers`. It does not start, defer, or cancel a task. The promise
+remains pending if neither function is called; consumers must handle rejection
+with `catch` or `try`/`catch` around `await`.
+
+---
+
 ## retry
 
 Retries synchronous or asynchronous work up to `maxAttempts` times. The

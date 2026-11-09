@@ -25,8 +25,8 @@ Color.fromHex('#336699').withAlpha(0.5).toRGBAString()
 - `hexToRGBString` accepts `{ omitWrapper: true }` to return comma-separated
   channels without `rgb(...)`, commonly used to compute CSS custom property
   values. The wrapper is included by default. This option and its exported
-  `HexToRGBStringOptions` type were added after v0.24.0; check installed
-  declarations before passing the second argument.
+  `HexToRGBStringOptions` type are included in v0.25.0; check installed
+  declarations before passing the second argument to older releases.
 - `RGBColor` is a type with numeric `red`, `green`, and `blue` properties.
   `rgbToHex` takes that object, rounds channels, and clamps them to 0–255.
 - `lightenHexColor` and `darkenHexColor` add/subtract a percentage of the full

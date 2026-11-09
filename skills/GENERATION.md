@@ -9,23 +9,29 @@ documentation, public exports, implementation, and tests.
 
 ## Source Snapshot
 
-| Field               | Value                                      |
-| ------------------- | ------------------------------------------ |
-| Package             | `@ntnyq/utils`                             |
-| Package version     | `0.24.0`                                   |
-| Source commit       | `acf16956960877b99232cff7d972a12324aa4299` |
-| Short SHA           | `acf1695`                                  |
-| Commit date         | `2026-11-03 09:53:31 +0800`                |
-| Commit subject      | `fix: support readonly array inputs`       |
-| Generation date     | `2026-11-03`                               |
-| Source working tree | Clean before skill update                  |
+| Field               | Value                                                        |
+| ------------------- | ------------------------------------------------------------ |
+| Package             | `@ntnyq/utils`                                               |
+| Package version     | `0.25.0`                                                     |
+| Source commit       | `7c9951e7346fcee8b2c27f0220e1d3adad751424`                   |
+| Short SHA           | `7c9951e`                                                    |
+| Commit date         | `2026-11-09 10:15:56 +0800`                                  |
+| Commit subject      | `chore(vscode): configure Oxc formatting and TypeScript SDK` |
+| Generation date     | `2026-11-09`                                                 |
+| Source working tree | Clean before skill update                                    |
 
-`countCodePoints` is included in v0.24.0. The snapshot also covers the
-post-v0.24.0 `hexToRGBString` option and exported `HexToRGBStringOptions` type,
-expanded readonly inputs for array helpers and `pick` keys, and readonly
-`ElementOf` inference. These newer contracts require checking the installed
-package's declarations. The number module's tree-shaking fix preserves its
+v0.25.0 includes the `hexToRGBString` option and exported
+`HexToRGBStringOptions` type, expanded readonly inputs for array helpers and
+`pick` keys, and readonly `ElementOf` inference. `countCodePoints` has been
+available since v0.24.0. The number module's tree-shaking fix preserves its
 documented runtime behavior.
+
+The snapshot also covers post-v0.25.0 additions: `createDeferred` and its
+`Deferred` type, `raceWithSignal`, `formatByteSize` and its
+`FormatByteSizeOptions` type, and `formatDurationClock` and its
+`FormatDurationClockOptions` type. These APIs require checking the installed
+package's exports and declarations. `mapAsync` and `retry` now share
+`raceWithSignal` internally; their documented contracts remain unchanged.
 
 The SHA identifies the source that was reviewed, not the later commit that
 adds or updates the generated skill. There is no automatic generation script;
@@ -58,7 +64,7 @@ the repository root.
 | Reference                                                | Category    | Primary tests                                                                  |
 | -------------------------------------------------------- | ----------- | ------------------------------------------------------------------------------ |
 | [api-array](ntnyq-utils/references/api-array.md)         | `array`     | `tests/array.test.ts`, `tests/types.readonly-array.test.ts`                    |
-| [api-async](ntnyq-utils/references/api-async.md)         | `async`     | `tests/async.test.ts`                                                          |
+| [api-async](ntnyq-utils/references/api-async.md)         | `async`     | `tests/async.test.ts`, `tests/types.async-api.test.ts`                         |
 | [api-color](ntnyq-utils/references/api-color.md)         | `color`     | `tests/color.test.ts`                                                          |
 | [api-function](ntnyq-utils/references/api-function.md)   | `function`  | `tests/function.test.ts`                                                       |
 | [api-html](ntnyq-utils/references/api-html.md)           | `html`      | `tests/html.test.ts`                                                           |
@@ -105,9 +111,9 @@ retain the number module's top-level initialization.
 From the repository root, compare against the recorded source commit:
 
 ```bash
-git diff --name-only acf16956960877b99232cff7d972a12324aa4299..HEAD -- README.md package.json src/ docs/ tests/
-git diff acf16956960877b99232cff7d972a12324aa4299..HEAD -- package.json src/ docs/ tests/
-git log --oneline acf16956960877b99232cff7d972a12324aa4299..HEAD -- src/ docs/ tests/
+git diff --name-only 7c9951e7346fcee8b2c27f0220e1d3adad751424..HEAD -- README.md package.json src/ docs/ tests/
+git diff 7c9951e7346fcee8b2c27f0220e1d3adad751424..HEAD -- package.json src/ docs/ tests/
+git log --oneline 7c9951e7346fcee8b2c27f0220e1d3adad751424..HEAD -- src/ docs/ tests/
 ```
 
 Also inspect uncommitted changes when generating from a working tree:
@@ -155,14 +161,14 @@ pnpm test
 pnpm typecheck
 ```
 
-Follow the active environment's command-wrapper rules when running these
-commands. If source or site files also change, run the additional checks
+If source or site files also change, run the additional checks
 required for that change, such as `pnpm run release:check` or `pnpm docs:build`.
 
 ## History
 
-| Date       | Source SHA | Package version                 | Change                                                                                                                     |
-| ---------- | ---------- | ------------------------------- | -------------------------------------------------------------------------------------------------------------------------- |
-| 2026-09-22 | `b07a60e`  | `0.23.0`                        | Initial skill with a task index, compatibility rules, and 18 API references                                                |
-| 2026-10-29 | `afdf47c`  | `0.23.0` + unreleased           | Add `countCodePoints`, distinguish unreleased APIs, and fix strict TypeScript examples                                     |
-| 2026-11-03 | `acf1695`  | `0.24.0` + post-release changes | Mark `countCodePoints` as released; clarify newer RGB formatting and readonly contracts, with examples and source mappings |
+| Date       | Source SHA | Package version                 | Change                                                                                                                           |
+| ---------- | ---------- | ------------------------------- | -------------------------------------------------------------------------------------------------------------------------------- |
+| 2026-09-22 | `b07a60e`  | `0.23.0`                        | Initial skill with a task index, compatibility rules, and 18 API references                                                      |
+| 2026-10-29 | `afdf47c`  | `0.23.0` + unreleased           | Add `countCodePoints`, distinguish unreleased APIs, and fix strict TypeScript examples                                           |
+| 2026-11-03 | `acf1695`  | `0.24.0` + post-release changes | Mark `countCodePoints` as released; clarify newer RGB formatting and readonly contracts, with examples and source mappings       |
+| 2026-11-09 | `7c9951e`  | `0.25.0` + post-release changes | Add deferred promises, abort-aware waiting, byte-size and duration clock formatting; mark RGB and readonly contracts as released |

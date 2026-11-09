@@ -9,8 +9,8 @@ references and readonly types. `shuffleInPlace` and `removeArrayItemInPlace`
 require mutable inputs.
 
 Readonly support for `chunk`, `filterFalsy`, `flattenArrayable`, `intersect`,
-`isArrayEqual`, `mergeArrayable`, and `unique` was added after v0.24.0.
-Check installed declarations when targeting that release or earlier.
+`isArrayEqual`, `mergeArrayable`, and `unique` is included in v0.25.0.
+Check installed declarations when targeting older releases.
 
 ## Select the Operation
 

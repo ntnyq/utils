@@ -48,13 +48,14 @@ type Locator = Exclusive<{ id: string }, { slug: string }>
 The `Primitive` alias differs from the runtime `isPrimitive` predicate, which
 excludes functions. Type helpers do not validate values at runtime.
 
-Readonly support in `ElementOf` was added after v0.24.0; check installed
-declarations before using readonly arrays or tuples with this type. The
+Readonly support in `ElementOf` is included in v0.25.0; check installed
+declarations when using readonly arrays or tuples with older releases. The
 `Arrayable<T>` alias remains mutable even though normalization helpers accept
 readonly inputs directly.
 
 Options and result types are exported alongside their corresponding utility,
 through the same flat package entry. Examples include `MapAsyncOptions`,
-`RetryOptions`, `ObjectOmitOptions`, `SetInResult`, `FileValidationIssue`,
-`StorageUnit`, and `TimeUnit`. Consult that utility's declarations for generics
+`RetryOptions`, `Deferred`, `FormatByteSizeOptions`, `FormatDurationClockOptions`,
+`ObjectOmitOptions`, `SetInResult`, `FileValidationIssue`, `StorageUnit`, and
+`TimeUnit`. Consult that utility's declarations for generics
 instead of recreating its contract locally.

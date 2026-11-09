@@ -7,8 +7,8 @@ Source: `docs/api/object.md`, `src/object/`, `tests/object.test.ts`,
 
 - `pick(object, keys, { omitUndefined })` selects own properties into a new
   object. `omitUndefined` defaults to false. Keys accept readonly arrays and
-  `as const` tuples in source versions after v0.24.0; check installed
-  declarations before relying on that support.
+  `as const` tuples in v0.25.0; check installed declarations before relying on
+  that support in older releases.
 - `omit(object, keys, { omitUndefined })` returns a new object, preserving its
   prototype and retained property descriptors, including symbols.
 - `omitInPlace(object, ...keys)` deletes properties from the source. Its keys

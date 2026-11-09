@@ -12,7 +12,7 @@ glance.
 | Category                    | Exports | Description                                                    |
 | --------------------------- | ------: | -------------------------------------------------------------- |
 | [Array](/api/array)         |      22 | Array normalization, grouping, comparison, and transformation. |
-| [Async](/api/async)         |       4 | Deferred promises, timing, retry, and concurrency helpers.     |
+| [Async](/api/async)         |       5 | Promises, cancellation, timing, retry, and concurrency.        |
 | [Color](/api/color)         |      11 | Color conversion, manipulation, and random generation.         |
 | [Function](/api/function)   |       8 | Composition, memoization, throttling, and invocation control.  |
 | [HTML](/api/html)           |       2 | HTML text escaping and unescaping.                             |
@@ -27,7 +27,7 @@ glance.
 | [String](/api/string)       |      15 | String formatting, matching, and owned character constants.    |
 | [Tree](/api/tree)           |       8 | Tree construction, traversal, filtering, lookup, and mapping.  |
 | [Types](/api/types)         |      22 | Reusable TypeScript types.                                     |
-| [Units](/api/units)         |       6 | Duration and byte-size conversions.                            |
+| [Units](/api/units)         |       8 | Duration and byte-size conversions and formatting.             |
 | [Web](/api/web)             |      10 | Environment, DOM, file, image, and animation-frame helpers.    |
 
 All utilities are ESM-first and tree-shakable. Import public APIs from

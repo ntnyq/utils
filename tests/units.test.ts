@@ -1,4 +1,6 @@
 import { describe, expect, it } from 'vitest'
+import { formatByteSize, formatDurationClock } from '../src'
+import type { FormatByteSizeOptions, FormatDurationClockOptions } from '../src'
 import {
   convertFromBytes,
   convertFromMilliseconds,
@@ -68,6 +70,60 @@ describe('storage unit conversion', () => {
       expect(convertStorageUnit(50, 'KB', 'KB')).toBe(50)
     })
   })
+
+  describe(formatByteSize, () => {
+    it.each([
+      [0, '0 B'],
+      [-0, '0 B'],
+      [0.5, '0.5 B'],
+      [1023, '1023 B'],
+      [1024, '1 KB'],
+      [1536, '1.5 KB'],
+      [1_048_575, '1024 KB'],
+      [1_048_576, '1 MB'],
+      [2 ** 30, '1 GB'],
+      [2 ** 40, '1 TB'],
+      [2 ** 50, '1 PB'],
+      [2 ** 60, '1 EB'],
+      [2 ** 70, '1024 EB'],
+    ] as const)('should format %s bytes as %s', (bytes, expected) => {
+      expect(formatByteSize(bytes)).toBe(expected)
+    })
+
+    it('should support compact and fixed-precision IEC labels', () => {
+      const options: FormatByteSizeOptions = {
+        digits: 1,
+        omitTrailingZeros: false,
+        unitStyle: 'iec',
+      }
+      expect(formatByteSize(1024, { separator: '' })).toBe('1KB')
+      expect(formatByteSize(1024, options)).toBe('1.0 KiB')
+      expect(formatByteSize(2 ** 20, options)).toBe('1.0 MiB')
+      expect(formatByteSize(0, options)).toBe('0.0 B')
+      expect(formatByteSize(1536, { digits: 0 })).toBe('2 KB')
+      expect(formatByteSize(1728, { digits: 3 })).toBe('1.688 KB')
+    })
+
+    it('should accept the maximum fixed precision', () => {
+      expect(
+        formatByteSize(1024, { digits: 100, omitTrailingZeros: false }),
+      ).toBe(`1.${'0'.repeat(100)} KB`)
+    })
+
+    it.each([-1, Number.NaN, Infinity, -Infinity])(
+      'should reject invalid byte counts (%s)',
+      bytes => {
+        expect(() => formatByteSize(bytes)).toThrow(RangeError)
+      },
+    )
+
+    it.each([-1, 0.5, 101, Number.NaN, Infinity])(
+      'should reject invalid precision (%s)',
+      digits => {
+        expect(() => formatByteSize(1024, { digits })).toThrow(RangeError)
+      },
+    )
+  })
 })
 
 describe('time unit conversion', () => {
@@ -130,5 +186,34 @@ describe('time unit conversion', () => {
       expect(convertTimeUnit(100, 'SECOND', 'SECOND')).toBe(100)
       expect(convertTimeUnit(50, 'MINUTE', 'MINUTE')).toBe(50)
     })
+  })
+
+  describe(formatDurationClock, () => {
+    it.each([
+      [0, '00:00:00', '00:00'],
+      [1, '00:00:01', '00:01'],
+      [59.99, '00:00:59', '00:59'],
+      [60, '00:01:00', '01:00'],
+      [3_661.9, '01:01:01', '61:01'],
+      [90_061, '25:01:01', '1501:01'],
+      [360_002, '100:00:02', '6000:02'],
+    ] as const)(
+      'should format %s elapsed seconds',
+      (seconds, clock, minutes) => {
+        const options: FormatDurationClockOptions = { mode: 'totalMinutes' }
+        expect(formatDurationClock(seconds)).toBe(clock)
+        expect(formatDurationClock(seconds, options)).toBe(minutes)
+      },
+    )
+
+    it.each([-1, Number.NaN, Infinity, -Infinity])(
+      'should use zero for %s seconds',
+      seconds => {
+        expect(formatDurationClock(seconds, { mode: 'hours' })).toBe('00:00:00')
+        expect(formatDurationClock(seconds, { mode: 'totalMinutes' })).toBe(
+          '00:00',
+        )
+      },
+    )
   })
 })

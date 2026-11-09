@@ -1,8 +1,21 @@
 import { describe, expectTypeOf, it } from 'vitest'
-import { createDeferred } from '../src'
+import { createDeferred, raceWithSignal } from '../src'
 import type { Deferred } from '../src'
 
 describe('async utility public API types', () => {
+  it('should infer the awaited result from a promise-like task', () => {
+    const { signal } = new AbortController()
+    const result = raceWithSignal(Promise.resolve('ready' as const), signal)
+
+    expectTypeOf(result).toEqualTypeOf<Promise<'ready'>>()
+    expectTypeOf<PromiseLike<number>>().toExtend<
+      Parameters<typeof raceWithSignal<number>>[0]
+    >()
+    expectTypeOf<
+      typeof raceWithSignal<Promise<number>>
+    >().returns.toEqualTypeOf<Promise<number>>()
+  })
+
   it('should expose a typed deferred from the package entry', () => {
     const deferred = createDeferred<number>()
 

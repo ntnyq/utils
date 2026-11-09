@@ -1,5 +1,11 @@
 import { afterEach, describe, expect, it, vi } from 'vitest'
-import { createDeferred, mapAsync, retry, waitFor } from '../src/async'
+import {
+  createDeferred,
+  mapAsync,
+  raceWithSignal,
+  retry,
+  waitFor,
+} from '../src/async'
 
 describe(createDeferred, () => {
   it('should remain pending until resolved externally', async () => {
@@ -95,6 +101,63 @@ describe(createDeferred, () => {
     resolve(thenable)
 
     await expect(promise).resolves.toBe(42)
+  })
+})
+
+describe(raceWithSignal, () => {
+  it('should adopt a promise-like task', async () => {
+    const ready = Promise.resolve('ready')
+    // oxlint-disable-next-line unicorn/no-thenable -- Exercise the public PromiseLike input.
+    const task: PromiseLike<string> = { then: ready.then.bind(ready) }
+
+    await expect(
+      raceWithSignal(task, new AbortController().signal),
+    ).resolves.toBe('ready')
+  })
+
+  it('should return the task value and release the abort listener', async () => {
+    const { signal } = new AbortController()
+    const addListener = vi.spyOn(signal, 'addEventListener')
+    const removeListener = vi.spyOn(signal, 'removeEventListener')
+    const task = createDeferred<string>()
+    const result = raceWithSignal(task.promise, signal)
+    task.resolve('ready')
+
+    await expect(result).resolves.toBe('ready')
+    expect(removeListener).toHaveBeenCalledWith(
+      'abort',
+      addListener.mock.calls[0]![1],
+    )
+  })
+
+  it('should preserve the task rejection and release the abort listener', async () => {
+    const { signal } = new AbortController()
+    const removeListener = vi.spyOn(signal, 'removeEventListener')
+    const reason = new Error('task failed')
+
+    await expect(raceWithSignal(Promise.reject(reason), signal)).rejects.toBe(
+      reason,
+    )
+    expect(removeListener).toHaveBeenCalledWith('abort', expect.any(Function))
+  })
+
+  it('should reject with the abort reason and observe a later task failure', async () => {
+    const controller = new AbortController()
+    const task = createDeferred<number>()
+    const result = raceWithSignal(task.promise, controller.signal)
+    controller.abort('stopped')
+
+    await expect(result).rejects.toBe('stopped')
+    task.reject(new Error('late failure'))
+  })
+
+  it('should prefer an already aborted signal even for settled tasks', async () => {
+    const signal = AbortSignal.abort()
+    await expect(raceWithSignal(Promise.resolve('ready'), signal)).rejects.toBe(
+      signal.reason,
+    )
+    const rejected = Promise.reject(new Error('late failure'))
+    await expect(raceWithSignal(rejected, signal)).rejects.toBe(signal.reason)
   })
 })
 
@@ -211,6 +274,22 @@ describe(mapAsync, () => {
 
     await expect(result).rejects.toBe(reason)
     expect(receivedSignals).toStrictEqual([controller.signal])
+  })
+
+  it('should stop scheduling when a mapper aborts synchronously', async () => {
+    const controller = new AbortController()
+    const mapper = vi.fn(() => {
+      controller.abort('stopped')
+      return 'done'
+    })
+
+    await expect(
+      mapAsync([1, 2, 3], mapper, {
+        concurrency: 2,
+        signal: controller.signal,
+      }),
+    ).rejects.toBe('stopped')
+    expect(mapper).toHaveBeenCalledOnce()
   })
 })
 

@@ -1,4 +1,5 @@
 import type { Awaitable } from '../types'
+import { raceWithSignal } from './raceWithSignal'
 
 export interface RetryContext {
   /**
@@ -77,24 +78,8 @@ async function runWithAbort<Value>(
     return await operation()
   }
 
-  let handleAbort: (() => void) | undefined
-  // oxlint-disable-next-line promise/avoid-new
-  const aborted = new Promise<never>((_resolve, reject) => {
-    handleAbort = () => reject(signal.reason)
-    signal.addEventListener('abort', handleAbort, { once: true })
-
-    if (signal.aborted) {
-      handleAbort()
-    }
-  })
-
-  try {
-    return await Promise.race([Promise.resolve().then(operation), aborted])
-  } finally {
-    if (handleAbort) {
-      signal.removeEventListener('abort', handleAbort)
-    }
-  }
+  // oxlint-disable-next-line promise/prefer-await-to-then -- Register the abort listener before invoking the operation.
+  return raceWithSignal(Promise.resolve().then(operation), signal)
 }
 
 async function waitForBackoff(

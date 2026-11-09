@@ -47,6 +47,34 @@ with `catch` or `try`/`catch` around `await`.
 
 ---
 
+## raceWithSignal
+
+`raceWithSignal(task, signal)` waits for a promise or promise-like value.
+When the task settles first, the returned promise preserves its value or
+rejection reason. Aborting first rejects with the exact `signal.reason`. An
+already aborted signal takes precedence even if the task has already settled.
+
+```ts
+import { createDeferred, raceWithSignal } from '@ntnyq/utils'
+
+const task = createDeferred<string>()
+const controller = new AbortController()
+const result = raceWithSignal(task.promise, controller.signal)
+
+controller.abort(new Error('Stopped waiting'))
+try {
+  await result
+} catch (error) {
+  console.log(error === controller.signal.reason) // true
+}
+```
+
+The helper stops waiting and releases its abort listener. The underlying task
+can still finish, and a late rejection is handled. To also stop the work,
+pass the signal to the operation that created the task.
+
+---
+
 ## retry
 
 Retries synchronous or asynchronous work up to `maxAttempts` times. The

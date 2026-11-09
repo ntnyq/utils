@@ -1,4 +1,5 @@
 import type { Awaitable } from '../types'
+import { raceWithSignal } from './raceWithSignal'
 
 export interface MapAsyncOptions {
   /**
@@ -103,30 +104,10 @@ export async function mapAsync<T, Result>(
   const workers = Promise.all(
     Array.from({ length: workerCount }, () => runWorker()),
   )
-  if (!signal) {
+  if (signal) {
+    await raceWithSignal(workers, signal)
+  } else {
     await workers
-    return results
   }
-
-  let handleAbort: (() => void) | undefined
-  // oxlint-disable-next-line promise/avoid-new
-  const aborted = new Promise<never>((_resolve, reject) => {
-    handleAbort = () => {
-      isStopped = true
-      reject(signal.reason)
-    }
-    signal.addEventListener('abort', handleAbort, { once: true })
-    if (signal.aborted) {
-      handleAbort()
-    }
-  })
-
-  try {
-    await Promise.race([workers, aborted])
-    return results
-  } finally {
-    if (handleAbort) {
-      signal.removeEventListener('abort', handleAbort)
-    }
-  }
+  return results
 }

@@ -21,6 +21,7 @@ This section documents 23 exported methods from the array module.
 - [chunk](#chunk)
 - [differenceBy](#differenceby)
 - [filterFalsy](#filterfalsy)
+- [findLastIndex](#findlastindex)
 - [flattenArrayable](#flattenarrayable)
 - [groupBy](#groupby)
 - [intersect](#intersect)
@@ -129,6 +130,33 @@ const mixedArray = [0, 1, false, 2, '', 3, null, 4, undefined, 5]
 const truthyArray = filterFalsy(mixedArray)
 console.log(truthyArray) // Output: [1, 2, 3, 4, 5]
 ```
+
+---
+
+## findLastIndex
+
+Finds the last matching index by searching backward without mutating the array.
+Returns `-1` for empty arrays or when nothing matches. The predicate receives
+the value, index, and original readonly array; any truthy result matches.
+Sparse slots are visited as `undefined`.
+
+The optional `fromIndex` is inclusive and defaults to the last index. Negative
+indexes count from the end. Indexes beyond either end are clamped to the first
+or last index, fractions are truncated toward zero, and `NaN` becomes zero.
+
+```ts
+import { findLastIndex } from '@ntnyq/utils'
+
+const values = [1, 2, 3, 2] as const
+
+findLastIndex(values, value => value === 2) // => 3
+findLastIndex(values, value => value === 2, -2) // => 1
+findLastIndex(values, value => value > 3) // => -1
+```
+
+Only callback predicates are supported. Unlike `es-toolkit/compat`, this helper
+does not accept property names, partial objects, or property-value pairs as
+predicate shorthand, or nullish and array-like inputs.
 
 ---
 

@@ -2,6 +2,7 @@ import { describe, expectTypeOf, it } from 'vitest'
 import {
   chunk,
   filterFalsy,
+  findLastIndex,
   flattenArrayable,
   intersect,
   isArrayEqual,
@@ -14,6 +15,32 @@ import {
 import type { ElementOf } from '../src'
 
 describe('readonly array inputs', () => {
+  it('should infer findLastIndex callback arguments and return a number', () => {
+    const values = [1, 2, 3]
+    const tuple = [1, 'a'] as const
+
+    expectTypeOf(
+      findLastIndex(values, (value, index, array) => {
+        expectTypeOf(value).toEqualTypeOf<number>()
+        expectTypeOf(index).toEqualTypeOf<number>()
+        expectTypeOf(array).toEqualTypeOf<readonly number[]>()
+        return value > 1
+      }),
+    ).toEqualTypeOf<number>()
+
+    expectTypeOf(
+      findLastIndex(
+        tuple,
+        (value, index, array) => {
+          expectTypeOf(value).toEqualTypeOf<1 | 'a'>()
+          expectTypeOf(array).toEqualTypeOf<readonly (1 | 'a')[]>()
+          return index
+        },
+        -1,
+      ),
+    ).toEqualTypeOf<number>()
+  })
+
   it('should preserve inference for mutable arrays', () => {
     const values = [1, 2]
     const tuple: [1, 2] = [1, 2]

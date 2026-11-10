@@ -4,6 +4,7 @@ import {
   chunk,
   differenceBy,
   filterFalsy,
+  findLastIndex,
   flattenArrayable,
   groupBy,
   intersect,
@@ -23,6 +24,84 @@ import {
   uniqueBy,
   uniqueWith,
 } from '../src/array'
+
+describe(findLastIndex, () => {
+  it('should return the last matching index without mutating readonly input', () => {
+    const source = Object.freeze([{ id: 1 }, { id: 2 }, { id: 1 }])
+
+    expect(findLastIndex(source, item => item.id === 1)).toBe(2)
+    expect(source).toStrictEqual([{ id: 1 }, { id: 2 }, { id: 1 }])
+  })
+
+  it('should return -1 for empty arrays and missing matches', () => {
+    const predicate = vi.fn(() => true)
+
+    expect(findLastIndex([], predicate)).toBe(-1)
+    expect(predicate).not.toHaveBeenCalled()
+    expect(findLastIndex([1, 2, 3], value => value === 4)).toBe(-1)
+  })
+
+  it('should visit items backward and stop on the first truthy result', () => {
+    const source = [1, 2, 3, 4]
+    const visited: number[] = []
+    const predicate = vi.fn((value: number, index: number) => {
+      visited.push(index)
+      return value % 2 === 1 ? 'matched' : ''
+    })
+
+    expect(findLastIndex(source, predicate)).toBe(2)
+    expect(visited).toStrictEqual([3, 2])
+    expect(predicate).toHaveBeenNthCalledWith(1, 4, 3, source)
+    expect(predicate).toHaveBeenNthCalledWith(2, 3, 2, source)
+  })
+
+  it.each([
+    [undefined, 3],
+    [2, 1],
+    [1, 1],
+    [0, -1],
+    [-1, 3],
+    [-2, 1],
+    [99, 3],
+    [2.9, 1],
+    [-1.9, 3],
+    [Number.NaN, -1],
+    [Infinity, 3],
+    [-Infinity, -1],
+  ])('should search from index %s', (fromIndex, expected) => {
+    expect(findLastIndex([1, 2, 3, 2], value => value === 2, fromIndex)).toBe(
+      expected,
+    )
+  })
+
+  it('should clamp negative indexes beyond the start to the first item', () => {
+    expect(findLastIndex([1, 2, 1], value => value === 1, -99)).toBe(0)
+    expect(findLastIndex([1, 2, 1], value => value === 1, -Infinity)).toBe(0)
+    expect(findLastIndex([1, 2, 1], value => value === 1, -0.5)).toBe(0)
+  })
+
+  it('should visit sparse slots as undefined', () => {
+    const source = [1, undefined, 3]
+    Reflect.deleteProperty(source, 1)
+
+    expect(findLastIndex(source, value => value === undefined)).toBe(1)
+  })
+
+  it('should capture the initial length and pass the original array', () => {
+    const source = [1, 2, 3]
+    const visited: number[] = []
+
+    expect(
+      findLastIndex(source, (value, index, array) => {
+        expect(array).toBe(source)
+        visited.push(index)
+        source.push(4)
+        return value === 1
+      }),
+    ).toBe(0)
+    expect(visited).toStrictEqual([2, 1, 0])
+  })
+})
 
 describe('readonly array inputs', () => {
   it('should transform frozen arrays into new mutable arrays', () => {

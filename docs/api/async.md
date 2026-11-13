@@ -77,6 +77,9 @@ pass the signal to the operation that created the task.
 
 ## retry
 
+An abort that arrives before a queued operation starts prevents that operation
+from being called. Already-running operations must cooperate with the signal.
+
 Retries synchronous or asynchronous work up to `maxAttempts` times. The
 operation receives a 1-based attempt number and the configured `AbortSignal`.
 

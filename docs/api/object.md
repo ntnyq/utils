@@ -375,7 +375,8 @@ console.log(result) // => { a: 1, c: 3 }
 
 ## setIn
 
-Sets a nested value by path.
+Sets a nested own value by path. Inherited intermediate properties are treated
+as missing, including in mutable mode. Immutable array updates preserve sparse slots.
 
 ### Parameters
 
@@ -388,6 +389,8 @@ Sets a nested value by path.
 
 Updated object. Literal dot paths, custom-separator paths, and tuple paths
 produce an updated result type; dynamic paths return a conservative object type.
+When `createIntermediate` may be false, the result type also includes the
+unchanged source because a missing intermediate can prevent the update.
 
 ### Example
 

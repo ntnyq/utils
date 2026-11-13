@@ -376,7 +376,9 @@ export function isPrimitive(
  * ```
  */
 // oxlint-disable-next-line unicorn/prefer-native-coercion-functions
-export function isTruthy<T>(value: T | undefined): value is T {
+export function isTruthy<T>(
+  value: T | undefined,
+): value is Exclude<T, false | 0 | 0n | '' | null | undefined> {
   return Boolean(value)
 }
 

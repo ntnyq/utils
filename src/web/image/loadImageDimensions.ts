@@ -27,8 +27,8 @@ export interface LoadImageDimensionsOptions {
    */
   crossOrigin?: 'anonymous' | 'use-credentials' | null
   /**
-   * Whether to reuse successful loads. Disabled string loads receive a unique
-   * cache-busting query parameter.
+   * Whether to reuse successful loads. Disabled HTTP(S) and relative URL loads
+   * receive a unique cache-busting query parameter; other schemes are preserved.
    *
    * @default true
    */
@@ -54,6 +54,11 @@ function createStringCacheKey(source: string, optionsKey: string): string {
 }
 
 function addCacheBuster(source: string): string {
+  const scheme = source.match(/^[a-z][a-z\d+.-]*:/iu)?.[0]
+  if (scheme && !/^https?:$/iu.test(scheme)) {
+    return source
+  }
+
   const hashIndex = source.indexOf('#')
   const beforeHash = hashIndex === -1 ? source : source.slice(0, hashIndex)
   const hash = hashIndex === -1 ? '' : source.slice(hashIndex)

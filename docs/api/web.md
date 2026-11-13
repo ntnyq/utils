@@ -24,6 +24,8 @@ and utility modules.
 
 - `loadImageDimensions` loads a URL, Blob, or File and resolves its natural
   dimensions. It supports timeout, decoding, cross-origin, and cache options.
+  With `cache: false`, HTTP(S) and relative URLs receive a cache-busting query
+  parameter. Other schemes, including `data:` and `blob:`, remain unchanged.
 
 ## File
 

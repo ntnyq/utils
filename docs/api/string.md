@@ -32,6 +32,8 @@ This section documents 15 exported values from the string module.
 ## createPadString
 
 Creates a function that left-pads a string to a fixed length.
+Long inputs are truncated to their final `length` UTF-16 code units; a zero
+length always produces an empty string.
 
 ### Parameters
 
@@ -324,6 +326,8 @@ console.log(result) // => 'hello-world'
 ## truncate
 
 Truncates text to a maximum length and appends/prepends a suffix.
+With `preserveWords`, complete words at the cut boundary are retained and
+partial boundary words are removed when a whitespace boundary is available.
 
 ### Parameters
 

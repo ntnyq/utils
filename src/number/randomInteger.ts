@@ -9,6 +9,7 @@ export interface RandomIntegerOptions {
 
 /**
  * Generate a random integer within the given range.
+ * Integer bounds and the number of possible results must fit safe precision.
  *
  * @param min - min value
  * @param max - max value
@@ -41,7 +42,7 @@ export function randomInteger(
     ;[min, max] = [max, min]
   }
 
-  if (min === max && Number.isInteger(min)) {
+  if (min === max && Number.isSafeInteger(min)) {
     return min
   }
 
@@ -52,5 +53,16 @@ export function randomInteger(
     throw new RangeError('Random integer range contains no integers')
   }
 
-  return Math.floor(Math.random() * (upper - lower + 1)) + lower
+  const size = upper - lower + 1
+  if (
+    !Number.isSafeInteger(lower) ||
+    !Number.isSafeInteger(upper) ||
+    !Number.isSafeInteger(size)
+  ) {
+    throw new RangeError(
+      'Random integer bounds and range size must be safe integers',
+    )
+  }
+
+  return Math.floor(Math.random() * size) + lower
 }

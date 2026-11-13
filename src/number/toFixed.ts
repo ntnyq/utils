@@ -30,7 +30,12 @@ export interface ToFixedOptions {
  */
 export function toFixed(num: number, options: ToFixedOptions = {}): string {
   const { digits = 2, omitTrailingZeros = true } = options
-  const fixed = (Math.round(num * 10 ** digits) / 10 ** digits).toFixed(digits)
+  const multiplier = 10 ** digits
+  const scaled = num * multiplier
+  const rounded = Number.isFinite(scaled)
+    ? Math.round(scaled) / multiplier
+    : num
+  const fixed = rounded.toFixed(digits)
   return omitTrailingZeros
     ? fixed.replace(/(?<fraction>\.\d*?[1-9])0+$|\.0+$/u, '$<fraction>')
     : fixed

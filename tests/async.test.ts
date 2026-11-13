@@ -298,6 +298,16 @@ describe(retry, () => {
     vi.useRealTimers()
   })
 
+  it('should not start a queued operation after aborting', async () => {
+    const controller = new AbortController()
+    const operation = vi.fn(() => 'value')
+    const result = retry(operation, { signal: controller.signal })
+    controller.abort(new Error('cancelled'))
+
+    await expect(result).rejects.toThrow('cancelled')
+    expect(operation).not.toHaveBeenCalled()
+  })
+
   it('should return the first successful result', async () => {
     const attempts: number[] = []
 

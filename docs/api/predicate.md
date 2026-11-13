@@ -1031,6 +1031,9 @@ console.log(result) // => true
 
 ## isTruthy
 
+The type guard excludes falsy literal types (`false`, `0`, `0n`, `''`, `null`,
+and `undefined`), including when used with `Array.prototype.filter`.
+
 Checks whether a value is truthy.
 
 ### Parameters

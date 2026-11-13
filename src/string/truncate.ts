@@ -27,7 +27,7 @@ export interface TruncateOptions {
 }
 
 function trimByWordBoundary(input: string, position: 'start' | 'end'): string {
-  if (!input.includes(' ')) {
+  if (!/\s/u.test(input)) {
     return input
   }
 
@@ -80,7 +80,11 @@ export function truncate(input: string, options: TruncateOptions): string {
   if (position === 'start') {
     let tail = input.slice(-available)
     if (preserveWords) {
-      tail = trimByWordBoundary(tail, 'start')
+      const previousCharacter = input.charAt(input.length - tail.length - 1)
+      tail =
+        /^\s/u.test(tail) || /\s/u.test(previousCharacter)
+          ? tail.trimStart()
+          : trimByWordBoundary(tail, 'start')
     }
     return `${suffix}${tail}`
   }
@@ -93,7 +97,11 @@ export function truncate(input: string, options: TruncateOptions): string {
 
   let head = input.slice(0, available)
   if (preserveWords) {
-    head = trimByWordBoundary(head, 'end')
+    const nextCharacter = input.charAt(head.length)
+    head =
+      /\s$/u.test(head) || /\s/u.test(nextCharacter)
+        ? head.trimEnd()
+        : trimByWordBoundary(head, 'end')
   }
   return `${head}${suffix}`
 }

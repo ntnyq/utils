@@ -66,6 +66,16 @@ describe(toChineseNumber, () => {
 })
 
 describe(randomInteger, () => {
+  it('should reject integer bounds and spans outside safe precision', () => {
+    expect(() => randomInteger(-Number.MAX_VALUE, Number.MAX_VALUE)).toThrow(
+      RangeError,
+    )
+    expect(() => randomInteger(Number.MAX_SAFE_INTEGER + 1)).toThrow(RangeError)
+    expect(() =>
+      randomInteger(-Number.MAX_SAFE_INTEGER, Number.MAX_SAFE_INTEGER),
+    ).toThrow(RangeError)
+  })
+
   it('should return a number within the specified range', () => {
     const max = 10
     const min = 1
@@ -361,6 +371,12 @@ describe(toNumber, () => {
 })
 
 describe(toFixed, () => {
+  it('should preserve finite large values when decimal scaling overflows', () => {
+    expect(toFixed(Number.MAX_VALUE)).toBe(Number.MAX_VALUE.toFixed(2))
+    expect(toFixed(-Number.MAX_VALUE)).toBe((-Number.MAX_VALUE).toFixed(2))
+    expect(toFixed(1e250, { digits: 100 })).toBe('1e+250')
+  })
+
   it('should preserve integer zeros when no fractional digits are requested', () => {
     expect(toFixed(0, { digits: 0 })).toBe('0')
     expect(toFixed(100, { digits: 0 })).toBe('100')
@@ -409,6 +425,14 @@ describe(toFixed, () => {
 })
 
 describe(round, () => {
+  it('should avoid overflow and underflow caused by decimal scaling', () => {
+    expect(round(Number.MAX_VALUE, 2)).toBe(Number.MAX_VALUE)
+    expect(round(-Number.MAX_VALUE, 2)).toBe(-Number.MAX_VALUE)
+    expect(round(1.25, 400)).toBe(1.25)
+    expect(round(1.25, -400)).toBe(0)
+    expect(round(-1.25, -400)).toBe(-0)
+  })
+
   it('should round to nearest integer by default', () => {
     expect(round(1.2345)).toBe(1)
     expect(round(1.5)).toBe(2)
@@ -424,7 +448,7 @@ describe(round, () => {
 
   it('should handle negative numbers correctly', () => {
     expect(round(-1.2345)).toBe(-1)
-    expect(round(-1.5)).toBe(-1) // JavaScript Math.round uses banker's rounding
+    expect(round(-1.5)).toBe(-1) // JavaScript Math.round breaks ties toward positive infinity.
     expect(round(-1.2345, 2)).toBe(-1.23)
     expect(round(-1.6)).toBe(-2)
   })

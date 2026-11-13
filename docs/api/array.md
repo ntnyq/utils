@@ -275,7 +275,8 @@ console.log(result) // => [2, 3]
 
 ## isArrayEqual
 
-Check if values of two arrays are equal
+Compares ordered values using `===`. Sparse slots are read as `undefined`,
+so comparison is symmetric even when either input is sparse.
 
 ### Parameters
 
@@ -492,6 +493,9 @@ shuffleInPlace(values)
 ---
 
 ## toArray
+
+Nullish inputs return an empty array. When an explicit generic is provided
+with a nullish or omitted argument, the return type includes that empty array.
 
 Converts a value to an array. Existing mutable and readonly arrays are returned
 by reference with their input type preserved. Nullish values become an empty

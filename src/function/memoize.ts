@@ -20,6 +20,34 @@ interface DefaultCacheEntry {
   key: object
 }
 
+/**
+ * Keeps argument identities in sync with mutations of the exposed cache.
+ */
+class MemoizeCache<Value> extends Map<unknown, Value> {
+  readonly #defaultEntries: DefaultCacheEntry[]
+
+  constructor(entries: DefaultCacheEntry[]) {
+    super()
+    this.#defaultEntries = entries
+  }
+
+  override clear(): void {
+    super.clear()
+    this.#defaultEntries.length = 0
+  }
+
+  override delete(key: unknown): boolean {
+    const isDeleted = super.delete(key)
+    const entryIndex = this.#defaultEntries.findIndex(
+      entry => entry.key === key,
+    )
+    if (entryIndex !== -1) {
+      this.#defaultEntries.splice(entryIndex, 1)
+    }
+    return isDeleted
+  }
+}
+
 function findDefaultKey(
   entries: readonly DefaultCacheEntry[],
   receiver: unknown,
@@ -50,8 +78,8 @@ export function memoize<Fn extends (...args: any[]) => any, Key = unknown>(
     throw new RangeError('Memoize maxSize must be a positive integer')
   }
 
-  const cache = new Map<unknown, ReturnType<Fn>>()
   const defaultEntries: DefaultCacheEntry[] = []
+  const cache = new MemoizeCache<ReturnType<Fn>>(defaultEntries)
 
   const memoized = function memoizedFn(
     this: ThisParameterType<Fn>,
@@ -83,12 +111,6 @@ export function memoize<Fn extends (...args: any[]) => any, Key = unknown>(
     if (maxSize !== undefined && cache.size > maxSize) {
       const oldestKey = cache.keys().next().value
       cache.delete(oldestKey)
-      const entryIndex = defaultEntries.findIndex(
-        entry => entry.key === oldestKey,
-      )
-      if (entryIndex !== -1) {
-        defaultEntries.splice(entryIndex, 1)
-      }
     }
 
     return value
@@ -97,7 +119,6 @@ export function memoize<Fn extends (...args: any[]) => any, Key = unknown>(
   memoized.cache = cache
   memoized.clear = () => {
     cache.clear()
-    defaultEntries.length = 0
   }
 
   return memoized

@@ -64,6 +64,8 @@ later calls can retry. Returned promises are cached as values.
 ### Returns
 
 A memoized function with `.cache` and `.clear()` helpers.
+Calling `.cache.clear()` or `.cache.delete(key)` also releases the associated
+argument identities, keeping the optional size bound effective.
 
 ### Example
 

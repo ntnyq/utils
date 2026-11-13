@@ -1,5 +1,5 @@
 /**
- * Check if values of two arrays are equal
+ * Check if values of two arrays are equal. Sparse slots are read as undefined.
  * @param array1 - array 1
  * @param array2 - array 2
  * @returns `true` if equal
@@ -21,5 +21,10 @@ export function isArrayEqual(
     return false
   }
 
-  return array1.every((item, idx) => item === array2[idx])
+  for (let index = 0; index < array1.length; index++) {
+    if (array1[index] !== array2[index]) {
+      return false
+    }
+  }
+  return true
 }

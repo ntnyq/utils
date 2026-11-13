@@ -434,6 +434,21 @@ describe(loadImageDimensions, () => {
     await expect(second).resolves.toStrictEqual({ width: 30, height: 40 })
   })
 
+  it.each([
+    'data:image/svg+xml,%3Csvg%20xmlns="http://www.w3.org/2000/svg"/%3E',
+    'blob:https://example.com/image-id',
+  ])(
+    'should preserve non-HTTP image sources with cache disabled: %s',
+    async source => {
+      const promise = loadImageDimensions(source, { cache: false })
+      const instance = MockImage.instances[0]!
+
+      expect(instance.src).toBe(source)
+      instance.onload?.()
+      await expect(promise).resolves.toStrictEqual({ width: 0, height: 0 })
+    },
+  )
+
   it('should create and revoke object URL for blob source', async () => {
     const blob = new Blob(['image-binary'], { type: 'image/png' })
     const promise = loadImageDimensions(blob)

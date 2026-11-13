@@ -78,8 +78,14 @@ async function runWithAbort<Value>(
     return await operation()
   }
 
-  // oxlint-disable-next-line promise/prefer-await-to-then -- Register the abort listener before invoking the operation.
-  return raceWithSignal(Promise.resolve().then(operation), signal)
+  return raceWithSignal(
+    // oxlint-disable-next-line promise/prefer-await-to-then -- Register the abort listener before invoking the operation.
+    Promise.resolve().then(() => {
+      signal.throwIfAborted()
+      return operation()
+    }),
+    signal,
+  )
 }
 
 async function waitForBackoff(

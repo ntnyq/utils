@@ -39,12 +39,12 @@ correct receiver. They require those methods to exist and have no timer fallback
 returns a promise of `{ width, height }` using natural image dimensions.
 It requires browser image APIs. Defaults:
 
-| Option        | Default       | Purpose                                                                    |
-| ------------- | ------------- | -------------------------------------------------------------------------- |
-| `timeout`     | `30000`       | Milliseconds until load rejection                                          |
-| `decoding`    | `'async'`     | Browser decoding hint                                                      |
-| `crossOrigin` | `'anonymous'` | CORS mode; also accepts `'use-credentials'` or null                        |
-| `cache`       | `true`        | Reuse successful loads; false adds a cache-busting query to string sources |
+| Option        | Default       | Purpose                                                                                                                       |
+| ------------- | ------------- | ----------------------------------------------------------------------------------------------------------------------------- |
+| `timeout`     | `30000`       | Milliseconds until load rejection                                                                                             |
+| `decoding`    | `'async'`     | Browser decoding hint                                                                                                         |
+| `crossOrigin` | `'anonymous'` | CORS mode; also accepts `'use-credentials'` or null                                                                           |
+| `cache`       | `true`        | Reuse successful loads; false adds a cache-busting query to HTTP(S) and relative URLs, preserving `data:` and `blob:` sources |
 
 Blob object URLs are cleaned up after loading. Failed loads are removed from
 the cache so a later call can retry.

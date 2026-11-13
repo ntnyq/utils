@@ -50,6 +50,9 @@ digitsToChinese('020-1234') // => '零二零-一二三四'
 
 ## randomInteger
 
+Integer bounds and the count of possible results must be safe integers;
+unsupported ranges throw `RangeError` instead of returning imprecise or infinite values.
+
 Generate a random integer within the given range.
 
 ### Parameters
@@ -73,6 +76,9 @@ console.log(result) // => a number between 0 and 9
 ---
 
 ## round
+
+Decimal scaling preserves finite large values when multiplication would
+overflow. Extremely coarse precision produces zero, preserving its sign.
 
 Rounds a number to a specified number of decimal places.
 
@@ -129,6 +135,8 @@ toChineseNumber(-2026) // => '负二千零二十六'
 ## toFixed
 
 Formats a number using fixed-point notation.
+Large finite values remain finite when scaling by the requested precision
+would overflow; they use JavaScript's native exponential formatting.
 
 ### Parameters
 

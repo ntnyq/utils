@@ -747,6 +747,16 @@ describe(orderBy, () => {
 })
 
 describe(isArrayEqual, () => {
+  it('should compare sparse slots symmetrically as undefined', () => {
+    const sparse = [1, 2]
+    delete sparse[0]
+
+    expect(isArrayEqual(sparse, [9, 2])).toBeFalsy()
+    expect(isArrayEqual([9, 2], sparse)).toBeFalsy()
+    expect(isArrayEqual(sparse, [undefined, 2])).toBeTruthy()
+    expect(isArrayEqual([undefined, 2], sparse)).toBeTruthy()
+  })
+
   it('should return true for equal arrays', () => {
     expect(isArrayEqual([1, 2, 3], [1, 2, 3])).toBeTruthy()
     expect(isArrayEqual(['a', 'b'], ['a', 'b'])).toBeTruthy()

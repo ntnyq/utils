@@ -25,9 +25,15 @@ export type ToArrayResult<Value> = Value extends null | undefined
  * ```
  *
  */
+export function toArray<Value>(array: Value): ToArrayResult<Value>
+
 export function toArray<Value = undefined>(
   array?: Nullable<Value>,
-): ToArrayResult<Value> {
+): ToArrayResult<Value> | []
+
+export function toArray<Value = undefined>(
+  array?: Nullable<Value>,
+): ToArrayResult<Value> | [] {
   const value = array ?? []
 
   return (Array.isArray(value) ? value : [value]) as ToArrayResult<Value>

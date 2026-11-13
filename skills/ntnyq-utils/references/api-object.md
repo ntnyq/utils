@@ -90,8 +90,10 @@ const publicValue = deleteIn(updated, 'user.role')
   inherited ones; it is not an own-property validator. String-path results are
   conservatively typed as `unknown`.
 - `setIn` defaults to `{ mutate: false, createIntermediate: true }`. Numeric
-  next segments create arrays. Literal paths produce updated result types;
-  dynamic paths produce a conservative object type.
+  next segments create arrays; inherited intermediates are treated as missing.
+  Immutable array updates preserve sparse slots. Literal paths produce updated
+  result types; options that may disable creation also include the original
+  source type. Dynamic paths produce a conservative object type.
 - `deleteIn` deletes own properties and clones containers along the path by
   default. Missing paths return the original object. Deleting an array index
   leaves a hole without shortening the array.

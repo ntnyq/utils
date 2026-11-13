@@ -58,6 +58,32 @@ describe(once, () => {
 })
 
 describe(memoize, () => {
+  it.each(['clear', 'delete'] as const)(
+    'should release argument identities after direct cache.%s calls',
+    method => {
+      const memoized = memoize((input: object) => input, { maxSize: 1 })
+      for (let index = 0; index < 100; index++) {
+        memoized({ index })
+        if (method === 'clear') {
+          memoized.cache.clear()
+        } else {
+          memoized.cache.delete(memoized.cache.keys().next().value)
+        }
+      }
+
+      const identityChecks = vi.spyOn(Object, 'is')
+      let comparisonCount: number
+      try {
+        memoized({ final: true })
+        comparisonCount = identityChecks.mock.calls.length
+      } finally {
+        identityChecks.mockRestore()
+      }
+      expect(comparisonCount).toBeLessThan(10)
+      expect(memoized.cache.size).toBe(1)
+    },
+  )
+
   it('should retry failed calls without retaining failed argument identities', () => {
     const operation = vi.fn((input: { fail: boolean }) => {
       if (input.fail) {
@@ -125,6 +151,8 @@ describe(memoize, () => {
     memoized(2)
 
     expect(memoized.cache.size).toBe(2)
+    expect([...memoized.cache.entries()]).toHaveLength(2)
+    expect(Reflect.ownKeys(memoized.cache)).toStrictEqual([])
 
     memoized.clear()
     expect(memoized.cache.size).toBe(0)

@@ -116,9 +116,21 @@ type SetInReturn<
   Path extends PathInput,
   Value,
   Options extends SetInOptions,
-> = Options extends { createIntermediate: false }
-  ? T | SetInResult<T, Path, Value, ResolveSetInSeparator<Options>>
-  : SetInResult<T, Path, Value, ResolveSetInSeparator<Options>>
+> =
+  SetInResult<
+    T,
+    Path,
+    Value,
+    ResolveSetInSeparator<Options>
+  > extends infer Result
+    ? object extends Result
+      ? Result
+      : 'createIntermediate' extends keyof Options
+        ? false extends Options['createIntermediate']
+          ? T | Result
+          : Result
+        : Result
+    : never
 
 export interface SetInOptions {
   /**
@@ -178,12 +190,31 @@ function isObjectLike(value: unknown): value is Record<PathSegment, unknown> {
   return typeof value === 'object' && value !== null
 }
 
+function setOwnValue(
+  target: Record<PathSegment, unknown>,
+  key: PathSegment,
+  value: unknown,
+): void {
+  if (Object.hasOwn(target, key)) {
+    target[key] = value
+    return
+  }
+  Object.defineProperty(target, key, {
+    configurable: true,
+    enumerable: true,
+    value,
+    writable: true,
+  })
+}
+
 function cloneContainer(
   value: unknown,
   nextKey: PathSegment | undefined,
 ): unknown {
   if (Array.isArray(value)) {
-    return [...value]
+    // Preserve unrelated sparse slots during an immutable update.
+    // oxlint-disable-next-line unicorn/prefer-spread
+    return value.slice()
   }
 
   if (isObjectLike(value)) {
@@ -194,7 +225,8 @@ function cloneContainer(
 }
 
 /**
- * Sets a nested value by path.
+ * Sets a nested own value by path. Inherited intermediates are treated as
+ * missing, so mutable updates cannot change objects on the prototype chain.
  * @param target - Source object.
  * @param path - Dot-path string or path segments.
  * @param value - Value to set.
@@ -247,18 +279,18 @@ export function setIn<T extends object, Value>(
       const isLast = index === segments.length - 1
 
       if (isLast) {
-        current[key] = value
+        setOwnValue(current, key, value)
         return target
       }
 
       const nextKey = segments[index + 1]
-      const nextValue = current[key]
+      const nextValue = Object.hasOwn(current, key) ? current[key] : undefined
 
       if (!isObjectLike(nextValue) && !Array.isArray(nextValue)) {
         if (!createIntermediate) {
           return target
         }
-        current[key] = createContainer(nextKey)
+        setOwnValue(current, key, createContainer(nextKey))
       }
 
       current = current[key] as Record<PathSegment, unknown>
@@ -279,13 +311,13 @@ export function setIn<T extends object, Value>(
     const isLast = index === segments.length - 1
 
     if (isLast) {
-      current[key] = value
+      setOwnValue(current, key, value)
       return root as T
     }
 
     const nextKey = segments[index + 1]
     const sourceNext =
-      isObjectLike(sourceCurrent) || Array.isArray(sourceCurrent)
+      isObjectLike(sourceCurrent) && Object.hasOwn(sourceCurrent, key)
         ? (sourceCurrent as Record<PathSegment, unknown>)[key]
         : undefined
 
@@ -294,7 +326,7 @@ export function setIn<T extends object, Value>(
     }
 
     const clonedNext = cloneContainer(sourceNext, nextKey)
-    current[key] = clonedNext
+    setOwnValue(current, key, clonedNext)
     current = clonedNext as Record<PathSegment, unknown>
     sourceCurrent = sourceNext
   }

@@ -16,5 +16,15 @@
 export function round(value: number, decimal: number = 0): number {
   // oxlint-disable-next-line prefer-exponentiation-operator
   const multiplier = Math.pow(10, decimal)
-  return Math.round(value * multiplier) / multiplier
+  if (Number.isNaN(multiplier)) {
+    return Number.NaN
+  }
+  if (multiplier === 0) {
+    if (!Number.isFinite(value)) {
+      return value
+    }
+    return value < 0 || Object.is(value, -0) ? -0 : 0
+  }
+  const scaled = value * multiplier
+  return Number.isFinite(scaled) ? Math.round(scaled) / multiplier : value
 }

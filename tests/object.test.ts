@@ -1172,6 +1172,44 @@ describe(deleteIn, () => {
 })
 
 describe(setIn, () => {
+  it('should create own intermediates without changing inherited objects', () => {
+    const inherited = Object.freeze({ settings: { enabled: false } })
+    const source = Object.create(inherited) as typeof inherited
+
+    setIn(source, 'settings.enabled', true, { mutate: true })
+
+    expect(inherited.settings.enabled).toBeFalsy()
+    expect(Object.hasOwn(source, 'settings')).toBeTruthy()
+    expect(source.settings.enabled).toBeTruthy()
+  })
+
+  it('should ignore inherited intermediates when creation is disabled', () => {
+    const inherited = { settings: { enabled: false } }
+    const source = Object.create(inherited) as typeof inherited
+
+    expect(
+      setIn(source, 'settings.enabled', true, {
+        createIntermediate: false,
+        mutate: true,
+      }),
+    ).toBe(source)
+    expect(inherited.settings.enabled).toBeFalsy()
+    expect(Object.hasOwn(source, 'settings')).toBeFalsy()
+    expect(
+      setIn(source, 'settings.enabled', true, { createIntermediate: false }),
+    ).toBe(source)
+  })
+
+  it('should preserve unrelated sparse slots in immutable array updates', () => {
+    const source = { items: ['a', 'b', 'c'] }
+    delete source.items[0]
+    const result = setIn(source, ['items', 2], 'updated')
+
+    expect(Object.hasOwn(result.items, 0)).toBeFalsy()
+    expect(result.items[2]).toBe('updated')
+    expect(source.items[2]).toBe('c')
+  })
+
   it('should set nested value with createIntermediate by default', () => {
     const source = { user: {} }
     const result = setIn(source, 'user.profile.name', 'Alice') as {

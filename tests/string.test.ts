@@ -216,6 +216,10 @@ describe(joinNonEmptyValues, () => {
 })
 
 describe(createPadString, () => {
+  it('should produce an empty string for zero width', () => {
+    expect(createPadString({ length: 0, char: '0' })('123')).toBe('')
+  })
+
   it('should pad string to specified length', () => {
     const pad = createPadString({ length: 5, char: '0' })
     expect(pad('1')).toBe('00001')
@@ -391,6 +395,28 @@ describe(unindent, () => {
 })
 
 describe(truncate, () => {
+  it('should retain complete boundary words when preserving words', () => {
+    expect(
+      truncate('Hello world again', {
+        maxLength: 14,
+        preserveWords: true,
+      }),
+    ).toBe('Hello world...')
+    expect(
+      truncate('Again hello world', {
+        maxLength: 14,
+        position: 'start',
+        preserveWords: true,
+      }),
+    ).toBe('...hello world')
+    expect(
+      truncate('Hello\tworld again', {
+        maxLength: 11,
+        preserveWords: true,
+      }),
+    ).toBe('Hello...')
+  })
+
   it('should truncate from end by default', () => {
     expect(truncate('The quick brown fox', { maxLength: 10 })).toBe(
       'The qui...',

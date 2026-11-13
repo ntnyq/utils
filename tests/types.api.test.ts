@@ -46,6 +46,7 @@ import {
   isNonEmptyObject,
   isNonEmptySet,
   isPrimitive,
+  isTruthy,
   isURLString,
   isWeakMap,
   isWeakSet,
@@ -79,6 +80,12 @@ import type {
 } from '../src/web'
 
 describe('public API types', () => {
+  it('should exclude falsy literal types with isTruthy', () => {
+    const values: (0 | 0n | 1 | '' | false | true | null | undefined)[] = [1]
+    // oxlint-disable-next-line unicorn/no-array-callback-reference -- Verify type guard inference through the filter overload.
+    expectTypeOf(values.filter(isTruthy)).toEqualTypeOf<(1 | true)[]>()
+  })
+
   it('should preserve object keys when omit receives no keys', () => {
     expectTypeOf(omit({ a: 1 })).toEqualTypeOf<{ a: number }>()
     expectTypeOf(omit({ a: 1 }, undefined)).toEqualTypeOf<{ a: number }>()
@@ -172,6 +179,25 @@ describe('public API types', () => {
     expectTypeOf<
       ToArrayResult<null | readonly [1, 2] | string>
     >().toEqualTypeOf<[] | readonly [1, 2] | string[]>()
+  })
+
+  it('should account for nullish arguments with explicit toArray generics', () => {
+    expectTypeOf(toArray<readonly [1]>(null)).toEqualTypeOf<readonly [1] | []>()
+    expectTypeOf(toArray<readonly [1]>(undefined)).toEqualTypeOf<
+      readonly [1] | []
+    >()
+    expectTypeOf(toArray<readonly [1]>()).toEqualTypeOf<readonly [1] | []>()
+  })
+
+  it('should account for disabled creation in widened setIn options', () => {
+    const options: Pick<SetInOptions, 'createIntermediate'> = {
+      createIntermediate: false,
+    }
+    const result = setIn({ nested: 1 }, 'nested.name', 'Alice', options)
+
+    expectTypeOf(result).toEqualTypeOf<
+      { nested: number } | { nested: { name: string } }
+    >()
   })
 
   it('should narrow collection and primitive checks', () => {

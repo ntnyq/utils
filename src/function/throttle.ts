@@ -47,9 +47,8 @@ export function throttle<
   assertValidDelay(delay)
 
   let lastExec = Number.NEGATIVE_INFINITY
-  let timeoutId: ReturnType<typeof setTimeout> | undefined = undefined
-  let pendingArgs: Parameters<Exclude<T, null | undefined>> | undefined =
-    undefined
+  let timeoutId: ReturnType<typeof setTimeout> | undefined
+  let pendingArgs: Parameters<Exclude<T, null | undefined>> | undefined
   let pendingReceiver: unknown
 
   function clearExistingTimeout() {
@@ -138,7 +137,7 @@ export function debounce<
 ): T & { cancel: () => void } {
   assertValidDelay(delay)
 
-  let timeoutId: ReturnType<typeof setTimeout> | undefined = undefined
+  let timeoutId: ReturnType<typeof setTimeout> | undefined
 
   function cancel() {
     if (timeoutId !== undefined) {

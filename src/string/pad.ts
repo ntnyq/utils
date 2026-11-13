@@ -21,5 +21,6 @@ export function createPadString(
   options: CreatePadStringOptions,
 ): (value: string) => string {
   const { length, char } = options
-  return (value: string) => (char.repeat(length) + value).slice(-length)
+  return (value: string) =>
+    length === 0 ? '' : (char.repeat(length) + value).slice(-length)
 }

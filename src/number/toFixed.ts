@@ -20,6 +20,8 @@ export interface ToFixedOptions {
  * @example
  *
  * ```typescript
+ * import { toFixed } from '@ntnyq/utils'
+ *
  * toFixed(123.456) // '123.46'
  * toFixed(123.456, { digits: 1 }) // '123.5'
  * toFixed(123.400, { omitTrailingZeros: false }) // '123.40'

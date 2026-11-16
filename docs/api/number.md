@@ -8,13 +8,14 @@ outline: deep
 Helpers for ranges, random numbers, rounding, number coercion, and Chinese
 numeral formatting.
 
-This section documents 8 exported methods from the number module.
+This section documents 9 exported methods from the number module.
 
 ## Methods
 
 - [clamp](#clamp)
 - [digitsToChinese](#digitstochinese)
 - [randomInteger](#randominteger)
+- [randomNumber](#randomnumber)
 - [round](#round)
 - [toChineseNumber](#tochinesenumber)
 - [toFixed](#tofixed)
@@ -71,6 +72,40 @@ import { randomInteger } from '@ntnyq/utils'
 
 const result = randomInteger(10)
 console.log(result) // => a number between 0 and 9
+```
+
+---
+
+## randomNumber
+
+Generates a random number, preserving decimal bounds. Reversed bounds are
+swapped, and equal bounds return that value without sampling.
+
+The lower bound is inclusive and the upper bound is normally exclusive.
+Floating-point rounding can produce the upper bound.
+
+### Parameters
+
+- **min**: Lower bound, or upper bound when used alone. Defaults to `1`.
+- **max**: Upper bound. When omitted, the lower bound is `0`.
+
+### Returns
+
+A random number within the range.
+
+### Throws
+
+Throws `RangeError` if either bound or the range size is not finite.
+
+### Example
+
+```ts
+import { randomNumber } from '@ntnyq/utils'
+
+randomNumber() // => a number between 0 and 1
+randomNumber(10) // => a number between 0 and 10
+randomNumber(1.5, 3.5) // => a number between 1.5 and 3.5
+randomNumber(3.5, 1.5) // => a number between 1.5 and 3.5
 ```
 
 ---

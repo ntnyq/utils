@@ -7,6 +7,8 @@
  * @example
  *
  * ```typescript
+ * import { once } from '@ntnyq/utils'
+ *
  * const initialize = once(() => {
  *   console.log('Initialized')
  * })

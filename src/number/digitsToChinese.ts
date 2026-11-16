@@ -10,6 +10,8 @@ const CHINESE_DIGITS = '零一二三四五六七八九'
  * @example
  *
  * ```typescript
+ * import { digitsToChinese } from '@ntnyq/utils'
+ *
  * digitsToChinese(2026) // '二零二六'
  * digitsToChinese('020-1234') // '零二零-一二三四'
  * ```

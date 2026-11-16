@@ -1,15 +1,16 @@
 // oxlint-disable oxc/approx-constant
-import { describe, expect, it, vi } from 'vitest'
+import { afterEach, describe, expect, it, vi } from 'vitest'
 import {
   clamp,
   digitsToChinese,
   randomInteger,
+  randomNumber,
   round,
   toChineseNumber,
   toFixed,
   toInteger,
   toNumber,
-} from '../src/number'
+} from '../src'
 
 describe(digitsToChinese, () => {
   it('should convert each digit independently', () => {
@@ -209,6 +210,81 @@ describe(randomInteger, () => {
   it('should reject invalid or empty integer ranges', () => {
     expect(() => randomInteger(Number.POSITIVE_INFINITY, 2)).toThrow(RangeError)
     expect(() => randomInteger(1.1, 1.2)).toThrow(RangeError)
+  })
+})
+
+describe(randomNumber, () => {
+  afterEach(() => {
+    vi.restoreAllMocks()
+  })
+
+  it('should default to a range between zero and one', () => {
+    vi.spyOn(Math, 'random').mockReturnValue(0.25)
+
+    expect(randomNumber()).toBe(0.25)
+  })
+
+  it('should use a single argument as the upper bound', () => {
+    vi.spyOn(Math, 'random').mockReturnValue(0.25)
+
+    expect(randomNumber(10)).toBe(2.5)
+    expect(randomNumber(-10)).toBe(-7.5)
+  })
+
+  it('should preserve decimal bounds and swap reversed bounds', () => {
+    vi.spyOn(Math, 'random').mockReturnValue(0.25)
+
+    expect(randomNumber(1.5, 3.5)).toBe(2)
+    expect(randomNumber(3.5, 1.5)).toBe(2)
+    expect(randomNumber(-3.5, -1.5)).toBe(-3)
+    expect(randomNumber(-1.5, 0.5)).toBe(-1)
+  })
+
+  it('should include the lower bound and approach the upper bound', () => {
+    const random = vi.spyOn(Math, 'random')
+    random.mockReturnValueOnce(0).mockReturnValueOnce(1 - Number.EPSILON)
+
+    expect(randomNumber(2, 4)).toBe(2)
+    const result = randomNumber(2, 4)
+    expect(result).toBeGreaterThan(3.9)
+    expect(result).toBeLessThan(4)
+  })
+
+  it('should return equal bounds without sampling', () => {
+    const random = vi.spyOn(Math, 'random')
+
+    expect(randomNumber(1.5, 1.5)).toBe(1.5)
+    expect(randomNumber(-2.5, -2.5)).toBe(-2.5)
+    expect(randomNumber(Number.MAX_VALUE, Number.MAX_VALUE)).toBe(
+      Number.MAX_VALUE,
+    )
+    expect(randomNumber(0)).toBe(0)
+    expect(random).not.toHaveBeenCalled()
+  })
+
+  it('should allow the upper bound when floating-point rounding produces it', () => {
+    vi.spyOn(Math, 'random').mockReturnValue(1 - Number.EPSILON)
+
+    expect(randomNumber(1, 1 + Number.EPSILON)).toBe(1 + Number.EPSILON)
+  })
+
+  it.each([Number.NaN, Number.POSITIVE_INFINITY, Number.NEGATIVE_INFINITY])(
+    'should reject non-finite bounds: %s',
+    value => {
+      expect(() => randomNumber(value)).toThrow(RangeError)
+      expect(() => randomNumber(value, 1)).toThrow(RangeError)
+      expect(() => randomNumber(0, value)).toThrow(RangeError)
+      expect(() => randomNumber(value, value)).toThrow(RangeError)
+    },
+  )
+
+  it('should reject range sizes that overflow', () => {
+    expect(() => randomNumber(-Number.MAX_VALUE, Number.MAX_VALUE)).toThrow(
+      RangeError,
+    )
+    expect(() => randomNumber(Number.MAX_VALUE, -Number.MAX_VALUE)).toThrow(
+      RangeError,
+    )
   })
 })
 

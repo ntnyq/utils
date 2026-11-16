@@ -6,6 +6,8 @@
  * @example
  *
  * ```typescript
+ * import { filterFalsy } from '@ntnyq/utils'
+ *
  * const mixedArray = [0, 1, false, 2, '', 3, null, 4, undefined, 5];
  * const truthyArray = filterFalsy(mixedArray);
  * console.log(truthyArray); // Output: [1, 2, 3, 4, 5]

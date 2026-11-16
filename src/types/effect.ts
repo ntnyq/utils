@@ -6,6 +6,8 @@ import type { Prettify } from './base'
  * @example
  *
  * ```typescript
+ * import type { Overwrite } from '@ntnyq/utils'
+ *
  * type A = { a: string, b: number }
  * type B = { b?: boolean, c: string }
  *
@@ -22,6 +24,8 @@ export type Overwrite<T, U> = Prettify<Omit<T, keyof U> & U>
  * @example
  *
  * ```typescript
+ * import type { StrictOverwrite } from '@ntnyq/utils'
+ *
  * type A = { a: string, b: number }
  * type B = { b: boolean }
  *
@@ -41,6 +45,8 @@ export type StrictOverwrite<T, U> =
  * @example
  *
  * ```typescript
+ * import type { Without } from '@ntnyq/utils'
+ *
  * type A = { a: string, b: number }
  * type B = { b: number }
  *
@@ -57,6 +63,8 @@ export type Without<T, U> = { [P in Exclude<keyof T, keyof U>]?: never }
  * @example
  *
  * ```typescript
+ * import type { Exclusive } from '@ntnyq/utils'
+ *
  * type A = { a: string }
  * type B = { b: number }
  *

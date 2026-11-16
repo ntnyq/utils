@@ -40,6 +40,8 @@ function convertGroup(value: number): string {
  * @example
  *
  * ```typescript
+ * import { toChineseNumber } from '@ntnyq/utils'
+ *
  * toChineseNumber(10) // '十'
  * toChineseNumber(1024) // '一千零二十四'
  * toChineseNumber(-2026) // '负二千零二十六'

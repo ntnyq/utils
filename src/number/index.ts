@@ -1,6 +1,7 @@
 export * from './clamp'
 export * from './digitsToChinese'
 export * from './randomInteger'
+export * from './randomNumber'
 export * from './round'
 export * from './toChineseNumber'
 export * from './toFixed'

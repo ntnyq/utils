@@ -10,6 +10,8 @@ import { createDeferred } from './createDeferred'
  *
  * @example
  * ```typescript
+ * import { raceWithSignal } from '@ntnyq/utils'
+ *
  * const controller = new AbortController()
  * const task = Promise.resolve('ready')
  * const value = await raceWithSignal(task, controller.signal) // 'ready'

@@ -30,6 +30,8 @@ export type TimeUnit = keyof typeof TIME_UNITS
  * @example
  *
  * ```typescript
+ * import { convertToMilliseconds } from '@ntnyq/utils'
+ *
  * convertToMilliseconds(5, 'SECOND') // 5000
  * convertToMilliseconds(2, 'MINUTE') // 120000
  * convertToMilliseconds(1, 'HOUR') // 3600000
@@ -51,6 +53,8 @@ export function convertToMilliseconds(
  * @example
  *
  * ```typescript
+ * import { convertFromMilliseconds } from '@ntnyq/utils'
+ *
  * convertFromMilliseconds(5000, 'SECOND') // 5
  * convertFromMilliseconds(120000, 'MINUTE') // 2
  * convertFromMilliseconds(3600000, 'HOUR') // 1
@@ -73,6 +77,8 @@ export function convertFromMilliseconds(
  * @example
  *
  * ```typescript
+ * import { convertTimeUnit } from '@ntnyq/utils'
+ *
  * convertTimeUnit(1, 'HOUR', 'MINUTE') // 60
  * convertTimeUnit(120, 'SECOND', 'MINUTE') // 2
  * convertTimeUnit(2, 'WEEK', 'DAY') // 14

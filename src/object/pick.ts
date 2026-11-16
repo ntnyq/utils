@@ -19,6 +19,8 @@ export interface ObjectPickOptions {
  * @example
  *
  * ```typescript
+ * import { pick } from '@ntnyq/utils'
+ *
  * const object = { a: 1, b: '2', c: 3 }
  * const result = pick(object, ['a', 'c'])
  * console.log(result) // => { a: 1, c: 3 }

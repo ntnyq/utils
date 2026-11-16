@@ -34,6 +34,8 @@ export type Primitive =
  * @example
  *
  * ```typescript
+ * import type { PropertyKeyOf } from '@ntnyq/utils'
+ *
  * interface Item {
  *   id: number
  *   name: string

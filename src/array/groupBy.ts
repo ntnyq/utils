@@ -11,6 +11,8 @@ import type { PropertyKeyOf } from '../types'
  * @example
  *
  * ```typescript
+ * import { groupBy } from '@ntnyq/utils'
+ *
  * const data = [
  *  { name: 'Alice', age: 30 },
  *  { name: 'Bob', age: 25 },

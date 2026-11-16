@@ -28,6 +28,8 @@ export type StorageUnit = keyof typeof STORAGE_UNITS
  * @example
  *
  * ```typescript
+ * import { convertToBytes } from '@ntnyq/utils'
+ *
  * convertToBytes(5, 'MB') // 5242880
  * convertToBytes(1, 'GB') // 1073741824
  * convertToBytes(512, 'KB') // 524288
@@ -49,6 +51,8 @@ export function convertToBytes(
  * @example
  *
  * ```typescript
+ * import { convertFromBytes } from '@ntnyq/utils'
+ *
  * convertFromBytes(5242880, 'MB') // 5
  * convertFromBytes(1073741824, 'GB') // 1
  * convertFromBytes(524288, 'KB') // 512
@@ -71,6 +75,8 @@ export function convertFromBytes(
  * @example
  *
  * ```typescript
+ * import { convertStorageUnit } from '@ntnyq/utils'
+ *
  * convertStorageUnit(1, 'GB', 'MB') // 1024
  * convertStorageUnit(2048, 'MB', 'GB') // 2
  * convertStorageUnit(1024, 'KB', 'MB') // 1

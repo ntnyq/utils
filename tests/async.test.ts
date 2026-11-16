@@ -13,7 +13,7 @@ describe(createDeferred, () => {
     const onFulfilled = vi.fn()
     const onRejected = vi.fn()
     // oxlint-disable-next-line promise/prefer-await-to-then -- Observe settlement without blocking the pending-state assertion.
-    const observed = promise.then(onFulfilled, onRejected)
+    const observed = promise.then(onFulfilled).catch(onRejected)
 
     await Promise.resolve()
     expect(onFulfilled).not.toHaveBeenCalled()
@@ -91,12 +91,9 @@ describe(createDeferred, () => {
   })
 
   it('should adopt a custom promise-like value', async () => {
-    const thenable: PromiseLike<number> = {
-      // oxlint-disable-next-line unicorn/no-thenable -- Exercise adoption of a non-Promise thenable.
-      then(onFulfilled, onRejected) {
-        return Promise.resolve(42).then(onFulfilled, onRejected)
-      },
-    }
+    const ready = Promise.resolve(42)
+    // oxlint-disable-next-line unicorn/no-thenable -- Exercise adoption of a non-Promise thenable.
+    const thenable: PromiseLike<number> = { then: ready.then.bind(ready) }
     const { promise, resolve } = createDeferred<number>()
     resolve(thenable)
 

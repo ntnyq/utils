@@ -14,6 +14,7 @@ import type { ToArrayResult } from '../src/array'
 import {
   digitsToChinese,
   randomInteger,
+  randomNumber,
   toChineseNumber,
   toInteger,
 } from '../src/number'
@@ -80,6 +81,12 @@ import type {
 } from '../src/web'
 
 describe('public API types', () => {
+  it('should expose randomNumber with optional numeric bounds', () => {
+    expectTypeOf(randomNumber).toEqualTypeOf<
+      (min?: number, max?: number) => number
+    >()
+  })
+
   it('should exclude falsy literal types with isTruthy', () => {
     const values: (0 | 0n | 1 | '' | false | true | null | undefined)[] = [1]
     // oxlint-disable-next-line unicorn/no-array-callback-reference -- Verify type guard inference through the filter overload.

@@ -16,6 +16,8 @@ export interface FormatDurationClockOptions {
  *
  * @example
  * ```typescript
+ * import { formatDurationClock } from '@ntnyq/utils'
+ *
  * formatDurationClock(90_061) // '25:01:01'
  * formatDurationClock(3_661, { mode: 'totalMinutes' }) // '61:01'
  * ```

@@ -28,6 +28,8 @@ const BYTE_SIZE_LABELS = ['B', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB'] as const
  *
  * @example
  * ```typescript
+ * import { formatByteSize } from '@ntnyq/utils'
+ *
  * formatByteSize(1_536) // '1.5 KB'
  * formatByteSize(1_024, { separator: '' }) // '1KB'
  * formatByteSize(1_024, { digits: 1, omitTrailingZeros: false, unitStyle: 'iec' }) // '1.0 KiB'

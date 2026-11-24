@@ -838,7 +838,7 @@ describe(shuffle, () => {
   it('should contain all original elements', () => {
     const arr = [1, 2, 3, 4, 5]
     const shuffled = shuffle([...arr])
-    expect(shuffled.toSorted()).toStrictEqual(arr)
+    expect([...shuffled].sort((left, right) => left - right)).toStrictEqual(arr)
   })
 
   it('should handle empty array', () => {
@@ -859,7 +859,9 @@ describe(shuffle, () => {
   it('should handle array with duplicate values', () => {
     const arr = [1, 1, 2, 2, 3]
     const shuffled = shuffle([...arr])
-    expect(shuffled.toSorted()).toStrictEqual([1, 1, 2, 2, 3])
+    expect([...shuffled].sort((left, right) => left - right)).toStrictEqual([
+      1, 1, 2, 2, 3,
+    ])
   })
 })
 
@@ -867,7 +869,9 @@ describe(shuffleInPlace, () => {
   it('should mutate and return the source array', () => {
     const arr = [1, 2, 3, 4, 5]
     expect(shuffleInPlace(arr)).toBe(arr)
-    expect(arr.toSorted()).toStrictEqual([1, 2, 3, 4, 5])
+    expect([...arr].sort((left, right) => left - right)).toStrictEqual([
+      1, 2, 3, 4, 5,
+    ])
   })
 })
 

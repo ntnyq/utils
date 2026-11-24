@@ -823,6 +823,39 @@ describe(isURLString, () => {
 })
 
 describe(isDeepEqual, () => {
+  it.each([
+    {
+      collection: 'object Sets',
+      left: new Set([{ id: 1 }, { id: 2 }]),
+      right: new Set([{ id: 2 }, { id: 1 }]),
+    },
+    {
+      collection: 'Maps with object keys',
+      left: new Map([
+        [{ id: 1 }, 'first'],
+        [{ id: 2 }, 'second'],
+      ]),
+      right: new Map([
+        [{ id: 2 }, 'second'],
+        [{ id: 1 }, 'first'],
+      ]),
+    },
+  ])('should compare $collection without toSpliced', ({ left, right }) => {
+    const descriptor = Object.getOwnPropertyDescriptor(
+      Array.prototype,
+      'toSpliced',
+    )
+
+    try {
+      expect(Reflect.deleteProperty(Array.prototype, 'toSpliced')).toBeTruthy()
+      expect(isDeepEqual(left, right)).toBeTruthy()
+    } finally {
+      if (descriptor) {
+        Reflect.defineProperty(Array.prototype, 'toSpliced', descriptor)
+      }
+    }
+  })
+
   it('should reconsider Set pairings when later properties constrain shared references', () => {
     const first = {}
     const second = {}
@@ -879,7 +912,7 @@ describe(isDeepEqual, () => {
 
   it('should compare large primitive collections without recursive matching', () => {
     const values = Array.from({ length: 10_000 }, (_value, index) => index)
-    const reversedValues = values.toReversed()
+    const reversedValues = [...values].reverse()
     const leftMap = new Map(values.map(value => [value, value]))
     const rightMap = new Map(reversedValues.map(value => [value, value]))
     expect(isDeepEqual(new Set(values), new Set(reversedValues))).toBeTruthy()

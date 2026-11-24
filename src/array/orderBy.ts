@@ -256,13 +256,14 @@ export function orderBy<T>(
 
   const { collator, directions = 'asc', nulls = 'last' } = options
 
-  return array
-    .map((item, index) => ({
-      index,
-      item,
-      values: normalizedSelectors.map(selector => selectValue(item, selector)),
-    }))
-    .toSorted((leftEntry, rightEntry) => {
+  const entries = array.map((item, index) => ({
+    index,
+    item,
+    values: normalizedSelectors.map(selector => selectValue(item, selector)),
+  }))
+
+  return [...entries]
+    .sort((leftEntry, rightEntry) => {
       for (
         let selectorIndex = 0;
         selectorIndex < normalizedSelectors.length;

@@ -44,7 +44,7 @@ export function sortObjectKeys<T extends Record<string, any>>(
     const ownKeys = Reflect.ownKeys(obj)
     const sortedKeys = ownKeys
       .filter((key): key is string => typeof key === 'string')
-      .toSorted(compareFn)
+      .sort(compareFn)
     const symbolKeys = ownKeys.filter(
       (key): key is symbol => typeof key === 'symbol',
     )

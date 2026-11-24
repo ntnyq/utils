@@ -5,5 +5,5 @@ export default defineConfig({
   dts: true,
   entry: ['src/index.ts'],
   platform: 'neutral',
-  target: ['node22', 'es2023'],
+  target: ['node22', 'es2022'],
 })

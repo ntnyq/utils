@@ -192,10 +192,12 @@ function queueCollectionCandidate(
   }
 
   if (left.length > 1) {
+    const remainingCandidates = [...right]
+    remainingCandidates.splice(candidateIndex, 1)
     state.pending.push({
       kind: 'collection',
       left: left.slice(1),
-      right: right.toSpliced(candidateIndex, 1),
+      right: remainingCandidates,
       candidateIndex: 0,
     })
   }

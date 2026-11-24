@@ -66,6 +66,7 @@
     "unicorn/no-abusive-eslint-disable": "off",
     "unicorn/prefer-global-this": "off",
     "unicorn/no-array-reverse": "off",
+    "unicorn/no-array-sort": "off",
     "unicorn/no-null": "off",
     "unicorn/no-array-reduce": "off",
     "unicorn/no-array-for-each": "off",

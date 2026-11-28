@@ -23,6 +23,16 @@ export function shuffle<T>(array: readonly T[]): T[] {
  * Applies a Fisher–Yates shuffle to an array in place.
  * @param array - Array to mutate.
  * @returns The source array after shuffling.
+ *
+ * @example
+ *
+ * ```typescript
+ * import { shuffleInPlace } from '@ntnyq/utils'
+ *
+ * const items = [1, 2, 3, 4]
+ * const shuffled = shuffleInPlace(items)
+ * console.log(shuffled === items) // => true
+ * ```
  */
 export function shuffleInPlace<T>(array: T[]): T[] {
   for (let i = array.length - 1; i > 0; i--) {

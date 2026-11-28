@@ -78,7 +78,7 @@ function resolveFallback(
  * import { safeStringify } from '@ntnyq/utils'
  *
  * const value: Record<string, unknown> = { count: 1n }
- * value.self = value
+ * value['self'] = value
  *
  * safeStringify(value)
  * // => '{"count":"1n","self":"[Circular]"}'

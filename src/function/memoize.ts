@@ -11,6 +11,21 @@ export type MemoizedFunction<Fn extends (...args: any[]) => any> = ((
   ...args: Parameters<Fn>
 ) => ReturnType<Fn>) & {
   cache: Map<unknown, ReturnType<Fn>>
+
+  /**
+   * Clears all cached results.
+   *
+   * @example
+   *
+   * ```typescript
+   * import { memoize } from '@ntnyq/utils'
+   *
+   * const square = memoize((value: number) => value ** 2)
+   * square(4)
+   * square.clear()
+   * console.log(square.cache.size) // => 0
+   * ```
+   */
   clear: () => void
 }
 
@@ -67,6 +82,16 @@ function findDefaultKey(
  * @param func - Function to memoize.
  * @param options - Memoize options.
  * @returns Memoized function with cache helpers.
+ *
+ * @example
+ *
+ * ```typescript
+ * import { memoize } from '@ntnyq/utils'
+ *
+ * const createPoint = memoize((x: number, y: number) => ({ x, y }))
+ * const point = createPoint(2, 3)
+ * console.log(createPoint(2, 3) === point) // => true
+ * ```
  */
 export function memoize<Fn extends (...args: any[]) => any, Key = unknown>(
   func: Fn,

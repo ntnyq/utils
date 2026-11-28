@@ -22,7 +22,7 @@ import type { PropertyKeyOf } from '../types'
  * ]
  *
  * const usersById = keyBy(users, 'id')
- * console.log(usersById.a?.name) // => 'Alice'
+ * console.log(usersById['a']?.name) // => 'Alice'
  * ```
  */
 export function keyBy<T, Key extends PropertyKey>(

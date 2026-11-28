@@ -37,7 +37,23 @@ export function throttle<
   delay: number,
   callback: Exclude<T, undefined | null>,
   options: ThrottleDebounceOptions = {},
-): T & { cancel: () => void } {
+): T & {
+  /**
+   * Cancels a pending trailing call.
+   *
+   * @example
+   *
+   * ```typescript
+   * import { throttle } from '@ntnyq/utils'
+   *
+   * const update = throttle(200, (value: number) => console.log(value))
+   * update(1) // logs 1 immediately
+   * update(2) // schedules a trailing call
+   * update.cancel()
+   * ```
+   */
+  cancel: () => void
+} {
   const { isDebounce } = options
 
   if (isDebounce) {
@@ -134,7 +150,22 @@ export function debounce<
   delay: number,
   callback: Exclude<T, undefined | null>,
   _options: ThrottleDebounceOptions = {},
-): T & { cancel: () => void } {
+): T & {
+  /**
+   * Cancels the pending debounced call.
+   *
+   * @example
+   *
+   * ```typescript
+   * import { debounce } from '@ntnyq/utils'
+   *
+   * const save = debounce(300, () => console.log('saved'))
+   * save()
+   * save.cancel() // cancels the scheduled save
+   * ```
+   */
+  cancel: () => void
+} {
   assertValidDelay(delay)
 
   let timeoutId: ReturnType<typeof setTimeout> | undefined

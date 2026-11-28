@@ -73,9 +73,9 @@ Accessor properties are preserved without invoking their getters.
 ```ts
 import { cleanObjectInPlace } from '@ntnyq/utils'
 
-const value = { name: 'Alice', note: null }
-cleanObjectInPlace(value)
-console.log(value) // => { name: 'Alice' }
+const profile = { name: 'Alice', age: undefined, note: null }
+cleanObjectInPlace(profile)
+console.log(profile) // => { name: 'Alice' }
 ```
 
 ---
@@ -103,16 +103,18 @@ A deep clone of the input value.
 ```ts
 import { cloneDeep } from '@ntnyq/utils'
 
-const original = { user: { name: 'Alice' } }
-const cloned = cloneDeep(original)
-console.log(cloned.user === original.user) // => false
+const original = { settings: { darkMode: false } }
+const copy = cloneDeep(original)
+copy.settings.darkMode = true
+console.log(original.settings.darkMode) // => false
 ```
 
 ---
 
 ## deepMerge
 
-Deeply merges objects into a new object.
+Deeply merges objects into a new object. Later arrays replace earlier arrays
+by default.
 When a shared source is merged into distinct existing destinations, each
 destination keeps its own fields and resolves source cycles to itself.
 Shared values copied without an existing destination remain shared.
@@ -131,11 +133,10 @@ A new merged object.
 import { deepMerge } from '@ntnyq/utils'
 
 const result = deepMerge(
-  { theme: { color: 'blue', tags: ['base'] } },
-  { theme: { color: 'red', tags: ['brand'] } },
+  { settings: { theme: 'light', compact: true } },
+  { settings: { theme: 'dark' } },
 )
-
-console.log(result.theme) // => { color: 'red', tags: ['brand'] }
+console.log(result) // => { settings: { theme: 'dark', compact: true } }
 ```
 
 ---
@@ -162,10 +163,10 @@ import { deepMergeWithOptions } from '@ntnyq/utils'
 
 const result = deepMergeWithOptions(
   { arrayStrategy: 'concat' },
-  { tags: ['base'] },
-  { tags: ['feature'] },
+  { tags: ['typescript'] },
+  { tags: ['utils'] },
 )
-console.log(result.tags) // => ['base', 'feature']
+console.log(result.tags) // => ['typescript', 'utils']
 ```
 
 ---
@@ -341,9 +342,9 @@ Removes selected keys from an object in place.
 ```ts
 import { omitInPlace } from '@ntnyq/utils'
 
-const value = { a: 1, b: 2, c: 3 }
-omitInPlace(value, 'b')
-console.log(value) // => { a: 1, c: 3 }
+const item = { id: 1, draft: true, revision: 2 }
+omitInPlace(item, 'draft', 'revision')
+console.log(item) // => { id: 1 }
 ```
 
 ---

@@ -66,6 +66,18 @@ export interface ListToTreeOptions<
  * @param items - Flat source items.
  * @param options - Identifier, child-key, root, orphan, and cycle options.
  * @returns Built root nodes.
+ *
+ * @example
+ *
+ * ```typescript
+ * import { listToTree } from '@ntnyq/utils'
+ *
+ * const tree = listToTree([
+ *   { id: 1, parentId: null },
+ *   { id: 2, parentId: 1 },
+ * ])
+ * console.log(tree[0]?.children[0]?.id) // => 2
+ * ```
  */
 export function listToTree<
   Item extends object,

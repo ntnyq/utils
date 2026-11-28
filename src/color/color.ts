@@ -33,6 +33,18 @@ function normalizeAlpha(value: number): number {
   return Math.min(1, Math.max(0, value))
 }
 
+/**
+ * Represents a color with RGB and alpha channels.
+ *
+ * @example
+ *
+ * ```typescript
+ * import { Color } from '@ntnyq/utils'
+ *
+ * const color = Color.fromHex('#336699').withAlpha(0.5)
+ * console.log(color.toRGBAString()) // => 'rgba(51, 102, 153, 0.5)'
+ * ```
+ */
 export class Color {
   public red = 0
   public green = 0
@@ -46,6 +58,15 @@ export class Color {
    * @param green - Green channel value, clamped to the range from 0 to 255.
    * @param blue - Blue channel value, clamped to the range from 0 to 255.
    * @param alpha - Alpha channel value, clamped to the range from 0 to 1.
+   *
+   * @example
+   *
+   * ```typescript
+   * import { Color } from '@ntnyq/utils'
+   *
+   * const color = new Color(300, -10, 64, 0.5)
+   * console.log(color.toRGBAString()) // => 'rgba(255, 0, 64, 0.5)'
+   * ```
    */
   constructor(red = 0, green = 0, blue = 0, alpha = 1) {
     this.red = normalizeChannel(red)
@@ -61,6 +82,15 @@ export class Color {
    * @param green - Green channel value.
    * @param blue - Blue channel value.
    * @returns A color with full opacity.
+   *
+   * @example
+   *
+   * ```typescript
+   * import { Color } from '@ntnyq/utils'
+   *
+   * const color = Color.fromRGB(255, 128, 0)
+   * console.log(color.toRGBAString()) // => 'rgba(255, 128, 0, 1)'
+   * ```
    */
   static fromRGB(red: number, green: number, blue: number): Color {
     return new Color(red, green, blue)
@@ -74,6 +104,15 @@ export class Color {
    * @param blue - Blue channel value.
    * @param alpha - Alpha channel value.
    * @returns A color with the given opacity.
+   *
+   * @example
+   *
+   * ```typescript
+   * import { Color } from '@ntnyq/utils'
+   *
+   * const color = Color.fromRGBA(255, 128, 0, 0.25)
+   * console.log(color.toRGBAString()) // => 'rgba(255, 128, 0, 0.25)'
+   * ```
    */
   static fromRGBA(
     red: number,
@@ -90,6 +129,15 @@ export class Color {
    * @param hex - Hexadecimal color string.
    * @returns The parsed color with full opacity.
    * @throws {Error} If the string is not a supported hexadecimal color.
+   *
+   * @example
+   *
+   * ```typescript
+   * import { Color } from '@ntnyq/utils'
+   *
+   * const color = Color.fromHex('#f80')
+   * console.log(color.toHexString()) // => '#FF8800'
+   * ```
    */
   static fromHex(hex: string): Color {
     if (!validateHexColor(hex)) {
@@ -106,6 +154,15 @@ export class Color {
    * Gets the perceived brightness on a scale from 0 to 255.
    *
    * @returns The weighted brightness of the RGB channels.
+   *
+   * @example
+   *
+   * ```typescript
+   * import { Color } from '@ntnyq/utils'
+   *
+   * const color = Color.fromHex('#808080')
+   * console.log(color.brightness) // => 128
+   * ```
    */
   get brightness(): number {
     return (this.red * 299 + this.green * 587 + this.blue * 114) / 1000
@@ -115,6 +172,15 @@ export class Color {
    * Gets whether the color is considered dark.
    *
    * @returns `true` when the perceived brightness is below 128.
+   *
+   * @example
+   *
+   * ```typescript
+   * import { Color } from '@ntnyq/utils'
+   *
+   * const color = Color.fromHex('#123')
+   * console.log(color.isDark) // => true
+   * ```
    */
   get isDark(): boolean {
     return this.brightness < 128
@@ -124,6 +190,15 @@ export class Color {
    * Gets whether the color is considered light.
    *
    * @returns `true` when the color is not considered dark.
+   *
+   * @example
+   *
+   * ```typescript
+   * import { Color } from '@ntnyq/utils'
+   *
+   * const color = Color.fromHex('#abc')
+   * console.log(color.isLight) // => true
+   * ```
    */
   get isLight(): boolean {
     return !this.isDark
@@ -134,6 +209,16 @@ export class Color {
    *
    * @param isUpperCase - Whether to use uppercase hexadecimal digits.
    * @returns The color in `#RRGGBB` format.
+   *
+   * @example
+   *
+   * ```typescript
+   * import { Color } from '@ntnyq/utils'
+   *
+   * const color = Color.fromRGB(10, 20, 30)
+   * console.log(color.toHexString()) // => '#0A141E'
+   * console.log(color.toHexString(false)) // => '#0a141e'
+   * ```
    */
   toHexString(isUpperCase = true): string {
     const pad2 = createPadString({ length: 2, char: '0' })
@@ -145,6 +230,15 @@ export class Color {
    * Formats the color as an RGBA CSS color string.
    *
    * @returns The color in `rgba(red, green, blue, alpha)` format.
+   *
+   * @example
+   *
+   * ```typescript
+   * import { Color } from '@ntnyq/utils'
+   *
+   * const color = Color.fromRGBA(10, 20, 30, 0.4)
+   * console.log(color.toRGBAString()) // => 'rgba(10, 20, 30, 0.4)'
+   * ```
    */
   toRGBAString(): string {
     return `rgba(${this.red}, ${this.green}, ${this.blue}, ${this.alpha})`
@@ -155,6 +249,17 @@ export class Color {
    *
    * @param alpha - alpha value
    * @returns instance of {@link Color}
+   *
+   * @example
+   *
+   * ```typescript
+   * import { Color } from '@ntnyq/utils'
+   *
+   * const color = Color.fromHex('#369')
+   * const translucent = color.withAlpha(0.5)
+   * console.log(translucent.alpha) // => 0.5
+   * console.log(color.alpha) // => 1
+   * ```
    */
   withAlpha(alpha = 1): Color {
     return new Color(this.red, this.green, this.blue, alpha)
@@ -164,6 +269,15 @@ export class Color {
    * lighten the color by percentage
    *
    * @param percentage - percentage to lighten
+   *
+   * @example
+   *
+   * ```typescript
+   * import { Color } from '@ntnyq/utils'
+   *
+   * const color = Color.fromHex('#369')
+   * console.log(color.lighten(20).toHexString()) // => '#6699CC'
+   * ```
    */
   lighten(percentage = 0): Color {
     const amount = Math.round((percentage / 100) * 255)
@@ -179,6 +293,15 @@ export class Color {
    * darken the color by percentage
    *
    * @param percentage - percentage to darken
+   *
+   * @example
+   *
+   * ```typescript
+   * import { Color } from '@ntnyq/utils'
+   *
+   * const color = Color.fromHex('#369')
+   * console.log(color.darken(20).toHexString()) // => '#003366'
+   * ```
    */
   darken(percentage = 0): Color {
     const amount = Math.round((percentage / 100) * 255)

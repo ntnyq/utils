@@ -176,6 +176,22 @@ function pushTreeFoldEntries<Node extends object, Result, State>(
  * @param options - Child-key and cycle options.
  * @param createCycleError - Creates the caller-specific cycle error.
  * @returns Traversal status and visit count.
+ *
+ * @example
+ *
+ * ```typescript
+ * import { traverseTree } from './traverseTree'
+ *
+ * const tree = [{ id: 1, children: [{ id: 2 }] }]
+ * const result = traverseTree(
+ *   tree,
+ *   ({ node }) => (node.id === 2 ? 'stop' : 'continue'),
+ *   {},
+ *   () => new TypeError('Circular tree'),
+ * )
+ * console.log(result.stoppedNode?.id) // => 2
+ * console.log(result.visitedCount) // => 2
+ * ```
  */
 export function traverseTree<
   Node extends object,
@@ -269,6 +285,25 @@ export function traverseTree<
  * @param options - Child-key and cycle options.
  * @param createCycleError - Creates the caller-specific cycle error.
  * @returns Folded root results.
+ *
+ * @example
+ *
+ * ```typescript
+ * import { foldTree } from './traverseTree'
+ *
+ * const tree = [{ id: 1, children: [{ id: 2 }] }]
+ * const sizes = foldTree(
+ *   tree,
+ *   {
+ *     leave: (_context, childSizes: number[]) =>
+ *       1 + childSizes.reduce((sum, size) => sum + size, 0),
+ *   },
+ *   undefined,
+ *   {},
+ *   () => new TypeError('Circular tree'),
+ * )
+ * console.log(sizes) // => [2]
+ * ```
  */
 export function foldTree<
   Node extends object,

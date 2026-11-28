@@ -248,8 +248,9 @@ True if the two values are deeply equal, or false otherwise.
 ```ts
 import { isDeepEqual } from '@ntnyq/utils'
 
-const result = isDeepEqual({ a: 1 }, { a: 1 })
-console.log(result) // => true
+const first = { items: [{ id: 1 }] }
+const second = { items: [{ id: 1 }] }
+console.log(isDeepEqual(first, second)) // => true
 ```
 
 ---

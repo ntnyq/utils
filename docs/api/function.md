@@ -39,13 +39,11 @@ A composed function.
 ```ts
 import { compose } from '@ntnyq/utils'
 
-const fn = compose(
-  (n: number) => `v:${n}`,
-  (n: number) => n * 2,
-  (n: number) => n + 1,
+const calculate = compose(
+  (value: number) => value * 2,
+  (value: number) => value + 1,
 )
-
-console.log(fn(2)) // => 'v:6'
+console.log(calculate(3)) // => 8
 ```
 
 ---
@@ -72,8 +70,20 @@ argument identities, keeping the optional size bound effective.
 ```ts
 import { memoize } from '@ntnyq/utils'
 
-const heavy = memoize((n: number) => n * n)
-console.log(heavy(4)) // => 16
+const createPoint = memoize((x: number, y: number) => ({ x, y }))
+const point = createPoint(2, 3)
+console.log(createPoint(2, 3) === point) // => true
+```
+
+### Clear the cache
+
+```ts
+import { memoize } from '@ntnyq/utils'
+
+const square = memoize((value: number) => value ** 2)
+square(4)
+square.clear()
+console.log(square.cache.size) // => 0
 ```
 
 ---
@@ -150,12 +160,11 @@ A piped function.
 ```ts
 import { pipe } from '@ntnyq/utils'
 
-const fn = pipe(
-  (value: string) => value.trim(),
-  value => value.toUpperCase(),
+const calculate = pipe(
+  (value: number) => value * 2,
+  (value: number) => value + 1,
 )
-
-console.log(fn('  hi  ')) // => 'HI'
+console.log(calculate(3)) // => 7
 ```
 
 ---
@@ -174,6 +183,16 @@ search('utils')
 search('utils library') // only this value is logged after 300 ms
 ```
 
+### Cancel a pending debounced call
+
+```ts
+import { debounce } from '@ntnyq/utils'
+
+const save = debounce(300, () => console.log('saved'))
+save()
+save.cancel() // cancels the scheduled save
+```
+
 ---
 
 ## throttle
@@ -186,4 +205,15 @@ import { throttle } from '@ntnyq/utils'
 
 const onResize = throttle(200, () => console.log('resized'))
 window.addEventListener('resize', onResize)
+```
+
+### Cancel a pending trailing call
+
+```ts
+import { throttle } from '@ntnyq/utils'
+
+const update = throttle(200, (value: number) => console.log(value))
+update(1) // logs 1 immediately
+update(2) // schedules a trailing call
+update.cancel()
 ```

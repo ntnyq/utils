@@ -244,7 +244,7 @@ const users = [
 ]
 
 const usersById = keyBy(users, 'id')
-console.log(usersById.a?.name) // => 'Alice'
+console.log(usersById['a']?.name) // => 'Alice'
 ```
 
 ---
@@ -449,9 +449,9 @@ item was removed.
 ```ts
 import { removeArrayItemInPlace } from '@ntnyq/utils'
 
-const list = [1, 2, 3]
-const removed = removeArrayItemInPlace(list, 2)
-console.log(removed, list) // => true, [1, 3]
+const items = [1, 2, 2, 3]
+console.log(removeArrayItemInPlace(items, 2)) // => true
+console.log(items) // => [1, 2, 3]
 ```
 
 ---
@@ -486,8 +486,9 @@ Applies a Fisher–Yates shuffle to an array in place.
 ```ts
 import { shuffleInPlace } from '@ntnyq/utils'
 
-const values = [1, 2, 3, 4]
-shuffleInPlace(values)
+const items = [1, 2, 3, 4]
+const shuffled = shuffleInPlace(items)
+console.log(shuffled === items) // => true
 ```
 
 ---

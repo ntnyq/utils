@@ -282,6 +282,28 @@ function linkFlatTreeEntries<
  * @param items - Flat source items.
  * @param options - Identifier, cloning, root, cycle, and orphan policies.
  * @returns Newly allocated root nodes.
+ *
+ * @example
+ *
+ * ```typescript
+ * import { buildFlatTree } from './buildFlatTree'
+ *
+ * const items = [
+ *   { id: 1, parentId: null },
+ *   { id: 2, parentId: 1 },
+ * ]
+ * const tree = buildFlatTree(items, {
+ *   childrenKey: 'children',
+ *   cloneStrategy: 'enumerable',
+ *   cycleStrategy: 'throw',
+ *   errorMode: 'listToTree',
+ *   getId: item => item.id,
+ *   getParentId: item => item.parentId,
+ *   orphanStrategy: 'root',
+ *   rootParentIds: [null, undefined],
+ * })
+ * console.log(tree[0]?.children[0]?.id) // => 2
+ * ```
  */
 export function buildFlatTree<
   Item extends object,

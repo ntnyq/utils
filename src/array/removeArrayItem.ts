@@ -25,6 +25,16 @@ export function removeArrayItem<T>(array: readonly T[], value: T): T[] {
  * @param array - The source array to mutate.
  * @param value - The item to remove.
  * @returns True when an item was removed.
+ *
+ * @example
+ *
+ * ```typescript
+ * import { removeArrayItemInPlace } from '@ntnyq/utils'
+ *
+ * const items = [1, 2, 2, 3]
+ * console.log(removeArrayItemInPlace(items, 2)) // => true
+ * console.log(items) // => [1, 2, 3]
+ * ```
  */
 export function removeArrayItemInPlace<T>(array: T[], value: T): boolean {
   if (!array) {

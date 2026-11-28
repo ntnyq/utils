@@ -185,6 +185,17 @@ function loadImage(
  * @param source - The image URL, Blob, or File to load.
  * @param options - Loading and cache options.
  * @returns A promise that resolves with the image's natural dimensions.
+ *
+ * @example
+ *
+ * ```typescript
+ * import { loadImageDimensions } from '@ntnyq/utils'
+ *
+ * const svg = '<svg xmlns="http://www.w3.org/2000/svg" width="40" height="20"/>'
+ * const source = `data:image/svg+xml,${encodeURIComponent(svg)}`
+ * const size = await loadImageDimensions(source)
+ * console.log(size) // => { width: 40, height: 20 }
+ * ```
  */
 export async function loadImageDimensions(
   source: string | Blob | File,

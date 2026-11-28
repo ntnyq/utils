@@ -4,6 +4,18 @@ type AnyFunction = (...args: any[]) => any
 
 /**
  * Composes functions from right to left.
+ *
+ * @example
+ *
+ * ```typescript
+ * import { compose } from '@ntnyq/utils'
+ *
+ * const calculate = compose(
+ *   (value: number) => value * 2,
+ *   (value: number) => value + 1,
+ * )
+ * console.log(calculate(3)) // => 8
+ * ```
  */
 export function compose(): <T>(value: T) => T
 export function compose<A extends unknown[], R>(
@@ -49,6 +61,18 @@ export function compose(...fns: AnyFunction[]): AnyFunction {
 
 /**
  * Pipes functions from left to right.
+ *
+ * @example
+ *
+ * ```typescript
+ * import { pipe } from '@ntnyq/utils'
+ *
+ * const calculate = pipe(
+ *   (value: number) => value * 2,
+ *   (value: number) => value + 1,
+ * )
+ * console.log(calculate(3)) // => 7
+ * ```
  */
 export function pipe(): <T>(value: T) => T
 export function pipe<A extends unknown[], R>(

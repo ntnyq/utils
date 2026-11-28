@@ -62,12 +62,29 @@ and cycle handling.
 ```ts
 import { listToTree } from '@ntnyq/utils'
 
+const tree = listToTree([
+  { id: 1, parentId: null },
+  { id: 2, parentId: 1 },
+])
+console.log(tree[0]?.children[0]?.id) // => 2
+```
+
+Use selectors and a custom child key when the source uses different fields.
+
+```ts
+import { listToTree } from '@ntnyq/utils'
+
+const departments = [
+  { code: 1, parentCode: 0 },
+  { code: 2, parentCode: 1 },
+]
 const tree = listToTree(departments, {
   childrenKey: 'nodes',
   getId: department => department.code,
   getParentId: department => department.parentCode,
   rootParentIds: [0],
 })
+console.log(tree[0]?.nodes[0]?.code) // => 2
 ```
 
 Unresolved parents become roots by default. Set `orphanStrategy` to `discard`
@@ -105,7 +122,9 @@ predicate receives the node, parent, depth, sibling index, and path snapshot.
 ```ts
 import { findTreeNode } from '@ntnyq/utils'
 
-const selected = findTreeNode(departments, ({ node }) => node.id === selectedId)
+const tree = [{ id: 1, children: [{ id: 2 }] }]
+const match = findTreeNode(tree, ({ node }) => node.id === 2)
+console.log(match) // => { id: 2 }
 ```
 
 ---
@@ -164,11 +183,17 @@ or child property.
 ```ts
 import { mapTree } from '@ntnyq/utils'
 
-const options = mapTree(tree, ({ node, children }) => ({
-  label: node.name,
+interface MappedNode {
+  value: number
+  children: MappedNode[]
+}
+
+const tree = [{ id: 1, children: [{ id: 2 }] }]
+const mapped = mapTree(tree, ({ node, children }): MappedNode => ({
   value: node.id,
-  options: children,
+  children,
 }))
+console.log(mapped[0]?.children[0]?.value) // => 2
 ```
 
 ---
@@ -181,14 +206,37 @@ node's descendants, or `stop` to end the entire traversal.
 ```ts
 import { walkTree } from '@ntnyq/utils'
 
+const tree = [{ id: 1, children: [{ id: 2 }] }]
+walkTree(tree, ({ node }) => {
+  console.log(node.id) // logs 1, then 2
+})
+```
+
+Return `skip` to bypass a disabled node's descendants.
+
+```ts
+import { walkTree } from '@ntnyq/utils'
+
+interface TreeNode {
+  id: number
+  disabled?: boolean
+  children?: TreeNode[]
+}
+
+const tree: TreeNode[] = [
+  { id: 1, disabled: true, children: [{ id: 2 }] },
+  { id: 3 },
+]
+
 const result = walkTree(tree, ({ node }) => {
   if (node.disabled) {
     return 'skip'
   }
-  console.log(node.id)
+  console.log(node.id) // logs 3
+  return 'continue'
 })
 
-console.log(result.visitedCount)
+console.log(result.visitedCount) // => 2
 ```
 
 Custom child keys and `onCycle: 'skip'` are supported.

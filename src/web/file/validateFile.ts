@@ -181,11 +181,13 @@ function getExtensionIssue(
  * ```typescript
  * import { validateFile } from '@ntnyq/utils'
  *
+ * const file = new File(['name,age\nAlice,30'], 'people.csv', { type: 'text/csv' })
  * const result = validateFile(file, {
- *   allowedExtensions: ['pdf'],
- *   allowedMimeTypes: ['application/pdf'],
- *   maxSize: 10 * 1024 * 1024,
+ *   allowedExtensions: ['csv'],
+ *   allowedMimeTypes: ['text/csv'],
+ *   maxSize: 1024,
  * })
+ * console.log(result.isValid) // => true
  * ```
  */
 export function validateFile<

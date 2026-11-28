@@ -140,7 +140,7 @@ async function waitForBackoff(
  * import { retry } from '@ntnyq/utils'
  *
  * const result = await retry(
- *   ({ signal }) => fetch('/api/data', { signal }),
+ *   ({ signal }) => fetch('/api/data', { signal: signal ?? null }),
  *   {
  *     backoff: (_error, { attempt }) => 100 * 2 ** (attempt - 1),
  *     maxAttempts: 3,

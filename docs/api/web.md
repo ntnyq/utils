@@ -27,6 +27,15 @@ and utility modules.
   With `cache: false`, HTTP(S) and relative URLs receive a cache-busting query
   parameter. Other schemes, including `data:` and `blob:`, remain unchanged.
 
+```ts
+import { loadImageDimensions } from '@ntnyq/utils'
+
+const svg = '<svg xmlns="http://www.w3.org/2000/svg" width="40" height="20"/>'
+const source = `data:image/svg+xml,${encodeURIComponent(svg)}`
+const size = await loadImageDimensions(source)
+console.log(size) // => { width: 40, height: 20 }
+```
+
 ## File
 
 - `validateFile` checks byte-size, MIME-type, and filename-extension
@@ -36,16 +45,18 @@ and utility modules.
 ```ts
 import { validateFile } from '@ntnyq/utils'
 
-const result = validateFile(file, {
-  allowedExtensions: ['pdf'],
-  allowedMimeTypes: ['application/pdf'],
-  maxSize: 10 * 1024 * 1024,
+const file = new File(['name,age\nAlice,30'], 'people.csv', {
+  type: 'text/csv',
 })
-
-if (!result.isValid) {
-  console.log(result.issues)
-}
+const result = validateFile(file, {
+  allowedExtensions: ['csv'],
+  allowedMimeTypes: ['text/csv'],
+  maxSize: 1024,
+})
+console.log(result.isValid) // => true
 ```
+
+When validation fails, read `result.issues` for the reasons.
 
 ## Animation frame
 

@@ -38,7 +38,124 @@ brightness checks, alpha changes, lightening, and darkening.
 import { Color } from '@ntnyq/utils'
 
 const color = Color.fromHex('#336699').withAlpha(0.5)
-console.log(color.toRGBAString()) // => rgba(51, 102, 153, 0.5)
+console.log(color.toRGBAString()) // => 'rgba(51, 102, 153, 0.5)'
+```
+
+### Constructor
+
+```ts
+import { Color } from '@ntnyq/utils'
+
+const color = new Color(300, -10, 64, 0.5)
+console.log(color.toRGBAString()) // => 'rgba(255, 0, 64, 0.5)'
+```
+
+### Static methods
+
+#### fromRGB
+
+```ts
+import { Color } from '@ntnyq/utils'
+
+const color = Color.fromRGB(255, 128, 0)
+console.log(color.toRGBAString()) // => 'rgba(255, 128, 0, 1)'
+```
+
+#### fromRGBA
+
+```ts
+import { Color } from '@ntnyq/utils'
+
+const color = Color.fromRGBA(255, 128, 0, 0.25)
+console.log(color.toRGBAString()) // => 'rgba(255, 128, 0, 0.25)'
+```
+
+#### fromHex
+
+```ts
+import { Color } from '@ntnyq/utils'
+
+const color = Color.fromHex('#f80')
+console.log(color.toHexString()) // => '#FF8800'
+```
+
+### Accessors
+
+#### brightness
+
+```ts
+import { Color } from '@ntnyq/utils'
+
+const color = Color.fromHex('#808080')
+console.log(color.brightness) // => 128
+```
+
+#### isDark
+
+```ts
+import { Color } from '@ntnyq/utils'
+
+const color = Color.fromHex('#123')
+console.log(color.isDark) // => true
+```
+
+#### isLight
+
+```ts
+import { Color } from '@ntnyq/utils'
+
+const color = Color.fromHex('#abc')
+console.log(color.isLight) // => true
+```
+
+### Instance methods
+
+#### toHexString
+
+```ts
+import { Color } from '@ntnyq/utils'
+
+const color = Color.fromRGB(10, 20, 30)
+console.log(color.toHexString()) // => '#0A141E'
+console.log(color.toHexString(false)) // => '#0a141e'
+```
+
+#### toRGBAString
+
+```ts
+import { Color } from '@ntnyq/utils'
+
+const color = Color.fromRGBA(10, 20, 30, 0.4)
+console.log(color.toRGBAString()) // => 'rgba(10, 20, 30, 0.4)'
+```
+
+#### withAlpha
+
+```ts
+import { Color } from '@ntnyq/utils'
+
+const color = Color.fromHex('#369')
+const translucent = color.withAlpha(0.5)
+console.log(translucent.alpha) // => 0.5
+console.log(color.alpha) // => 1
+```
+
+#### lighten
+
+```ts
+import { Color } from '@ntnyq/utils'
+
+const color = Color.fromHex('#369')
+console.log(color.lighten(20).toHexString()) // => '#6699CC'
+```
+
+#### darken
+
+```ts
+import { Color } from '@ntnyq/utils'
+
+const color = Color.fromHex('#369')
+console.log(color.darken(20).toHexString()) // => '#003366'
 ```
 
 ---

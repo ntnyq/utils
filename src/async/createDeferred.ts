@@ -9,11 +9,31 @@ export interface Deferred<Value = unknown> {
 
   /**
    * Resolves with a value or adopts a promise-like result.
+   *
+   * @example
+   *
+   * ```typescript
+   * import { createDeferred } from '@ntnyq/utils'
+   *
+   * const deferred = createDeferred<string>()
+   * deferred.resolve(Promise.resolve('ready'))
+   * console.log(await deferred.promise) // => 'ready'
+   * ```
    */
   resolve: (value: Value | PromiseLike<Value>) => void
 
   /**
    * Rejects with the supplied reason.
+   *
+   * @example
+   *
+   * ```typescript
+   * import { createDeferred } from '@ntnyq/utils'
+   *
+   * const deferred = createDeferred<string>()
+   * deferred.reject(new Error('Cancelled'))
+   * await deferred.promise.catch(console.error)
+   * ```
    */
   reject: (reason: unknown) => void
 }

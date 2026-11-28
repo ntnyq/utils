@@ -47,10 +47,17 @@ function createMapTreeContext<Node, Mapped>(
  * ```typescript
  * import { mapTree } from '@ntnyq/utils'
  *
- * const mapped = mapTree(tree, ({ node, children }) => ({
+ * interface MappedNode {
+ *   value: number
+ *   children: MappedNode[]
+ * }
+ *
+ * const tree = [{ id: 1, children: [{ id: 2 }] }]
+ * const mapped = mapTree(tree, ({ node, children }): MappedNode => ({
  *   value: node.id,
  *   children,
  * }))
+ * console.log(mapped[0]?.children[0]?.value) // => 2
  * ```
  */
 export function mapTree<

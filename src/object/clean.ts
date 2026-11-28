@@ -177,6 +177,16 @@ export function cleanObject<T extends object>(
  * @param obj - Object to mutate.
  * @param options - Clean options.
  * @returns The source object after cleaning.
+ *
+ * @example
+ *
+ * ```typescript
+ * import { cleanObjectInPlace } from '@ntnyq/utils'
+ *
+ * const profile = { name: 'Alice', age: undefined, note: null }
+ * cleanObjectInPlace(profile)
+ * console.log(profile) // => { name: 'Alice' }
+ * ```
  */
 export function cleanObjectInPlace<T extends object>(
   obj?: T | undefined | null,

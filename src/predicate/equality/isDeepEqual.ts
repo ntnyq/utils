@@ -302,6 +302,16 @@ function compare(
  * @param value1 - The first value to compare.
  * @param value2 - The second value to compare.
  * @returns Whether the values are deeply equal.
+ *
+ * @example
+ *
+ * ```typescript
+ * import { isDeepEqual } from '@ntnyq/utils'
+ *
+ * const first = { items: [{ id: 1 }] }
+ * const second = { items: [{ id: 1 }] }
+ * console.log(isDeepEqual(first, second)) // => true
+ * ```
  */
 export function isDeepEqual(value1: unknown, value2: unknown): boolean {
   let state: ComparisonState | undefined = {

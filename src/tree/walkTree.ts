@@ -29,8 +29,9 @@ export interface WalkTreeResult<Node> {
  * ```typescript
  * import { walkTree } from '@ntnyq/utils'
  *
+ * const tree = [{ id: 1, children: [{ id: 2 }] }]
  * walkTree(tree, ({ node }) => {
- *   console.log(node)
+ *   console.log(node.id) // logs 1, then 2
  * })
  * ```
  */

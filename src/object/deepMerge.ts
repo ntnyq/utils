@@ -275,6 +275,18 @@ function mergeAll<
  * Deeply merges data objects from left to right into a new object.
  * @param objects - Source objects from left to right.
  * @returns A new merged object.
+ *
+ * @example
+ *
+ * ```typescript
+ * import { deepMerge } from '@ntnyq/utils'
+ *
+ * const result = deepMerge(
+ *   { settings: { theme: 'light', compact: true } },
+ *   { settings: { theme: 'dark' } },
+ * )
+ * console.log(result) // => { settings: { theme: 'dark', compact: true } }
+ * ```
  */
 export function deepMerge<const Objects extends readonly AnyRecord[]>(
   ...objects: Objects
@@ -287,6 +299,19 @@ export function deepMerge<const Objects extends readonly AnyRecord[]>(
  * @param options - Merge options.
  * @param objects - Source objects from left to right.
  * @returns A new merged object.
+ *
+ * @example
+ *
+ * ```typescript
+ * import { deepMergeWithOptions } from '@ntnyq/utils'
+ *
+ * const result = deepMergeWithOptions(
+ *   { arrayStrategy: 'concat' },
+ *   { tags: ['typescript'] },
+ *   { tags: ['utils'] },
+ * )
+ * console.log(result.tags) // => ['typescript', 'utils']
+ * ```
  */
 export function deepMergeWithOptions<
   const Options extends DeepMergeOptions,

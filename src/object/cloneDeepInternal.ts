@@ -255,6 +255,21 @@ function cloneDeepValue<T>(value: T, context: CloneDeepContext): T {
   return cloneObject(value, context) as T
 }
 
+/**
+ * Clones a value with optional descriptor normalization.
+ *
+ * @example
+ *
+ * ```typescript
+ * import { cloneDeepInternal } from './cloneDeepInternal'
+ *
+ * const source = Object.freeze({ name: 'Alice' })
+ * const copy = cloneDeepInternal(source, new WeakMap(), {
+ *   descriptorsConfigurable: true,
+ * })
+ * console.log(Object.getOwnPropertyDescriptor(copy, 'name')?.configurable) // => true
+ * ```
+ */
 export function cloneDeepInternal<T>(
   value: T,
   hash: WeakMap<object, unknown> = new WeakMap<object, unknown>(),

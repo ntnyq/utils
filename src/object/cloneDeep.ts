@@ -7,6 +7,17 @@ import { cloneDeepInternal } from './cloneDeepInternal'
  * @param value - The value to clone.
  * @param hash - Objects already cloned during this operation.
  * @returns A deep clone of the input value.
+ *
+ * @example
+ *
+ * ```typescript
+ * import { cloneDeep } from '@ntnyq/utils'
+ *
+ * const original = { settings: { darkMode: false } }
+ * const copy = cloneDeep(original)
+ * copy.settings.darkMode = true
+ * console.log(original.settings.darkMode) // => false
+ * ```
  */
 export function cloneDeep<T>(
   value: T,

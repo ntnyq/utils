@@ -55,6 +55,16 @@ export function omit<T extends object, K extends keyof T = never>(
  * @param object - The source object to mutate.
  * @param keys - The keys to remove.
  * @returns The source object with the selected keys removed.
+ *
+ * @example
+ *
+ * ```typescript
+ * import { omitInPlace } from '@ntnyq/utils'
+ *
+ * const item = { id: 1, draft: true, revision: 2 }
+ * omitInPlace(item, 'draft', 'revision')
+ * console.log(item) // => { id: 1 }
+ * ```
  */
 export function omitInPlace<T, K extends keyof T>(
   object: T,

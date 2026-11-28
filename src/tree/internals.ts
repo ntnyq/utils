@@ -6,6 +6,20 @@
  * @param node - Tree node to inspect.
  * @param childrenKey - Property containing child nodes.
  * @returns Child nodes or an empty array.
+ *
+ * @example
+ *
+ * ```typescript
+ * import { getTreeChildren } from './internals'
+ *
+ * interface Node {
+ *   id: number
+ *   children?: Node[]
+ * }
+ *
+ * const node: Node = { id: 1, children: [{ id: 2 }] }
+ * console.log(getTreeChildren(node, 'children')) // => [{ id: 2 }]
+ * ```
  */
 export function getTreeChildren<
   Node extends object,
@@ -20,6 +34,15 @@ export function getTreeChildren<
  *
  * @param childrenKey - Explicit child property.
  * @returns The explicit property or `children` by default.
+ *
+ * @example
+ *
+ * ```typescript
+ * import { resolveChildrenKey } from './internals'
+ *
+ * console.log(resolveChildrenKey(undefined)) // => 'children'
+ * console.log(resolveChildrenKey('items')) // => 'items'
+ * ```
  */
 export function resolveChildrenKey<ChildrenKey extends PropertyKey>(
   childrenKey: ChildrenKey | undefined,

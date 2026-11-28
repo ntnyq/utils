@@ -45,6 +45,26 @@ This helper uses the Promise constructor and does not require
 remains pending if neither function is called; consumers must handle rejection
 with `catch` or `try`/`catch` around `await`.
 
+### Resolve with a promise
+
+```ts
+import { createDeferred } from '@ntnyq/utils'
+
+const deferred = createDeferred<string>()
+deferred.resolve(Promise.resolve('ready'))
+console.log(await deferred.promise) // => 'ready'
+```
+
+### Reject with an error
+
+```ts
+import { createDeferred } from '@ntnyq/utils'
+
+const deferred = createDeferred<string>()
+deferred.reject(new Error('Cancelled'))
+await deferred.promise.catch(console.error)
+```
+
 ---
 
 ## raceWithSignal
@@ -91,14 +111,18 @@ active attempt, the retry predicate, or a pending delay.
 ```ts
 import { retry } from '@ntnyq/utils'
 
-const controller = new AbortController()
-const response = await retry(({ signal }) => fetch('/api/data', { signal }), {
-  backoff: (_error, { attempt }) => 100 * 2 ** (attempt - 1),
-  maxAttempts: 3,
-  shouldRetry: error => error instanceof TypeError,
-  signal: controller.signal,
-})
+const result = await retry(
+  ({ signal }) => fetch('/api/data', { signal: signal ?? null }),
+  {
+    backoff: (_error, { attempt }) => 100 * 2 ** (attempt - 1),
+    maxAttempts: 3,
+    shouldRetry: error => error instanceof TypeError,
+  },
+)
 ```
+
+Pass `controller.signal` in the retry options to cancel the operation with
+`controller.abort()`.
 
 ---
 

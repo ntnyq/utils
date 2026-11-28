@@ -49,14 +49,11 @@ represent return a configurable fallback string.
 ```ts
 import { safeStringify } from '@ntnyq/utils'
 
-const value: Record<string, unknown> = {
-  count: 1n,
-  error: new Error('Failed'),
-}
-value.self = value
+const value: Record<string, unknown> = { count: 1n }
+value['self'] = value
 
-const result = safeStringify(value)
-// => '{"count":"1n","error":{"name":"Error",...},"self":"[Circular]"}'
+safeStringify(value)
+// => '{"count":"1n","self":"[Circular]"}'
 ```
 
 Use `bigintSerializer`, `circularValue`, `errorSerializer`, or `replacer` to
